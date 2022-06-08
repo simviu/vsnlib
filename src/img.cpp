@@ -1,3 +1,9 @@
+/*
+   Author: Sherman Chen
+   Create Time: 2022-05-16
+   Email: schen@simviu.com
+ */
+
 #include "vsn/vsnLib.h"
 #include "vsn/ocv_hlpr.h"
 using namespace vsn;
