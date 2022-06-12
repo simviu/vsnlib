@@ -99,7 +99,19 @@ namespace ut
     //----------
     // draw data
     //----------
-    struct Px{int x=0;int y=0;};
+    struct Px{
+        Px(){}
+        Px(int x, int y):x(x),y(y){}
+        int x=0;int y=0;
+        Px operator - (const Px& d)const
+        { return {x - d.x, y - d.y}; }
+        Px operator + (const Px& d)const
+        { return {x + d.x, y + d.y}; }
+        void operator -= (const Px& d)
+        {  x -= d.x; y -= d.y; }
+        void operator += (const Px& d)
+        {  x += d.x; y += d.y; }
+    };
     struct Color{unsigned char r=0;
                  unsigned char g=0; 
                  unsigned char b=0;

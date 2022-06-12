@@ -31,10 +31,13 @@ namespace vsn{
          string str()const ;
     };
     //-----
-    struct Pose{ quat q; vec3 t; 
+    struct Pose{ 
+        quat q; 
+        vec3 t; 
         string str()const;
-        void inv();
+        Pose inv()const;
         vector<Line> axis(double l=1.0)const;
+        Pose operator *(const Pose& p)const;
     };
 
     //---------

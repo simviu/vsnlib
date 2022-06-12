@@ -55,7 +55,29 @@ vector<Line> Pose::axis(double l)const
     }
     return ls;
 }
+//----
+Pose Pose::inv()const
+{
+    // inv[ R | t] = [R^T | -R^T*t]
+    Pose p;
+    p.q = q.inverse();
+    mat3 RT(p.q);
+    p.t = -RT*t;
+    return p;
+}
+//----
+Pose Pose::operator *(const Pose& p)const
+{
+    //  | R1 t1 | x | R2 t2 | = | R1R2  R1t2+t1 | 
+    //  | 0   1 |   |  0  1 |   |  0       1    |
+    //
+    Pose T;
 
+    T.q = q * p.q;
+    mat3 R1(q);
+    T.t = R1*p.t + t;
+    return T;
+}
 
 //----- utils
 extern int vsn::cv_waitkey(int MS)

@@ -4,6 +4,7 @@
    Email: schen@simviu.com
  */
 
+#include "vsn/cutil.h"
 #include <unistd.h>
 #include <stdio.h>
 
