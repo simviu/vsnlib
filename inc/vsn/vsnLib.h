@@ -57,10 +57,25 @@ namespace vsn{
         { return data_.load(sf); }
         vec2 proj(const vec3& p)const;
         Line2d proj(const Line& l)const;
+        // camera distortion para
+        struct TDist{
+            TDist(){}
+            TDist(const vec5& v): k1(v(0)),k2(v(1)),
+            p1(v(2)),p2(v(3)),k3(v(4)){}
+            double k1=0;
+            double k2=0;
+            double k3=0;
+            double p1=0;
+            double p2=0;
+            vec5 V()const
+            { vec5 v; v << k1,k2,p1,p2,k3; }
+            
+        };
         //---
         struct Data{
             mat3 K;
-            vec5 D;
+            //vec5 D;
+            TDist D; // distortion
 
             int W=0;
             int H=0;
@@ -69,7 +84,9 @@ namespace vsn{
         };
         Data data_;
     };
-
+    //---- streamming
+    inline ostream& operator <<(ostream& s, const CamCfg::TDist& d)
+    { s << d.V(); return s;}
     //------------
     // Camera
     //------------

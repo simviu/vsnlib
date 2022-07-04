@@ -16,7 +16,9 @@ string Marker::str()const
 {
     stringstream ss;
     ss << "id:" << id << ", ";
-    ss << "ps:" << ps << ", ";
+    ss << "ps:";
+    for(auto& p : ps)
+        ss << p << ", ";
     ss << "pose:{"  << pose.str() <<"}";
     return ss.str();
 
@@ -64,7 +66,8 @@ bool Marker::pose_est(const CamCfg& camc, double w)
     auto& ccd = camc.data_;
     cv::Mat K,D;
     eigen2cv(ccd.K, K);
-    eigen2cv(ccd.D, D);
+    vec5 Dv = ccd.D.V();
+    eigen2cv(Dv, D);
     //---- pose estimation for this marker
     vector<Vec3d> rs, ts;
     vector<Point2f> cs;

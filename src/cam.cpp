@@ -24,14 +24,16 @@ bool CamCfg::Data::load(CStr& sf)
         return false;
     }
     
-    Mat K1,D1;
+    Mat K1,vD1;
     //---- read yaml
     fs["camera_matrix"] >> K1;
-    fs["distortion_coefficients"] >> D1;
+    fs["distortion_coefficients"] >> vD1;
     fs["image_width"] >> W;
     fs["image_height"] >> H;
     cv2eigen(K1, K);
-    cv2eigen(D1, D);
+    vec5 vD;
+    cv2eigen(vD1, vD);
+    D = TDist(vD);
     //----
     stringstream ss;
     ss << "read yaml : "+sf +" good" << endl;

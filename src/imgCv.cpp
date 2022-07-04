@@ -22,10 +22,9 @@ namespace{
 void ImgCv::undistort(const CamCfg& cc)
 {
     auto& ccd = cc.data_;
-    cv::Mat K,D;
+    cv::Mat K, D;
     eigen2cv(ccd.K, K);
-    eigen2cv(ccd.D, D);
-
+    eigen2cv(ccd.D.V(), D);    
     Mat imd;
     cv::undistort(im_, imd, K, D);
     im_ = imd;
