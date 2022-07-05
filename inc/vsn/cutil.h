@@ -132,4 +132,12 @@ namespace ut
     // file utils
     //-------------
     bool fexist(CStr& sf);
+
+    //-------------
+    // test
+    //-------------
+    class Test{
+    public:
+        virtual bool run()=0;
+    };
 }
