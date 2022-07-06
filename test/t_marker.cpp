@@ -12,7 +12,7 @@ namespace test
 {
     namespace{
         const struct{
-            string sf_camc = "vsnd/picam.yml";
+            string sf_camc = "vsnd/c310.yml";
         }l_cfg;
     }
     //--------------------------

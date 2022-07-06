@@ -12,12 +12,12 @@
 #include <fstream>
 #include <cstdio>
 #include <memory>
+#include <cmath>
 
 #include <vector>
 #include <map>
 #include <list>
 #include <queue>
-
 #include <functional>
 #include <thread>
 #include <mutex>
@@ -50,6 +50,12 @@ namespace ut
     { auto it = m.find(s); 
         return(it==m.end())?nullptr:it->second; }
 
+
+    //-----------
+    // math
+    //-----------
+    inline double toRad(double d){ return d*M_PI/180.0;  };
+    inline double toDgr(double d){ return d*180.0/M_PI;  };
     //-----------
     // log
     //-----------
@@ -73,7 +79,7 @@ namespace ut
         }
 
     }
-        
+    
     //----------------
     // multiple thread
     //----------------

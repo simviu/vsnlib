@@ -81,12 +81,28 @@ void CamCfg::undis(const vec2s& vds, vec2s& vs)const
 {
     vector<Point2f> cds;
     vector<Point2f> cs;
-    for(auto& v : vds) cds.push_back(toCv(v));
+    stringstream s;
+ //   s << "vds:" << endl;
+    for(auto& v : vds)
+    {
+    //    s << v << endl; 
+        cds.push_back(toCv(v));
+    }
     cv::Mat Kc,Dc; 
     eigen2cv(K, Kc);
     eigen2cv(D.V(), Dc);
     cv::undistortPoints(cds, cs, Kc, Dc);
-    for(auto& c : cs) vs.push_back(toVec(c));
+ //   s << "vs:" << endl;
+    for(auto& c : cs) 
+    {
+        vec2 u = toVec(c);
+        vec3 vn; vn << u.x(), u.y(), 1;
+        vec3 q = K*vn;
+        vec2 v; v << q.x(), q.y(); 
+    //    s << v << endl;
+        vs.push_back(v);
+    }
+  //  log_d(s.str());
 }
 
 //----------
@@ -110,7 +126,7 @@ string CamCfg::Lense::str()const
 {
     stringstream s;
     s << "fx=" << fx << ", fy=" << fy << ", ";
-    s << "cx=" << fx << ", cy=" << cy << ", ";
+    s << "cx=" << cx << ", cy=" << cy << ", ";
     s << "fovh=" << fovh << ", fovv=" << fovv << ", ";
     s << "fov=" << fov << endl;
     return s.str();
@@ -136,11 +152,16 @@ bool CamCfg::toLense(Lense& l)const
     vec2s qs;
     undis({qd}, qs);
     vec2 q = qs[0];
+    stringstream s;
     //--- proj corner point on
     //  unit focal length 1.0
     vec2 p; p<< (q.x() - cx)/fx, (q.y() - cy)/fy;
-    l.fovh = 2*atan(p.x());
-    l.fovv = 2*atan(p.y());
-    l.fov = 2*atan(p.norm());
+    l.fovh = toDgr(2*atan(p.x()));
+    l.fovv = toDgr(2*atan(p.y()));
+    l.fov  = toDgr(2*atan(p.norm()));
+    s << "qd=" << qd << ", ";
+    s << "q=" << q << ", ";
+    s << "p=" << p << ", ";
+    log_d(s.str());
     return true;
 }
