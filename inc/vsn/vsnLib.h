@@ -68,7 +68,7 @@ namespace vsn{
             double p1=0;
             double p2=0;
             vec5 V()const
-            { vec5 v; v << k1,k2,p1,p2,k3; }
+            { vec5 v; v << k1,k2,p1,p2,k3; return v;}
             
         };
         //---
