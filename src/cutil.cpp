@@ -83,6 +83,37 @@ bool fexist(CStr& sf)
     f.close();
     return ok;
 }
+        
+//--------------------
+// Cmd
+//--------------------
+bool Cmd::run(CStrs& args)
+{
+    //--- run
+    if(f_!=nullptr)
+        return f_(args);
+
+    // check subcmds
+    if(args.size()==0) 
+    {
+        log_e("cmd function null");
+        return false;
+    }
+    //-------
+    string sc = args[0];
+    auto p = lookup(cmds_, sc);
+    if(p==nullptr)
+    {
+        log_e("can't find subcmd:'"+sc+"'");
+        return false;
+        
+    }
+    //---- run subcmd
+    Strs ss = args;
+    ss.erase(ss.begin());
+    return p->run(ss);
+
+}
 
 
 }// namespace ut

@@ -28,7 +28,9 @@ namespace ut
     
     using namespace std;
 
-    typedef const string CStr;
+    using CStr = const string;
+    using Strs = vector<string>;
+    using CStrs = const vector<string>;
     //-----------------------------
     //	Aliase for std::shared_ptr
     //-----------------------------
@@ -39,7 +41,18 @@ namespace ut
     template<class T, class ..._Args>
     inline static std::shared_ptr<T> mkSp(_Args&& ...__args)
     { return std::make_shared<T>(__args...); };
-    //---- 
+
+    //-----------
+    // container utils
+    //-----------
+    template<class T>
+    inline Sp<T> lookup(map<string, Sp<T>>& m, CStr& s)
+    { auto it = m.find(s); 
+        return(it==m.end())?nullptr:it->second; }
+
+    //-----------
+    // log
+    //-----------
     namespace log{
         extern bool openFile(CStr& sFile);
         extern void dbg(CStr& s);
@@ -139,5 +152,26 @@ namespace ut
     class Test{
     public:
         virtual bool run()=0;
+    };
+
+    //-------------
+    // Cmds
+    //-------------
+    // string cmd line handler
+    class Cmd{
+    public:
+        using Fun=function<bool(CStrs& args)>;
+        Cmd(){}
+        Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
+        void add(CStr& s, Sp<Cmd> p)
+        { cmds_[s]=p; }
+        virtual bool run(CStrs& args);
+        bool parse(CStr& s);
+        bool runFile(CStr& sf);
+    protected:
+        string sHelp_;
+        Fun f_=nullptr;
+        map<string, Sp<Cmd>> cmds_;
+        
     };
 }
