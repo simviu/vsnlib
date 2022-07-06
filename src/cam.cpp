@@ -15,7 +15,7 @@ using namespace ut;
 //-----------------
 // CamCfg::Data
 //-----------------
-bool CamCfg::Data::load(CStr& sf)
+bool CamCfg::load(CStr& sf)
 {
 
     FileStorage fs(sf, FileStorage::READ);
@@ -44,30 +44,20 @@ bool CamCfg::Data::load(CStr& sf)
     ss << "  D=" << D << endl;
     log_i("Camera cfg loaded:"+sf);
     log_i(ss.str());
-    
-    return true;
-}
-
-
-//-----------------
-// CamCFg
-//-----------------
-bool CamCfg::load(CStr& sf)
-{
-    if(!data_.load(sf))
-        return false;
     Lense l;
-    bool ok = l.from(data_);
+    bool ok = toLense(l);
     log_i("Lense data: ");
     log_i(l.str());
     return ok; 
 }
 
+
+
 //----------- Note: assume undistorted img
 vec2 CamCfg::proj(const vec3& p)const
 {
     vec2 px; px << 0,0;
-    vec3 ph = data_.K * p;
+    vec3 ph = K * p;
     if(ph.z()==0) 
         return px;
     // de-homogns;
@@ -92,10 +82,10 @@ void CamCfg::undis(const vec2s& vds, vec2s& vs)const
     vector<Point2f> cds;
     vector<Point2f> cs;
     for(auto& v : vds) cds.push_back(toCv(v));
-    cv::Mat K,D; 
-    eigen2cv(data_.K, K);
-    eigen2cv(data_.D.V(), D);
-    cv::undistortPoints(cds, cs, K, D);
+    cv::Mat Kc,Dc; 
+    eigen2cv(K, Kc);
+    eigen2cv(D.V(), Dc);
+    cv::undistortPoints(cds, cs, Kc, Dc);
     for(auto& c : cs) vs.push_back(toVec(c));
 }
 
@@ -127,22 +117,30 @@ string CamCfg::Lense::str()const
 }
 
 //------
-bool CamCfg::Lense::from(Data& d)
+bool CamCfg::toLense(Lense& l)const
 {
-    fx = d.K(0,0);
-    fy = d.K(1,1);
-    cx = d.K(0,2);
-    cy = d.K(1,2);
+    auto& fx = l.fx; auto& fy = l.fy;
+    auto& cx = l.cx; auto& cy = l.cy;
+    
+    fx = K(0,0);
+    fy = K(1,1);
+    cx = K(0,2);
+    cy = K(1,2);
     if(fx==0 || fy==0)
     {
         log_e("incorrect camCfg");
         return false;
     }
-    //--- proj on unit focal length 1.0
-    double xc = (d.sz.w - cx)/fx;
-    double yc = (d.sz.h - cy)/fy;
-    fovh = 2*atan(xc);
-    fovv = 2*atan(yc);
-    fov = 2*atan(sqrt(xc*xc + yc*yc));
+    //--- undistor corner pnt
+    vec2 qd; qd << sz.w, sz.h;
+    vec2s qs;
+    undis({qd}, qs);
+    vec2 q = qs[0];
+    //--- proj corner point on
+    //  unit focal length 1.0
+    vec2 p; p<< (q.x() - cx)/fx, (q.y() - cy)/fy;
+    l.fovh = 2*atan(p.x());
+    l.fovv = 2*atan(p.y());
+    l.fov = 2*atan(p.norm());
     return true;
 }

@@ -71,17 +71,8 @@ namespace vsn{
             { vec5 v; v << k1,k2,p1,p2,k3; return v;}
             string str()const;
         };
-        //---
-        struct Data{
-            //--- camera intrinsic 3x3
-            mat3 K;
-            //--- camera distortion
-            Dist D; 
-            //---- camera dimention
-            Sz sz; 
-            bool load(CStr& sf);
-        };
-        Data data_;
+
+
         //---- Camera lens para
         struct Lense{
             double cx=0, cy=0, fx=0, fy=0;
@@ -90,16 +81,22 @@ namespace vsn{
             double fov = 0;
 
             string str()const;
-            bool from(const Data& d);
         };
         //---- functions
         void undis(const vec2s& vds, vec2s& vs)const;
-       bool toLense(Lense& l)
-       { return l.from(data_); }
+        bool toLense(Lense& l)const;
+    
+        //----------- data -----------
+        //--- camera intrinsic 3x3
+        mat3 K;
+        //--- camera distortion
+        Dist D; 
+        //---- camera dimention
+        Sz sz; 
 
     };
     //---- streamming
-    inline ostream& operator <<(ostream& s, const CamCfg::TDist& d)
+    inline ostream& operator <<(ostream& s, const CamCfg::Dist& d)
     { s << d.V(); return s;}
     //------------
     // Camera
