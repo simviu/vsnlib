@@ -129,6 +129,10 @@ namespace ut
                  unsigned char g=0; 
                  unsigned char b=0;
                  unsigned char a=255;};
+    struct Sz{
+        int w=0;
+        int h=0;
+    };
     //-------------
     // util stuct
     //-------------

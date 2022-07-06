@@ -15,6 +15,9 @@ namespace egn{
     using vec4 = Eigen::Vector4d;
     using vec5 = Eigen::Matrix<double,5,1>;
 
+    using vec3s = vector<vec3>;
+    using vec2s = vector<vec2>;
+
     using mat3 = Eigen::Matrix3d;
     using mat4 = Eigen::Matrix4d;
     using mat3x4 = Eigen::Matrix < double , 3 , 4 >;

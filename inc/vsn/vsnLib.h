@@ -53,14 +53,14 @@ namespace vsn{
     //---------
     struct CamCfg{
         using Ptr = shared_ptr<CamCfg>;
-        bool load(CStr& sf)
-        { return data_.load(sf); }
+        bool load(CStr& sf);
         vec2 proj(const vec3& p)const;
         Line2d proj(const Line& l)const;
-        // camera distortion para
-        struct TDist{
-            TDist(){}
-            TDist(const vec5& v): k1(v(0)),k2(v(1)),
+        
+        //---- camera distortion para
+        struct Dist{
+            Dist(){}
+            Dist(const vec5& v): k1(v(0)),k2(v(1)),
             p1(v(2)),p2(v(3)),k3(v(4)){}
             double k1=0;
             double k2=0;
@@ -69,20 +69,34 @@ namespace vsn{
             double p2=0;
             vec5 V()const
             { vec5 v; v << k1,k2,p1,p2,k3; return v;}
-            
+            string str()const;
         };
         //---
         struct Data{
+            //--- camera intrinsic 3x3
             mat3 K;
-            //vec5 D;
-            TDist D; // distortion
-
-            int W=0;
-            int H=0;
+            //--- camera distortion
+            Dist D; 
+            //---- camera dimention
+            Sz sz; 
             bool load(CStr& sf);
-
         };
         Data data_;
+        //---- Camera lens para
+        struct Lense{
+            double cx=0, cy=0, fx=0, fy=0;
+            double fovh = 0;
+            double fovv = 0;
+            double fov = 0;
+
+            string str()const;
+            bool from(const Data& d);
+        };
+        //---- functions
+        void undis(const vec2s& vds, vec2s& vs)const;
+       bool toLense(Lense& l)
+       { return l.from(data_); }
+
     };
     //---- streamming
     inline ostream& operator <<(ostream& s, const CamCfg::TDist& d)
