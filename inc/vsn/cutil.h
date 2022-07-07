@@ -172,6 +172,7 @@ namespace ut
     public:
         using Fun=function<bool(CStrs& args)>;
         Cmd(){}
+        Cmd(CStr& sHelp):sHelp_(sHelp){}
         Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
         void add(CStr& s, Sp<Cmd> p)
         { cmds_[s]=p; }

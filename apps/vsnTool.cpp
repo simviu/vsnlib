@@ -1,0 +1,46 @@
+#include "vsn/vsnTool.h"
+
+using namespace vsn;
+using namespace ut;
+using namespace app;
+//---------
+// initCmd
+//---------
+void VsnTool::initCmd(CStrs& args)
+{
+    //----
+    cmd_.add("marker",  mkSp<CmdMarker>());
+}
+
+//---------
+// run
+//---------
+bool VsnTool::run(CStrs& args)
+{
+    log_i("-- run VsnTool --");
+    //---- init cmd
+    initCmd(args);
+
+    //--- run
+    cmd_.run(args);
+
+    log_i("cur dir:"+sys::pwd());
+    return true;
+}
+
+
+
+
+//----------
+// main
+//----------
+int main(int argc, char ** argv)
+{
+    log_i("---- run "+string(argv[0]));
+    VsnTool tool;
+    Strs args;
+    for(int i=1;i<argc;i++)
+        args.push_back(argv[i]);
+    bool ok = tool.run(args);
+    return ok?0:1;
+}
