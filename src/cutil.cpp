@@ -11,7 +11,26 @@
 
 
 namespace ut{
-
+    //--- file name/ path util
+    namespace fn
+    {
+        extern string nopath(const string& s) 
+        {
+        // ref : https://btechgeeks.com/how-to-get-filename-from-a-path-with-or-without-extension-in-cpp/
+            char sep = '/';
+            #ifdef _WIN32
+            sep = '\\';
+            #endif
+            size_t i = s.rfind(sep, s.length());
+            if (i != string::npos) 
+            {
+                string filename = s.substr(i+1, s.length() - i);
+                string rawname = filename.substr(0, s.length()); 
+                return(rawname);
+            }
+            return("");
+        }
+    }
     //---- 
     extern bool parseKV(CStrs& ss, StrTbl& kv)
     {

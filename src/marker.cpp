@@ -22,7 +22,8 @@ string Marker::str()const
     for(int i=0;i<4;i++)
     {
         if(i!=0) ss << ", ";
-        ss << '"' << ps << '"'; 
+        vec2 q = ps[i];
+        ss << '"' << q.x() << "," << q.y() << '"'; 
     }
     ss << "]" << endl;
     //----
@@ -111,9 +112,9 @@ bool Marker::detect(const Img& im,
                     int dict_id)
 {
     ocv::ImgCv imc(im);
-    
+    //default: 0,  cv::aruco::DICT_5X5_250    
     //---- local static data
-    cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_250);
+    cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(dict_id);
     vector<int> ids;
     vector<std::vector<cv::Point2f>> corners;
     cv::aruco::detectMarkers(imc.im_, dict, corners, ids);
@@ -152,6 +153,10 @@ bool Marker::detect(const Img& im,
         //---- pose estimate
         for(auto& m : gms)
         {
+            auto& ids = g.ids;
+            auto it = ids.find(m.id);
+            if(it==ids.end())continue;
+
             ok &= m.pose_est(camc, g.w);
             ms.push_back(m);
         }

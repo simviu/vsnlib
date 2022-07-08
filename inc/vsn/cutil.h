@@ -57,6 +57,11 @@ namespace ut
     inline static std::shared_ptr<T> mkSp(_Args&& ...__args)
     { return std::make_shared<T>(__args...); };
 
+    //---- namespace fn
+    namespace fn
+    {
+        extern string nopath(const string& s);
+    }
     //-----------
     // container utils
     //-----------
@@ -64,7 +69,7 @@ namespace ut
     inline Sp<T> lookup(map<string, Sp<T>>& m, CStr& s)
     { auto it = m.find(s); 
         return(it==m.end())?nullptr:it->second; }
-
+    
 
     //-----------
     // math

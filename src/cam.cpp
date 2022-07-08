@@ -17,8 +17,9 @@ using namespace ut;
 //-----------------
 bool CamCfg::load(CStr& sf)
 {
+
     if(!fexist(sf)) {   
-        log_ef("file '"+ sf+"' not found"); 
+        log_ef("CamCfg '"+ sf+"' not found"); 
         return false; }
     //----
     Mat K1,vD1;

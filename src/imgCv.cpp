@@ -44,6 +44,7 @@ bool ImgCv::load(ut::CStr& s)
 //-----------------
 bool ImgCv::save(ut::CStr& s)
 {
+    log_i("Save img to:"+s+"...");
     bool ok = cv::imwrite(s, im_);
     if(ok)
         log::inf("Img save:"+s);
