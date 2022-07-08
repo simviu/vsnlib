@@ -1,0 +1,12 @@
+{
+    "marker_cfg":{
+        "groups":[
+            { 
+                "aruco_dict" :"5x5_250",
+                "aruco_dict_id":6,
+                "ids":[1, 2, 6, 7], 
+                "w":128.0
+            }
+        ]
+    }
+}

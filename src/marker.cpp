@@ -6,6 +6,7 @@
 
 #include "vsn/vsnLib.h"
 #include "vsn/ocv_hlpr.h"
+#include <jsoncpp/json/json.h>
 
 using namespace vsn;
 using namespace cv;
@@ -16,19 +17,92 @@ string Marker::str()const
 {
     // in json stream 
     stringstream ss;
-    ss << "id:" << id << ", ";
+    ss << "id:" << id << ", " << endl;
     ss << "corners:[" ;
     for(int i=0;i<4;i++)
     {
         if(i!=0) ss << ", ";
         ss << '"' << ps << '"'; 
     }
+    ss << "]" << endl;
     //----
     ss << "pose:{"  << pose.str() <<"}";
     return ss.str();
 
 }
+           
+//---------------
+// Marker::Cfg
+//---------------
+string Marker::Cfg::Grp::str()const
+{
+    Json::Value jd;
+    jd["aruco_dict"] = sDict;
+    jd["aruco_dict_id"] = dict_id;
+    Json::Value jids;
+    for(auto& i :ids)
+        jids.append(i);
+    jd["ids"] = jids;    
+    stringstream s;
+    s << jd;
+    return s.str();
+}
+//-----
+string Marker::Cfg::str()const
+{ 
+    stringstream s; 
+    bool b1 = true;
 
+    for(auto& g : grps_) 
+    {
+        if(!b1) s << ", "; 
+        s << "{" << g.str() <<  "}";
+        b1 = false;
+    }
+    return s.str();
+}
+
+//---------------
+bool Marker::Cfg::load(CStr& sf)
+{
+
+    ifstream ifs(sf);
+    if(!ifs)
+    {
+        log_ef(sf);
+        return false;
+    }
+    //----
+    try{
+
+        Json::Reader rdr;
+        Json::Value jd;
+        rdr.parse(ifs, jd);
+        auto& jm = jd["marker_cfg"];
+        auto& jgs = jm["groups"];
+        for(auto& jg : jgs)
+        {
+            Grp g;
+            g.sDict = jg["aruco_dict"].asString();
+            g.dict_id = jg["aruco_dict_id"].asInt();
+            auto jids = jg["ids"];
+            for(auto& ji : jids)
+                g.ids.push_back(ji.asInt());
+            grps_.push_back(g);
+        } 
+        //
+        //cout << " name " << obj["name"].asString() << endl;
+    }
+    catch(exception& e)
+    {
+        log_e("exception caught:"+string(e.what()));
+        return false;
+    }
+    //---- dbg
+    string s = this->str();
+    log_d(s);
+    return true;
+}
 
 //---------------
 bool Marker::detect(const Img& im,

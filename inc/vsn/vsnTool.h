@@ -23,6 +23,7 @@ namespace app
         CmdMarker();
     protected:
         bool run_det(CStrs& args)const;
+        bool run_pose(CStrs& args)const;
 
     };
 

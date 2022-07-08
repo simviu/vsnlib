@@ -149,11 +149,23 @@ namespace vsn{
         vec2 ps[4]; // 4 corner pos on image 
    //     double w=1.0; // marker width
         Pose pose; // estimated pose, relative to camera
-
-        // Call back function that retrieve
+        //---- user define cfg before pose estimate
+        struct Cfg{
+            struct Grp{
+                string sDict;
+                int dict_id=0;
+                vector<int> ids;
+                string str()const;
+            };
+            vector<Grp> grps_;
+            //--- load json def file
+            bool load(CStr& sf);
+            string str()const;
+        };
+        // (TODO:deprecated) Call back function that retrieve
         // marker width for pose estimation.
         // Defulat null, w=1.0 
-        using FWidthCb=std::function<double(int id)>;
+        //using FWidthCb=std::function<double(int id)>;
         static bool detect(const Img& im, vector<Marker>& ms);
         //---- pose estimate, w : marker width
         bool pose_est(const CamCfg& camc, double w);
