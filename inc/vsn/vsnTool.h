@@ -11,13 +11,19 @@ using namespace vsn;
 namespace app
 {
     //-----------
+    // util
+    //-----------
+
+    //-----------
     // CmdMarker
     //-----------
     class CmdMarker:public Cmd{
     public:
         using Cmd::Cmd;
         CmdMarker();
-     //   virtual bool run(CStrs& args)override;
+    protected:
+        bool run_det(CStrs& args)const;
+
     };
 
     //-----------

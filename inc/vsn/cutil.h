@@ -28,9 +28,23 @@ namespace ut
     
     using namespace std;
 
+    //------------
+    // string utils
+    //------------
     using CStr = const string;
     using Strs = vector<string>;
     using CStrs = const vector<string>;
+    using StrTbl = map<string, string>;
+    using CStrTbl = const StrTbl;
+    //--- 
+    inline string lookup(CStrTbl& m, CStr& sk)
+    {  auto it=m.find(sk); 
+        if(it==m.end()) return ""; return it->second; }
+
+    //--- parse key/value table, e.g.: 
+    // file=a.txt n=10 ...
+    extern bool parseKV(CStrs& ss, StrTbl& kv);
+       
     //-----------------------------
     //	Aliase for std::shared_ptr
     //-----------------------------

@@ -64,8 +64,9 @@ void ImgCv::text(CStr& s,
     const Px& px,
     const Color& c)
 {
+    cv::Scalar c1 = toCv(c);
     cv::putText(im_,s,{px.x,px.y},cv::FONT_HERSHEY_DUPLEX,
-        1 ,{c.b,c.g,c.r}, 2, false);
+        1 ,c1, 2, false);
 }
 //----
 void ImgCv::line(const Line2d& l, const Color& c, double w)

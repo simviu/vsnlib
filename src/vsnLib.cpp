@@ -64,7 +64,7 @@ Pose Pose::inv()const
     mat3 RT(p.q);
     p.t = -RT*t;
     return p;
-}
+} 
 //----
 Pose Pose::operator *(const Pose& p)const
 {

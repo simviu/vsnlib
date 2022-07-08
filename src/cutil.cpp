@@ -11,6 +11,25 @@
 
 
 namespace ut{
+
+    //---- 
+    extern bool parseKV(CStrs& ss, StrTbl& kv)
+    {
+        for(auto& s : ss)
+        {
+           if(s=="")continue;
+           size_t e = s.find('=');
+           //---- standalong string take as option
+           if(e==string::npos)
+           { kv[s] =""; continue; }
+           //--- split k/v
+           string sk = s.substr(0,e);
+           string sv = s.substr(e+1);
+           kv[sk] = sv;
+        }
+        return true;
+    }
+
 //-------------
 // log
 //-------------
@@ -20,7 +39,6 @@ namespace log
         ofstream logFile_;
     }
     
-
     //---- log file
     extern bool openFile(CStr& sFile)
     {
@@ -96,7 +114,7 @@ bool Cmd::run(CStrs& args)
     // check subcmds
     if(args.size()==0) 
     {
-        log_e("cmd function null");
+        log_e("cmd function null and sub cmd not provided");
         return false;
     }
     //-------

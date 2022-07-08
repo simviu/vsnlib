@@ -14,17 +14,18 @@ void VsnTool::initCmd(CStrs& args)
 
 //---------
 // run
-//---------
+//--------- 
 bool VsnTool::run(CStrs& args)
 {
     log_i("-- run VsnTool --");
+    log_i("cur dir:"+sys::pwd());
+
     //---- init cmd
     initCmd(args);
 
     //--- run
     cmd_.run(args);
 
-    log_i("cur dir:"+sys::pwd());
     return true;
 }
 

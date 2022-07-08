@@ -14,11 +14,16 @@ using namespace ocv;
 //---------------
 string Marker::str()const
 {
+    // in json stream 
     stringstream ss;
     ss << "id:" << id << ", ";
-    ss << "ps:";
-    for(auto& p : ps)
-        ss << p << ", ";
+    ss << "corners:[" ;
+    for(int i=0;i<4;i++)
+    {
+        if(i!=0) ss << ", ";
+        ss << '"' << ps << '"'; 
+    }
+    //----
     ss << "pose:{"  << pose.str() <<"}";
     return ss.str();
 
