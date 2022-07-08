@@ -30,35 +30,33 @@ string Marker::str()const
     return ss.str();
 
 }
-           
-//---------------
-// Marker::Cfg
-//---------------
-string Marker::Cfg::Grp::str()const
-{
-    Json::Value jd;
-    jd["aruco_dict"] = sDict;
-    jd["aruco_dict_id"] = dict_id;
-    Json::Value jids;
-    for(auto& i :ids)
-        jids.append(i);
-    jd["ids"] = jids;    
-    stringstream s;
-    s << jd;
-    return s.str();
-}
+     
+     
 //-----
 string Marker::Cfg::str()const
 { 
-    stringstream s; 
-    bool b1 = true;
 
+    Json::Value jgs;
     for(auto& g : grps_) 
     {
-        if(!b1) s << ", "; 
-        s << "{" << g.str() <<  "}";
-        b1 = false;
+        //----
+        Json::Value jids;
+        for(auto& i :g.ids)
+            jids.append(i);
+        //--- 
+        Json::Value jg;
+        jg["ids"] = jids;  
+        jg["w"] = g.w; 
+        jgs.append(jg);
     }
+    //----
+    Json::Value jd;
+    jd["groups"] = jgs;
+    jd["aruco_dict"] = sDict_;
+    jd["aruco_dict_id"] = dict_id_;
+    //----
+    stringstream s; 
+    s << jd;
     return s.str();
 }
 
@@ -80,14 +78,17 @@ bool Marker::Cfg::load(CStr& sf)
         rdr.parse(ifs, jd);
         auto& jm = jd["marker_cfg"];
         auto& jgs = jm["groups"];
+        sDict_ = jm["aruco_dict"].asString();
+        dict_id_ = jm["aruco_dict_id"].asInt();
         for(auto& jg : jgs)
         {
             Grp g;
-            g.sDict = jg["aruco_dict"].asString();
-            g.dict_id = jg["aruco_dict_id"].asInt();
+            g.w = jg["w"].asDouble();
+            //----
             auto jids = jg["ids"];
             for(auto& ji : jids)
-                g.ids.push_back(ji.asInt());
+                g.ids.insert(ji.asInt());
+            //----
             grps_.push_back(g);
         } 
         //
@@ -106,18 +107,16 @@ bool Marker::Cfg::load(CStr& sf)
 
 //---------------
 bool Marker::detect(const Img& im,
-                    vector<Marker>& ms)
+                    vector<Marker>& ms,
+                    int dict_id)
 {
     ocv::ImgCv imc(im);
     
     //---- local static data
-    struct Data{
-        cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_250);
-    };
-    static Data d_;
+    cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_250);
     vector<int> ids;
     vector<std::vector<cv::Point2f>> corners;
-    cv::aruco::detectMarkers(imc.im_, d_.dict, corners, ids);
+    cv::aruco::detectMarkers(imc.im_, dict, corners, ids);
     int i=0;
     for(auto& id : ids)
     {
@@ -138,6 +137,29 @@ bool Marker::detect(const Img& im,
     }
     return true;
 }
+//-----------
+bool Marker::detect(const Img& im, 
+                    const Cfg& cfg,
+                    const CamCfg& camc,
+                    vector<Marker>& ms)
+{
+    bool ok = true;
+    int dict_id = cfg.dict_id_;
+    for(auto& g : cfg.grps_)
+    {
+        vector<Marker> gms;
+        detect(im, gms, dict_id);
+        //---- pose estimate
+        for(auto& m : gms)
+        {
+            ok &= m.pose_est(camc, g.w);
+            ms.push_back(m);
+        }
+    }
+   
+    return true;
+}
+
 //-----------
 bool Marker::pose_est(const CamCfg& cc, double w)
 {
@@ -164,6 +186,8 @@ bool Marker::pose_est(const CamCfg& cc, double w)
     pose.t = t;
     return true;
 }
+        
+        
 
 //---------------
 bool Marker::fit_plane(

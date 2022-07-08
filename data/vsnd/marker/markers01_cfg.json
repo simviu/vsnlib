@@ -1,11 +1,11 @@
 {
     "marker_cfg":{
+        "aruco_dict" :"5x5_250",
+        "aruco_dict_id":6,
         "groups":[
             { 
-                "aruco_dict" :"5x5_250",
-                "aruco_dict_id":6,
                 "ids":[1, 2, 6, 7], 
-                "w":128.0
+                "w":0.128
             }
         ]
     }

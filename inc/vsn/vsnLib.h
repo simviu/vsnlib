@@ -151,11 +151,11 @@ namespace vsn{
         Pose pose; // estimated pose, relative to camera
         //---- user define cfg before pose estimate
         struct Cfg{
+            string sDict_="aruco_dict_id0";
+            int dict_id_=0;
             struct Grp{
-                string sDict;
-                int dict_id=0;
-                vector<int> ids;
-                string str()const;
+                set<int> ids;
+                double w=1;
             };
             vector<Grp> grps_;
             //--- load json def file
@@ -166,10 +166,16 @@ namespace vsn{
         // marker width for pose estimation.
         // Defulat null, w=1.0 
         //using FWidthCb=std::function<double(int id)>;
-        static bool detect(const Img& im, vector<Marker>& ms);
+        //---- default dict_id=6, cv::aruco::DICT_5X5_250
+        static bool detect(const Img& im, vector<Marker>& ms,
+                            int dict_id = 6); 
+        static bool detect(const Img& im,
+                            const Cfg& cfg, // marker cfg
+                            const CamCfg& camc, 
+                            vector<Marker>& ms); 
         //---- pose estimate, w : marker width
         bool pose_est(const CamCfg& camc, double w);
-
+        
         //--- fit plane
         static bool fit_plane(
             const vector<Marker>& ms, Pose& p);

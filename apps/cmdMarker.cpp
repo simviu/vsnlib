@@ -14,8 +14,8 @@ CmdMarker::CmdMarker():
     }
     //---- 'pose'
     {
-        string sH = "detect marker and pose estimate, ";
-        sH += "Usage:pose img=<FILE> cfg=<FILE_CFG>";
+        string sH = "detect marker and pose estimate \n";
+        sH += "Usage:pose img=<FILE> cfg=<FILE_CFG> camc=<FILE_CAM_CFG\n";
         add("pose", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_pose(args); }));
     }
@@ -41,25 +41,28 @@ bool CmdMarker::run_det(CStrs& args)const
 //----
 bool CmdMarker::run_pose(CStrs& args)const
 {
+    bool ok = true;
     StrTbl kv;
     parseKV(args, kv);
     string sf = lookup(kv, string("img"));
     string sfc = lookup(kv, string("cfg"));
-    //---- load cfg
+    string sfcc = lookup(kv, string("camc"));
+    //---- load cfg / camCfg
     Marker::Cfg cfg;
-    if(!cfg.load(sfc))
+    CamCfg camc;
+    if(!(cfg.load(sfc) 
+        && camc.load(sfcc) ) )
         return false;
-        
     //---- load img and det
     auto p = Img::create();
     if(!p->load(sf))
         return false;
     vector<Marker> ms;
-    Marker::detect(*p, ms);
+    ok = Marker::detect(*p, cfg, camc, ms);
     stringstream ss;
     for(auto& m : ms)
         ss << "Found marker:" << m.str() << endl;
     log_i(ss.str());
-    return true;
+    return ok;
 }
 

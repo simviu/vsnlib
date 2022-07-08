@@ -17,21 +17,33 @@ using namespace ut;
 //-----------------
 bool CamCfg::load(CStr& sf)
 {
+    if(!fexist(sf)) {   
+        log_ef("file '"+ sf+"' not found"); 
+        return false; }
+    //----
+    Mat K1,vD1;
 
-    FileStorage fs(sf, FileStorage::READ);
-    
-    if (!fs.isOpened())
+    try{
+        FileStorage fs(sf, FileStorage::READ);
+        
+        if (!fs.isOpened())
+        {
+            log_ef(sf);
+            return false;
+        }
+        
+        //---- read yaml
+        fs["camera_matrix"] >> K1;
+        fs["distortion_coefficients"] >> vD1;
+        fs["image_width"] >> sz.w;
+        fs["image_height"] >> sz.h;
+    }
+    catch(exception& e)
     {
-        log_ef(sf);
+        log_e(string(e.what()));
         return false;
     }
-    
-    Mat K1,vD1;
-    //---- read yaml
-    fs["camera_matrix"] >> K1;
-    fs["distortion_coefficients"] >> vD1;
-    fs["image_width"] >> sz.w;
-    fs["image_height"] >> sz.h;
+    //------
     cv2eigen(K1, K);
     vec5 vD;
     cv2eigen(vD1, vD);
