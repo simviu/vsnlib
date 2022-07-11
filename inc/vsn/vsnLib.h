@@ -146,8 +146,10 @@ namespace vsn{
     //-----------
     struct Marker{
         int id = 0;
+        int dict_id=0; // ArUco dictionary id
         vec2 ps[4]; // 4 corner pos on image 
-   //     double w=1.0; // marker width
+        //----
+        double w=0.0001; // marker width
         Pose pose; // estimated pose, relative to camera
         //---- user define cfg before pose estimate
         struct Cfg{
@@ -173,8 +175,8 @@ namespace vsn{
                             const Cfg& cfg, // marker cfg
                             const CamCfg& camc, 
                             vector<Marker>& ms); 
-        //---- pose estimate, w : marker width
-        bool pose_est(const CamCfg& camc, double w);
+        //---- pose estimate, wid : marker width
+        bool pose_est(const CamCfg& camc, double wid);
         
         //--- fit plane
         static bool fit_plane(

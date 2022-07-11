@@ -123,6 +123,7 @@ bool Marker::detect(const Img& im,
     {
         Marker m;
         m.id = id;
+        m.dict_id = dict_id;
         for(int j=0;j<4;j++)
         {
             cv::Point2f c = corners[i][j];
@@ -166,8 +167,9 @@ bool Marker::detect(const Img& im,
 }
 
 //-----------
-bool Marker::pose_est(const CamCfg& cc, double w)
+bool Marker::pose_est(const CamCfg& cc, double wid)
 {
+    w = wid;
 
     cv::Mat Kc,Dc;
     eigen2cv(cc.K, Kc);
