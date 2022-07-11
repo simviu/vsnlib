@@ -81,7 +81,7 @@ bool CmdMarker::run_pose(CStrs& args)const
             s << "t=" << str(Tcm.t);
             p->text(s.str(), px, {50,200,255});
             //--- draw axis
-            p->axis(camc,Tcm, m.w );
+            p->axis(camc,Tcm, m.w ,2);
         }       
         // ----write img
         
