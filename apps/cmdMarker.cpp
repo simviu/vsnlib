@@ -49,9 +49,16 @@ bool CmdMarker::run_pose(CStrs& args)
     string sfv = lookup(kv, string("video"));
     string sfc = lookup(kv, string("cfg"));
     string sfcc = lookup(kv, string("camc"));
+    //----
     cfg_.enShow = has(kv, "-show");
     cfg_.swd = lookup(kv, string("wdir"));
     cfg_.enWr = cfg_.swd !="";
+    //---- skip frm
+    {
+        string s = lookup(kv, "skip_frm");
+        if(s!="")
+            cfg_.skip_frm = std::stoi(s);
+    }
     //--- strange video upside down issue
     string srot = lookup(kv, "rot");
     if(srot!="")
@@ -99,28 +106,42 @@ bool CmdMarker::run_pose_video(CStr& sf)
     if(pv==nullptr)
         return false;
      //------------
+     Sp<Video> pw = nullptr;
+     if(cfg_.enWr)
+     {
+        string sfw = cfg_.swd +"/" + fn::nopath(sf);
+        pw = Video::create(sfw, pv->cfg_);
+     }
+     //------------
     // handle video
     //------------
     bool ok = true;
-    int i=1;
+    int i=0;
     while(1)
     {
+        i++;
         vector<Marker> ms;
 
         auto p=pv->read();
+     //   if(i<cfg_.skip_frm) 
+    //        continue;
         //---- rot
         if(cfg_.rot!=0.0)
             p->rot(cfg_.rot);
         //auto p = pi->copy();
         if(p==nullptr)break;
-        log_i("-- Video Frame:"+to_string(i++));
+        log_i("-- Video Frame:"+to_string(i));
         ok &= pose_est(*p, ms);
+        //--- write to video
+        if(pw!=nullptr)
+            pw->write(*p);
         //---- show
         if(cfg_.enShow)
         {
             p->show(sf);
             cv_waitESC(10);
         }
+            
     }
     return ok;    
 }

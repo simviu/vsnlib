@@ -104,8 +104,9 @@ namespace ocv{
         virtual Sp<Img> read()override;
         
         bool isOpen() { return cap_.isOpened(); }
-        bool createWr(CStr& sf, float fps, const Sz& sz);
+        bool createWr(CStr& sf, const Cfg& cfg);
         virtual bool write(const Img& im)override;
+
     protected:
         VideoCapture cap_;
         Sp<VideoWriter> p_vwr = nullptr;

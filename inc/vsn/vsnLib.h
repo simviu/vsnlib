@@ -147,11 +147,16 @@ namespace vsn{
     class Video{
     public:
         Video(){}
+        struct Cfg{
+            Sz sz;
+            float fps=1;
+        };
+
         static Sp<Video> open(CStr& s);
-        static Sp<Video> create(CStr& sf, float fps, const Sz& sz);
+        static Sp<Video> create(CStr& sf, const Cfg& cfg);
         virtual Sp<Img> read()=0;
         virtual bool write(const Img& im)=0;
-
+        Cfg cfg_;
     };
 
 

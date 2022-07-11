@@ -29,6 +29,7 @@ namespace app
             bool enShow = false;
             double rot=0;
             bool enWr = false;
+            int skip_frm=0;
         };
         Cfg cfg_;
         //----
