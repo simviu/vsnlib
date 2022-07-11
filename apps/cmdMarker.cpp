@@ -44,7 +44,8 @@ bool CmdMarker::run_pose(CStrs& args)const
     bool ok = true;
     StrTbl kv;
     parseKV(args, kv);
-    string sf = lookup(kv, string("img"));
+    string sfi = lookup(kv, string("img"));
+    string sfv = lookup(kv, string("video"));
     string sfc = lookup(kv, string("cfg"));
     string sfcc = lookup(kv, string("camc"));
     string swd = lookup(kv, string("wdir"));
@@ -55,12 +56,13 @@ bool CmdMarker::run_pose(CStrs& args)const
         && camc.load(sfcc) ) )
         return false;
     //---- load img and det
-    auto p = Img::create();
+    auto pi = Img::create();
 
-    if(!p->load(sf))
+    if( !pi->load(sfi))
         return false;
+    auto& im = *pi;
     vector<Marker> ms;
-    ok = Marker::detect(*p, cfg, camc, ms);
+    ok = Marker::detect(im, cfg, camc, ms);
     stringstream ss;
     ss << "Found markers:" << ms.size() << endl;
     for(auto& m : ms)
@@ -79,14 +81,14 @@ bool CmdMarker::run_pose(CStrs& args)const
             stringstream s;
             s << "id=" << m.id << ", ";
             s << "t=" << str(Tcm.t);
-            p->text(s.str(), px, {50,200,255});
+            im.text(s.str(), px, {50,200,255});
             //--- draw axis
-            p->axis(camc,Tcm, m.w ,2);
+            im.axis(camc,Tcm, m.w ,2);
         }       
         // ----write img
         
-        string sfw = swd +"/" + fn::nopath(sf);
-        p->save(sfw);
+        string sfw = swd +"/" + fn::nopath(sfi);
+        im.save(sfw);
     }
     return ok;
 }
