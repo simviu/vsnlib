@@ -88,5 +88,17 @@ namespace ocv{
         cv::Mat im_;
     protected:
     };
-
+    //------------
+    // VideoCv
+    //------------
+    // Implementation of Video
+    class VideoCv : public vsn::Video{
+    public:
+        VideoCv(){};
+        VideoCv(CStr& s);
+        virtual Sp<Img> read()override;
+        bool isOpen() { return cap_.isOpened(); }
+    protected:
+        VideoCapture cap_;
+    };
 }

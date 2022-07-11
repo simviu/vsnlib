@@ -138,7 +138,16 @@ namespace vsn{
         virtual void undistort(const CamCfg& cc)=0;
     protected:
     };
-   
+    //-------------
+    // video
+    //-------------
+    class Video{
+    public:
+        Video(){}
+        static Sp<Video> open(CStr& s);
+        virtual Sp<Img> read()=0;
+
+    };
 
 
     //-----------

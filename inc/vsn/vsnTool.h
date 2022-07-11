@@ -22,9 +22,20 @@ namespace app
         using Cmd::Cmd;
         CmdMarker();
     protected:
+        struct Cfg{
+            Marker::Cfg     mcfg;
+            CamCfg          camc;
+            string swd; // write dir
+        };
+        Cfg cfg_;
+        //----
         bool run_det(CStrs& args)const;
-        bool run_pose(CStrs& args)const;
-
+        bool run_pose(CStrs& args);
+        bool pose_est(Img& im, vector<Marker>& ms);
+        void draw(Img& im,  
+                const vector<Marker>& ms)const;
+        bool run_pose_video(CStr& sf);
+        bool run_pose_img(CStr& sf);
     };
 
     //-----------
