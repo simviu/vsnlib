@@ -16,6 +16,15 @@ namespace{
 
 
 }
+//---------
+void ImgCv::rot(double dgr)
+{
+    cv::Point2f center((im_.cols - 1)/2.0, (im_.rows - 1)/2.0);
+    cv::Mat R = cv::getRotationMatrix2D( center,dgr , 1.0 );
+    cv::Mat imr;
+    cv::warpAffine(im_, imr, R, im_.size());
+    im_ = imr;
+}
 
 //---------
 

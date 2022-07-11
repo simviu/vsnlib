@@ -136,6 +136,9 @@ namespace vsn{
         virtual const void* data()const=0;
         //--- Suggest undistortion at very beginning
         virtual void undistort(const CamCfg& cc)=0;
+        virtual Sp<Img> copy()const =0;
+        //---- img operations
+        virtual void rot(double dgr)=0;
     protected:
     };
     //-------------
@@ -145,7 +148,9 @@ namespace vsn{
     public:
         Video(){}
         static Sp<Video> open(CStr& s);
+        static Sp<Video> create(CStr& sf, float fps, const Sz& sz);
         virtual Sp<Img> read()=0;
+        virtual bool write(const Img& im)=0;
 
     };
 

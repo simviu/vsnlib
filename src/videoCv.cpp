@@ -33,3 +33,27 @@ Sp<Img> VideoCv::read()
     auto p = mkSp<ImgCv>(im);
     return p;
 }
+//-----        
+bool VideoCv::createWr(CStr& sf, float fps, const Sz& sz)
+{
+    p_vwr = mkSp<VideoWriter>(sf, 
+        cv::VideoWriter::fourcc('M','J','P','G'), 
+        fps, Size(sz.w,sz.h));
+}
+
+//-----        
+Sp<Video> Video::create(CStr& sf, float fps, const Sz& sz)
+{
+    auto p = mkSp<VideoCv>();
+    p->createWr(sf, fps, sz);
+    return p;
+}
+//----- 
+bool VideoCv::write(const Img& im)
+{ 
+    auto& imc = reinterpret_cast<const ImgCv&>(im);
+    if(p_vwr==nullptr)
+        return false;
+    p_vwr->write(imc.im_);
+    return true;
+}

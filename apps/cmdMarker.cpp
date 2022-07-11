@@ -49,7 +49,14 @@ bool CmdMarker::run_pose(CStrs& args)
     string sfv = lookup(kv, string("video"));
     string sfc = lookup(kv, string("cfg"));
     string sfcc = lookup(kv, string("camc"));
+    cfg_.enShow = has(kv, "-show");
     cfg_.swd = lookup(kv, string("wdir"));
+    cfg_.enWr = cfg_.swd !="";
+    //--- strange video upside down issue
+    string srot = lookup(kv, "rot");
+    if(srot!="")
+        cfg_.rot = std::stod(srot);
+
     //---- load cfg / camCfg
     if(!(cfg_.mcfg.load(sfc) 
         && cfg_.camc.load(sfcc) ) )
@@ -79,18 +86,15 @@ bool CmdMarker::run_pose_img(CStr& sf)
     bool ok = pose_est(im, ms);
     //--- write output
     CStr& swd = cfg_.swd;
-    if(swd=="") return ok;
-    
+    if(!cfg_.enWr) return ok;
     string sfw = swd +"/" + fn::nopath(sf);
     im.save(sfw);
-    
+    return ok;
 }
 //-----------
 bool CmdMarker::run_pose_video(CStr& sf)
 {
-    //--- open video
-    vector<Marker> ms;
-
+ 
     auto pv = Video::open(sf);
     if(pv==nullptr)
         return false;
@@ -98,12 +102,25 @@ bool CmdMarker::run_pose_video(CStr& sf)
     // handle video
     //------------
     bool ok = true;
-    Sp<Img> p;
     int i=1;
-    while((p=pv->read()) && (p!=nullptr))
+    while(1)
     {
+        vector<Marker> ms;
+
+        auto p=pv->read();
+        //---- rot
+        if(cfg_.rot!=0.0)
+            p->rot(cfg_.rot);
+        //auto p = pi->copy();
+        if(p==nullptr)break;
         log_i("-- Video Frame:"+to_string(i++));
         ok &= pose_est(*p, ms);
+        //---- show
+        if(cfg_.enShow)
+        {
+            p->show(sf);
+            cv_waitESC(10);
+        }
     }
     return ok;    
 }

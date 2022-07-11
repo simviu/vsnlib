@@ -80,6 +80,11 @@ namespace ocv{
         { return reinterpret_cast<void*>(&(im_)); }
         virtual const void* data()const override
         { return reinterpret_cast<const void*>(&(im_)); }
+        virtual Sp<Img> copy()const override
+        {  auto p = mkSp<ImgCv>(); 
+           im_.copyTo(p->im_); return p;  }
+        virtual void rot(double dgr)override;
+
         //---- dict selection ref OpenCV ArUco.
         // default is 5x5_250, TODO: change dict
      //   virtual void detect(vector<vsn::Marker>& markers)override;
@@ -97,8 +102,13 @@ namespace ocv{
         VideoCv(){};
         VideoCv(CStr& s);
         virtual Sp<Img> read()override;
+        
         bool isOpen() { return cap_.isOpened(); }
+        bool createWr(CStr& sf, float fps, const Sz& sz);
+        virtual bool write(const Img& im)override;
     protected:
         VideoCapture cap_;
+        Sp<VideoWriter> p_vwr = nullptr;
+
     };
 }

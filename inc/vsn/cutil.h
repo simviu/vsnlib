@@ -45,7 +45,8 @@ namespace ut
     //--- parse key/value table, e.g.: 
     // file=a.txt n=10 ...
     extern bool parseKV(CStrs& ss, StrTbl& kv);
-       
+    inline bool has(CStrTbl& m, CStr& sk)
+    { auto it=m.find(sk); return it!=m.end(); }
     //-----------------------------
     //	Aliase for std::shared_ptr
     //-----------------------------

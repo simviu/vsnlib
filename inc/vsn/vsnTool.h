@@ -26,6 +26,9 @@ namespace app
             Marker::Cfg     mcfg;
             CamCfg          camc;
             string swd; // write dir
+            bool enShow = false;
+            double rot=0;
+            bool enWr = false;
         };
         Cfg cfg_;
         //----
