@@ -5,7 +5,9 @@ using namespace ocv;
 //--------
 VideoCv::VideoCv(CStr& s)
 {
-    cap_.open(s);
+    cap_.open(s, CAP_FFMPEG);
+    bool ok = cap_.isOpened();
+    int dbg=0;
 
 }
 //--------
