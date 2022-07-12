@@ -1,3 +1,11 @@
+/*
+   Author: Sherman Chen
+   Create Time: 2022-07-12
+   Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
+ */
+
 #include "vsn/ocv_hlpr.h"
 
 using namespace ocv;

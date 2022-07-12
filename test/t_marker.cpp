@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-07-05
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #include "vsn/vsnTest.h"

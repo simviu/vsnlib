@@ -1,3 +1,11 @@
+/*
+   Author: Sherman Chen
+   Create Time: 2022-07-07
+   Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
+ */
+
 #include "vsn/vsnTool.h"
 
 using namespace vsn;
