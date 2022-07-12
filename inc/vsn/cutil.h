@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-12
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #pragma once
