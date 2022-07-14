@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-17
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 
@@ -15,6 +17,15 @@ namespace{
             
 
 
+}
+//---------
+void ImgCv::rot(double dgr)
+{
+    cv::Point2f center((im_.cols - 1)/2.0, (im_.rows - 1)/2.0);
+    cv::Mat R = cv::getRotationMatrix2D( center,dgr , 1.0 );
+    cv::Mat imr;
+    cv::warpAffine(im_, imr, R, im_.size());
+    im_ = imr;
 }
 
 //---------
@@ -44,6 +55,7 @@ bool ImgCv::load(ut::CStr& s)
 //-----------------
 bool ImgCv::save(ut::CStr& s)
 {
+    log_i("Save img to:"+s+"...");
     bool ok = cv::imwrite(s, im_);
     if(ok)
         log::inf("Img save:"+s);
@@ -64,8 +76,9 @@ void ImgCv::text(CStr& s,
     const Px& px,
     const Color& c)
 {
+    cv::Scalar c1 = toCv(c);
     cv::putText(im_,s,{px.x,px.y},cv::FONT_HERSHEY_DUPLEX,
-        1 ,{c.b,c.g,c.r}, 2, false);
+        1 ,c1, 2, false);
 }
 //----
 void ImgCv::line(const Line2d& l, const Color& c, double w)

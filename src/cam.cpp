@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-16
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #include "vsn/vsnLib.h"
@@ -18,20 +20,33 @@ using namespace ut;
 bool CamCfg::load(CStr& sf)
 {
 
-    FileStorage fs(sf, FileStorage::READ);
-    
-    if (!fs.isOpened())
+    if(!fexist(sf)) {   
+        log_ef("CamCfg '"+ sf+"' not found"); 
+        return false; }
+    //----
+    Mat K1,vD1;
+
+    try{
+        FileStorage fs(sf, FileStorage::READ);
+        
+        if (!fs.isOpened())
+        {
+            log_ef(sf);
+            return false;
+        }
+        
+        //---- read yaml
+        fs["camera_matrix"] >> K1;
+        fs["distortion_coefficients"] >> vD1;
+        fs["image_width"] >> sz.w;
+        fs["image_height"] >> sz.h;
+    }
+    catch(exception& e)
     {
-        log_ef(sf);
+        log_e(string(e.what()));
         return false;
     }
-    
-    Mat K1,vD1;
-    //---- read yaml
-    fs["camera_matrix"] >> K1;
-    fs["distortion_coefficients"] >> vD1;
-    fs["image_width"] >> sz.w;
-    fs["image_height"] >> sz.h;
+    //------
     cv2eigen(K1, K);
     vec5 vD;
     cv2eigen(vD1, vD);

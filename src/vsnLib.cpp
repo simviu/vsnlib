@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-04
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #include "vsn/vsnLib.h"
@@ -64,7 +66,7 @@ Pose Pose::inv()const
     mat3 RT(p.q);
     p.t = -RT*t;
     return p;
-}
+} 
 //----
 Pose Pose::operator *(const Pose& p)const
 {

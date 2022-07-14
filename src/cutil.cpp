@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-12
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #include "vsn/cutil.h"
@@ -11,6 +13,44 @@
 
 
 namespace ut{
+    //--- file name/ path util
+    namespace fn
+    {
+        extern string nopath(const string& s) 
+        {
+        // ref : https://btechgeeks.com/how-to-get-filename-from-a-path-with-or-without-extension-in-cpp/
+            char sep = '/';
+            #ifdef _WIN32
+            sep = '\\';
+            #endif
+            size_t i = s.rfind(sep, s.length());
+            if (i != string::npos) 
+            {
+                string filename = s.substr(i+1, s.length() - i);
+                string rawname = filename.substr(0, s.length()); 
+                return(rawname);
+            }
+            return("");
+        }
+    }
+    //---- 
+    extern bool parseKV(CStrs& ss, StrTbl& kv)
+    {
+        for(auto& s : ss)
+        {
+           if(s=="")continue;
+           size_t e = s.find('=');
+           //---- standalong string take as option
+           if(e==string::npos)
+           { kv[s] =""; continue; }
+           //--- split k/v
+           string sk = s.substr(0,e);
+           string sv = s.substr(e+1);
+           kv[sk] = sv;
+        }
+        return true;
+    }
+
 //-------------
 // log
 //-------------
@@ -20,7 +60,6 @@ namespace log
         ofstream logFile_;
     }
     
-
     //---- log file
     extern bool openFile(CStr& sFile)
     {
@@ -96,7 +135,7 @@ bool Cmd::run(CStrs& args)
     // check subcmds
     if(args.size()==0) 
     {
-        log_e("cmd function null");
+        log_e("cmd function null and sub cmd not provided");
         return false;
     }
     //-------

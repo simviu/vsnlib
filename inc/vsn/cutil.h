@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-12
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #pragma once
@@ -16,6 +18,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <list>
 #include <queue>
 #include <functional>
@@ -28,9 +31,24 @@ namespace ut
     
     using namespace std;
 
+    //------------
+    // string utils
+    //------------
     using CStr = const string;
     using Strs = vector<string>;
     using CStrs = const vector<string>;
+    using StrTbl = map<string, string>;
+    using CStrTbl = const StrTbl;
+    //--- 
+    inline string lookup(CStrTbl& m, CStr& sk)
+    {  auto it=m.find(sk); 
+        if(it==m.end()) return ""; return it->second; }
+
+    //--- parse key/value table, e.g.: 
+    // file=a.txt n=10 ...
+    extern bool parseKV(CStrs& ss, StrTbl& kv);
+    inline bool has(CStrTbl& m, CStr& sk)
+    { auto it=m.find(sk); return it!=m.end(); }
     //-----------------------------
     //	Aliase for std::shared_ptr
     //-----------------------------
@@ -42,6 +60,11 @@ namespace ut
     inline static std::shared_ptr<T> mkSp(_Args&& ...__args)
     { return std::make_shared<T>(__args...); };
 
+    //---- namespace fn
+    namespace fn
+    {
+        extern string nopath(const string& s);
+    }
     //-----------
     // container utils
     //-----------
@@ -49,7 +72,7 @@ namespace ut
     inline Sp<T> lookup(map<string, Sp<T>>& m, CStr& s)
     { auto it = m.find(s); 
         return(it==m.end())?nullptr:it->second; }
-
+    
 
     //-----------
     // math
@@ -172,6 +195,7 @@ namespace ut
     public:
         using Fun=function<bool(CStrs& args)>;
         Cmd(){}
+        Cmd(CStr& sHelp):sHelp_(sHelp){}
         Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
         void add(CStr& s, Sp<Cmd> p)
         { cmds_[s]=p; }

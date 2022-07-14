@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-04
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #pragma once
@@ -136,9 +138,28 @@ namespace vsn{
         virtual const void* data()const=0;
         //--- Suggest undistortion at very beginning
         virtual void undistort(const CamCfg& cc)=0;
+        virtual Sp<Img> copy()const =0;
+        //---- img operations
+        virtual void rot(double dgr)=0;
     protected:
     };
-   
+    //-------------
+    // video
+    //-------------
+    class Video{
+    public:
+        Video(){}
+        struct Cfg{
+            Sz sz;
+            float fps=1;
+        };
+
+        static Sp<Video> open(CStr& s);
+        static Sp<Video> create(CStr& sf, const Cfg& cfg);
+        virtual Sp<Img> read()=0;
+        virtual bool write(const Img& im)=0;
+        Cfg cfg_;
+    };
 
 
     //-----------
@@ -146,18 +167,38 @@ namespace vsn{
     //-----------
     struct Marker{
         int id = 0;
+        int dict_id=0; // ArUco dictionary id
         vec2 ps[4]; // 4 corner pos on image 
-   //     double w=1.0; // marker width
+        //----
+        double w=0.0001; // marker width
         Pose pose; // estimated pose, relative to camera
-
-        // Call back function that retrieve
+        //---- user define cfg before pose estimate
+        struct Cfg{
+            string sDict_="aruco_dict_id0";
+            int dict_id_=0;
+            struct Grp{
+                set<int> ids;
+                double w=1;
+            };
+            vector<Grp> grps_;
+            //--- load json def file
+            bool load(CStr& sf);
+            string str()const;
+        };
+        // (TODO:deprecated) Call back function that retrieve
         // marker width for pose estimation.
         // Defulat null, w=1.0 
-        using FWidthCb=std::function<double(int id)>;
-        static bool detect(const Img& im, vector<Marker>& ms);
-        //---- pose estimate, w : marker width
-        bool pose_est(const CamCfg& camc, double w);
-
+        //using FWidthCb=std::function<double(int id)>;
+        //---- default dict_id=6, cv::aruco::DICT_5X5_250
+        static bool detect(const Img& im, vector<Marker>& ms,
+                            int dict_id = 6); 
+        static bool detect(const Img& im,
+                            const Cfg& cfg, // marker cfg
+                            const CamCfg& camc, 
+                            vector<Marker>& ms); 
+        //---- pose estimate, wid : marker width
+        bool pose_est(const CamCfg& camc, double wid);
+        
         //--- fit plane
         static bool fit_plane(
             const vector<Marker>& ms, Pose& p);

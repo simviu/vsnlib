@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-05-16
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 #pragma once
 #include "vsn/cutil.h"
@@ -17,6 +19,7 @@ namespace egn{
 
     using vec3s = vector<vec3>;
     using vec2s = vector<vec2>;
+    extern string jstr(const vec2s& vs);
 
     using mat3 = Eigen::Matrix3d;
     using mat4 = Eigen::Matrix4d;

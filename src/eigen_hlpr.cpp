@@ -1,3 +1,11 @@
+/*
+   Author: Sherman Chen
+   Create Time: 2022-06-12
+   Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
+ */
+
 #include "vsn/eigen_hlpr.h"
 
 namespace egn
@@ -24,4 +32,20 @@ namespace egn
         s<< v.x() << ", " << v.y() << ", " << v.z(); 
         return s.str(); 
     }
+    //----
+    template<class T>
+    string jstr_vs(T vs)
+    { 
+        stringstream s; 
+        for(int i=0;i<vs.size();i++)
+        {
+            if(i!=0) s<<", ";
+            s << '"'<< vs[i] <<'"';
+        }
+        return s.str();
+    }
+    extern string jstr(const vec2s& vs)
+    { return jstr_vs(vs); }
+    extern string jstr(const vec3s& vs)
+    { return jstr_vs(vs); }
 }

@@ -2,6 +2,8 @@
    Author: Sherman Chen
    Create Time: 2022-07-05
    Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
  */
 
 #include "vsn/vsnTest.h"
@@ -12,7 +14,7 @@ namespace test
 {
     namespace{
         const struct{
-            string sf_camc = "vsnd/c310.yml";
+            string sf_camc = "vsnd/cam/c310.yml";
         }l_cfg;
     }
     //--------------------------
