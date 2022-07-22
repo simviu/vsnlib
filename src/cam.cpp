@@ -63,6 +63,7 @@ bool CamCfg::load(CStr& sf)
     bool ok = toLense(l);
     log_i("Lense data: ");
     log_i(l.str());
+    log_i("Distortion:"+D.str());
     return ok; 
 }
 
