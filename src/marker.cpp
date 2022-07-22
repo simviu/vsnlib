@@ -8,7 +8,7 @@
 
 #include "vsn/vsnLib.h"
 #include "vsn/ocv_hlpr.h"
-#include <jsoncpp/json/json.h>
+#include "json/json.h"
 
 using namespace vsn;
 using namespace cv;

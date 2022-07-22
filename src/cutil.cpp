@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-
+#define PATH_BUF_LEN 1024
 
 namespace ut{
     //--- file name/ path util
@@ -107,7 +107,10 @@ namespace sys
 {
     extern string pwd()
     {
-        return string(get_current_dir_name());
+        char s[PATH_BUF_LEN];
+        s[0]=0;
+        getcwd(s, sizeof(s));
+        return string(s);
     }
 }
 

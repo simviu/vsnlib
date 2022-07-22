@@ -7,8 +7,8 @@
  */
 #pragma once
 #include "vsn/cutil.h"
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Core>
+#include <Eigen/Dense>
 
 namespace egn{
     using namespace ut;
