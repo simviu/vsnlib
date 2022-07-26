@@ -192,6 +192,8 @@ namespace vsn{
         //---- default dict_id=6, cv::aruco::DICT_5X5_250
         static bool detect(const Img& im, vector<Marker>& ms,
                             int dict_id = 6); 
+        //---- if marker cfg provided, with marker width info,
+        // pose_est will be called.
         static bool detect(const Img& im,
                             const Cfg& cfg, // marker cfg
                             const CamCfg& camc, 
