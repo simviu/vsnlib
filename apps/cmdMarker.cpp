@@ -75,10 +75,12 @@ bool CmdMarker::run_pose(CStrs& args)
         cfg_.rot = std::stod(srot);
 
     //---- load cfg / camCfg
-    if(!(cfg_.mcfg.load(sfc) 
+    auto& mcfg = poseEstr_.cfg_.mcfg;
+    if(!(mcfg.load(sfc) 
         && cfg_.camc.load(sfcc) ) )
         return false;
-
+    poseEstr_.cfg_.camc = cfg_.camc;
+    
     //---- load img or video
     Sp<Video> pv = nullptr;
     if(sfi!="")
@@ -160,9 +162,11 @@ bool CmdMarker::run_pose_video(CStr& sf)
 bool CmdMarker::pose_est(Img& im, vector<Marker>& ms)
 {
     bool ok = true;
-    auto& camc = cfg_.camc;
-    auto& mcfg = cfg_.mcfg;
-    ok = Marker::detect(im, mcfg, camc, ms);
+    //auto& camc = cfg_.camc;
+    //auto& mcfg = cfg_.mcfg;
+    //ok = Marker::detect(im, mcfg, camc, ms);
+    ok = poseEstr_.onImg(im);
+    ms = poseEstr_.result_.ms;
     stringstream ss;
     ss << "Found markers:" << ms.size() << endl;
     for(auto& m : ms)

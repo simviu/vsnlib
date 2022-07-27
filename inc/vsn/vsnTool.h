@@ -25,7 +25,6 @@ namespace app
         CmdMarker();
     protected:
         struct Cfg{
-            Marker::Cfg     mcfg;
             CamCfg          camc;
             string swd; // write dir
             bool enShow = false;
@@ -34,6 +33,8 @@ namespace app
             int skip_frm=0;
         };
         Cfg cfg_;
+        //----
+        Marker::PoseEstimator poseEstr_;
         //----
         bool run_det(CStrs& args)const;
         bool run_pose(CStrs& args);

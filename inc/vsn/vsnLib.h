@@ -173,17 +173,36 @@ namespace vsn{
         double w=0.0001; // marker width
         Pose pose; // estimated pose, relative to camera
         //---- user define cfg before pose estimate
-        struct Cfg{
-            string sDict_="aruco_dict_id0";
-            int dict_id_=0;
-            struct Grp{
-                set<int> ids;
-                double w=1;
+        //---------------
+        // Pose Estimator
+        //---------------
+        class PoseEstimator{
+        public:
+            //---- Marker cfg
+            struct MCfg{
+                string sDict_="aruco_dict_id0";
+                int dict_id_=0;
+                struct Grp{
+                    set<int> ids;
+                    double w=1;
+                };
+                vector<Grp> grps_;
+                //--- load json def file
+                bool load(CStr& sf);
+                string str()const;
             };
-            vector<Grp> grps_;
-            //--- load json def file
-            bool load(CStr& sf);
-            string str()const;
+            //--- cfg
+            struct Cfg{
+                //--- cam cfg
+                CamCfg camc;
+                //--- Marker cfg
+                MCfg mcfg;
+            };
+            Cfg cfg_;
+            //---- result
+            struct{ vector<Marker> ms; }result_;
+            //---- detect
+            bool onImg(const Img& im);
         };
         // (TODO:deprecated) Call back function that retrieve
         // marker width for pose estimation.
@@ -192,12 +211,7 @@ namespace vsn{
         //---- default dict_id=6, cv::aruco::DICT_5X5_250
         static bool detect(const Img& im, vector<Marker>& ms,
                             int dict_id = 6); 
-        //---- if marker cfg provided, with marker width info,
-        // pose_est will be called.
-        static bool detect(const Img& im,
-                            const Cfg& cfg, // marker cfg
-                            const CamCfg& camc, 
-                            vector<Marker>& ms); 
+        
         //---- pose estimate, wid : marker width
         bool pose_est(const CamCfg& camc, double wid);
         

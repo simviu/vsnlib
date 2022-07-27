@@ -36,7 +36,7 @@ string Marker::str()const
      
      
 //-----
-string Marker::Cfg::str()const
+string Marker::PoseEstimator::MCfg::str()const
 { 
 
     Json::Value jgs;
@@ -64,7 +64,7 @@ string Marker::Cfg::str()const
 }
 
 //---------------
-bool Marker::Cfg::load(CStr& sf)
+bool Marker::PoseEstimator::MCfg::load(CStr& sf)
 {
 
     ifstream ifs(sf);
@@ -142,14 +142,20 @@ bool Marker::detect(const Img& im,
     return true;
 }
 //-----------
+/*
 bool Marker::detect(const Img& im, 
                     const Cfg& cfg,
                     const CamCfg& camc,
                     vector<Marker>& ms)
+                    */
+bool Marker::PoseEstimator::onImg(const Img& im)
 {
+    auto& ms = result_.ms;
+    ms.clear();
+    
     bool ok = true;
-    int dict_id = cfg.dict_id_;
-    for(auto& g : cfg.grps_)
+    int dict_id = cfg_.mcfg.dict_id_;
+    for(auto& g : cfg_.mcfg.grps_)
     {
         vector<Marker> gms;
         detect(im, gms, dict_id);
@@ -160,7 +166,7 @@ bool Marker::detect(const Img& im,
             auto it = ids.find(m.id);
             if(it==ids.end())continue;
 
-            ok &= m.pose_est(camc, g.w);
+            ok &= m.pose_est(cfg_.camc, g.w);
             ms.push_back(m);
         }
     }
