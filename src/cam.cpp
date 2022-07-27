@@ -127,11 +127,11 @@ void CamCfg::undis(const vec2s& vds, vec2s& vs)const
 string CamCfg::Dist::str()const
 {
     stringstream s;
-    cout << "k1=" << k1 << ", ";
-    cout << "k2=" << k2 << ", ";
-    cout << "k3=" << k3 << ", ";
-    cout << "p1=" << p1 << ", ";
-    cout << "p2=" << p2 << ", ";
+    s << "k1=" << k1 << ", ";
+    s << "k2=" << k2 << ", ";
+    s << "k3=" << k3 << ", ";
+    s << "p1=" << p1 << ", ";
+    s << "p2=" << p2 << ", ";
     return s.str();
 }
 
