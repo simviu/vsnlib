@@ -1,0 +1,86 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [ 
+        {
+            "name": "vsnTest",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/vsnTest",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/",
+            "environment": [],
+            "externalConsole": false,
+            "osx": {"MIMode": "lldb"},
+            "linux": {"MIMode": "gdb"}        
+        },
+            
+        {
+            "name": "vsnTool marker pose(imgs)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/vsntool",
+            "args": ["marker", "pose", 
+                "img=../data/test/pre-flight/imgs/img001.png", 
+                "cfg=vrpilotd/markers/markers01_cfg.json",
+                "camc=vrpilotd/cam/cam01.yml",
+                "wdir=output/"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+
+        {
+            "name": "vsnTool marker pose (video)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/vsntool",
+            "args": ["marker", "pose", 
+                "video=../data/test/pre-flight/pre-flight.avi", 
+                "cfg=vrpilotd/markers/markers01_cfg.json",
+                "camc=vrpilotd/cam/cam01.yml",
+                "wdir=output/",
+                "skip_frm=100",
+                "rot=180",
+                "-show"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/",
+            "environment": [],
+            "externalConsole": false,
+            "osx": {"MIMode": "lldb"},
+            "linux": {"MIMode": "gdb"},        
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+
+
+
+    ]
+}
