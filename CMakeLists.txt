@@ -19,11 +19,9 @@ include_directories(
     /opt/dep/local/include
     inc
     )
+#--- Hack for Mac brew
+link_directories(/opt/dep/local/lib)
 
-link_directories( 
-    /opt/dep/local/lib
-
-    )
 #---- dbg
 message(STATUS "OpenCV_dirs:${OpenCV_DIRS}" )
 #---- vsnLib 
