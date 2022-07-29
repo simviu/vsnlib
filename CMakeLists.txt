@@ -12,6 +12,7 @@ find_package(OpenCV REQUIRED)
 find_package(Gflags REQUIRED)
 
 include_directories( 
+    ${EIGEN3_INCLUDE_DIR}
     ${OpenCV_DIRS} 
     ${JsonCpp_INCLUDE_DIR}
     #${CMAKE_PREFIX_PATH}/include
@@ -28,9 +29,9 @@ message(STATUS "OpenCV_dirs:${OpenCV_DIRS}" )
 FILE(GLOB  SRC_VSNLIB src/*.cpp)
 add_library(vsnLib ${SRC_VSNLIB})
 target_link_libraries(vsnLib   
-    Eigen3::Eigen 
-    jsoncpp
     ${OpenCV_LIBRARIES} 
+    ${Eigen3_LIBRARY}    
+    jsoncpp
     )
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
   
