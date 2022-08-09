@@ -14,7 +14,7 @@ find_package(Gflags REQUIRED)
 include_directories( 
     ${OpenCV_DIRS} 
     ${JsonCpp_INCLUDE_DIR}
-    ${CMAKE_PREFIX_PATH}/include
+    #${CMAKE_PREFIX_PATH}/include
     /usr/include/jsoncpp
     /opt/dep/local/include
     inc
