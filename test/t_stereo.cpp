@@ -12,7 +12,7 @@
 using namespace vsn;
 using namespace ut;
 using namespace test;
-//using namespace cv;
+using namespace cv;
 
 namespace{
     const struct{
@@ -43,7 +43,14 @@ bool TestStereo::run()
         // If the frame is empty, break immediately
         if (frame.empty())
             break;
-
+        //---- split and crop
+        //cv::Mat im1 = frame(rang(), range());
+        //--- dbg
+        int dh = 246;
+        rectangle(frame, {0,dh}, {960, 1080/2 + dh},
+                    Scalar(0, 0, 250),
+                    1, LINE_8);
+        //----
         // Display the resulting frame
         cv::imshow( "Frame", frame );
 
