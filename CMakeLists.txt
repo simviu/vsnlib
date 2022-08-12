@@ -1,4 +1,4 @@
-project(board_det)
+project(vsnLib)
 cmake_minimum_required(VERSION 3.4)
 
 SET(CMAKE_CXX_STANDARD 14)
@@ -10,6 +10,10 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Gflags REQUIRED)
+
+message(STATUS "Eigen3 inc dir: ${EIGEN3_INCLUDE_DIR}")
+message(STATUS "JsonCpp libdir: ${JsonCpp_LIB_DIR}")
+message(STATUS "JsonCpp libs: ${jsoncpp_lib}")
 
 include_directories( 
     ${EIGEN3_INCLUDE_DIR}
@@ -31,10 +35,11 @@ add_library(vsnLib ${SRC_VSNLIB})
 target_link_libraries(vsnLib   
     ${OpenCV_LIBRARIES} 
     ${Eigen3_LIBRARY}    
-    jsoncpp
+    ${JsonCpp_LIBRARIES} 
     )
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
   
+
 #---- vsnTest
 FILE(GLOB  SRC_VSNTEST test/*.cpp)
 add_executable(vsnTest ${SRC_VSNTEST})

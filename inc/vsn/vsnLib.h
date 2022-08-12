@@ -221,8 +221,20 @@ namespace vsn{
         //--- print
         string str()const;
     };
-   
-   
+
+    //----------
+    // Feature
+    //----------
+    class Feature{
+    public:
+        struct Match{
+            vec2 p1, p2;
+        };
+        bool match(const Img& im1,
+                    const Img& im2,
+                    vector<Match>& ms);
+    };
+    
 
 }
 
