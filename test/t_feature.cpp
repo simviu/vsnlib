@@ -16,12 +16,11 @@ using namespace cv;
 
 namespace{
     const struct{
-        string sf_camc = "testd/cam.yml";
         string sf_cap = "testd/cur_video.m4v";
     }lcfg_;
 }
 //--------------------------
-bool TestStereo::run()
+bool TestFeature::run()
 {
     bool ok = true;
     log_i("run TestFeature()...");   
@@ -64,14 +63,12 @@ bool TestStereo::run()
 
         auto p_im1 = mkSp<ocv::ImgCv>(im1);
         auto p_im2 = mkSp<ocv::ImgCv>(im2);
-        
-        //---- stereo VO test
-        StereoVO vo;
-        CamCfg camc;
-        if(!camc.load(lcfg_.sf_camc))
-            return false;
-        vo.cfg_.camc = camc;
-        vo.onImg(*p_im1, *p_im2);
+        //---
+        vsn::FeatureMatch fm;
+        fm.cfg_.bShow = true;
+        fm.onImg(*p_im1, *p_im2);
+        auto& ms = fm.result_.ms;
+        log_d("features match:"+to_string(ms.size()));
         //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);
         if(c==27)

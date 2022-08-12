@@ -251,8 +251,11 @@ namespace vsn{
     class StereoVO{
     public:
         struct Cfg{
-            CamCfg camc_;
+            CamCfg camc;
+            bool bShow = false;
         };
+        Cfg cfg_;
+
         bool onImg(const Img& im1, 
                    const Img& im2);
     };

@@ -77,11 +77,12 @@ bool FeatureMatch::onImg(const Img& im1,
     //---- dbg show img
     Mat img_match;
     drawMatches(imc1, keypoints_1, imc2, keypoints_2, match, img_match);
-    if(cfg_.bShow) {
-        cv::namedWindow("Matched 2D ORB Features", cv::WINDOW_KEEPRATIO);
-        imshow("Matched 2D ORB Features", img_match);
-        resizeWindow("Matched 2D ORB Features", 0.7 * 1920,  0.7 * 1080/2);
-        waitKey(35);
+    if (cfg_.bShow)
+    {
+        string sName = "featureMatch";
+        cv::namedWindow(sName, cv::WINDOW_KEEPRATIO);
+        imshow(sName, img_match);
+        waitKey(10);
     }
     return true;        
 }

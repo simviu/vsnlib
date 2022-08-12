@@ -19,7 +19,8 @@ int main(int argc, char ** argv)
     bool ok = true;
     
   //TestMarker  t; ok &= t.run();
-    TestStereo t; ok &= t.run();
+    TestFeature t; ok &= t.run();
+  // TestStereo t; ok &= t.run();
     if(ok) log_i("All test PASS!");
     else log_e("Failed");
     return ok?0:1;
