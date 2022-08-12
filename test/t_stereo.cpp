@@ -61,7 +61,13 @@ bool TestStereo::run()
         cv::imshow( "Left", im1 );
         cv::imshow( "Right", im2 );
 
-        // Press  ESC on keyboard to exit
+        auto p_im1 = mkSp<ocv::ImgCv>(im1);
+        auto p_im2 = mkSp<ocv::ImgCv>(im1);
+        vector<vsn::Feature::Match> ms;
+        vsn::Feature::match(*p_im1, *p_im2, ms, true);
+
+        log_d("features match:"+to_string(ms.size()));
+        //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);
         if(c==27)
         break;

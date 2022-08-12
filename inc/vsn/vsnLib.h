@@ -230,9 +230,11 @@ namespace vsn{
         struct Match{
             vec2 p1, p2;
         };
-        bool match(const Img& im1,
+        //----
+        static bool match(const Img& im1,
                     const Img& im2,
-                    vector<Match>& ms);
+                    vector<Match>& ms,
+                    bool bShow=false);
     };
     
 
