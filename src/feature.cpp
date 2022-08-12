@@ -8,10 +8,8 @@ using namespace vsn;
 using namespace ut;
 using namespace cv;
 //-------
-bool Feature::match(const Img& im1,
-                    const Img& im2,
-                    vector<Match>& ms,
-                    bool bShow)
+bool FeatureMatch::onImg(const Img& im1,
+                         const Img& im2)
 {
     auto& imc1 = reinterpret_cast<const ocv::ImgCv*>(&im1)->im_;
     auto& imc2 = reinterpret_cast<const ocv::ImgCv*>(&im2)->im_;
@@ -58,6 +56,8 @@ bool Feature::match(const Img& im1,
   //  printf ( "-- Max dist : %f \n", max_dist );
   //  printf ( "-- Min dist : %f \n", min_dist );
 
+    auto& ms = result_.ms;
+    ms.clear();
     //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
     for ( int i = 0; i < descriptors_1.rows; i++ )
     {
@@ -68,7 +68,7 @@ bool Feature::match(const Img& im1,
             auto& kp2 = keypoints_2[m.trainIdx].pt;
 
             //matches.push_back ( match[i] );
-            Feature::Match fm;
+            Match fm;
             fm.p1 << kp1.x, kp1.y;
             fm.p2 << kp2.x, kp2.y;
             ms.push_back(fm);
@@ -77,7 +77,7 @@ bool Feature::match(const Img& im1,
     //---- dbg show img
     Mat img_match;
     drawMatches(imc1, keypoints_1, imc2, keypoints_2, match, img_match);
-    if(bShow) {
+    if(cfg_.bShow) {
         cv::namedWindow("Matched 2D ORB Features", cv::WINDOW_KEEPRATIO);
         imshow("Matched 2D ORB Features", img_match);
         resizeWindow("Matched 2D ORB Features", 0.7 * 1920,  0.7 * 1080/2);

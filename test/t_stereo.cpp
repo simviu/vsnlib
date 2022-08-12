@@ -63,9 +63,11 @@ bool TestStereo::run()
 
         auto p_im1 = mkSp<ocv::ImgCv>(im1);
         auto p_im2 = mkSp<ocv::ImgCv>(im1);
-        vector<vsn::Feature::Match> ms;
-        vsn::Feature::match(*p_im1, *p_im2, ms, true);
 
+        vsn::FeatureMatch fm;
+        fm.cfg_.bShow = true;
+        fm.onImg(*p_im1, *p_im2);
+        auto& ms = fm.result_.ms;
         log_d("features match:"+to_string(ms.size()));
         //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);

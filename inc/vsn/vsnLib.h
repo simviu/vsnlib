@@ -223,20 +223,39 @@ namespace vsn{
     };
 
     //----------
-    // Feature
+    // FeatureMatch
     //----------
-    class Feature{
+    class FeatureMatch{
     public:
+        struct Cfg{
+            bool bShow = false;
+        };
+        Cfg cfg_;
+        //----
         struct Match{
             vec2 p1, p2;
         };
         //----
-        static bool match(const Img& im1,
-                    const Img& im2,
-                    vector<Match>& ms,
-                    bool bShow=false);
+        struct Result{ 
+            vector<Match> ms;
+        };
+        Result result_;
+        //----
+        bool onImg(const Img& im1,
+                   const Img& im2);
     };
-    
+    //------------
+    // StereoVO
+    //------------
+    //Stereo video odometry
+    class StereoVO{
+    public:
+        struct Cfg{
+            CamCfg camc_;
+        };
+        bool onImg(const Img& im1, 
+                   const Img& im2);
+    };
 
 }
 
