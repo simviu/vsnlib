@@ -82,7 +82,7 @@ namespace ut
     //-----------
     // log
     //-----------
-    namespace log{
+    namespace utlog{
         extern bool openFile(CStr& sFile);
         extern void dbg(CStr& s);
         extern void inf(CStr& s);
@@ -90,10 +90,10 @@ namespace ut
         extern void errf(CStr& s);
     }
     // shortcuts
-    const auto log_i = log::inf;
-    const auto log_d = log::dbg;
-    const auto log_e = log::err;
-    const auto log_ef = log::errf;
+    const auto log_i = utlog::inf;
+    const auto log_d = utlog::dbg;
+    const auto log_e = utlog::err;
+    const auto log_ef = utlog::errf;
     //----
     namespace sys{
         extern string pwd();

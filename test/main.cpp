@@ -18,7 +18,8 @@ int main(int argc, char ** argv)
     log_i("cur_dir:"+sys::pwd());
     bool ok = true;
     
-    TestMarker t; ok &= t.run();
+  //TestMarker  t; ok &= t.run();
+    TestFeature t; ok &= t.run();
     if(ok) log_i("All test PASS!");
     else log_e("Failed");
     return ok?0:1;

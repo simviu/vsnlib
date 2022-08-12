@@ -12,7 +12,14 @@
 using namespace vsn;
 
 namespace test{
+    //------
     class TestMarker : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
+    //------
+    class TestFeature : public Test
     {
     public:
         virtual bool run() override;

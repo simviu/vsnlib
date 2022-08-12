@@ -33,7 +33,7 @@
 namespace ocv{
     using namespace cv;
     using namespace std;
-    using namespace ut;
+ //  sing namespace ut;
     using namespace vsn;
 
     extern string str(const cv::Point3d& d, int decim);

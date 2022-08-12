@@ -52,9 +52,9 @@ namespace ut{
     }
 
 //-------------
-// log
+// logf
 //-------------
-namespace log
+namespace utlog
 {
     namespace{
         ofstream logFile_;

@@ -47,9 +47,9 @@ bool ImgCv::load(ut::CStr& s)
     im_ = cv::imread(s);
     bool ok = val();
     if(ok)
-        log::inf("Img load:"+s);
+        log_i("Img load:"+s);
     else
-        log::errf(s);
+        log_ef(s);
     return ok;
 }
 //-----------------
@@ -58,9 +58,9 @@ bool ImgCv::save(ut::CStr& s)
     log_i("Save img to:"+s+"...");
     bool ok = cv::imwrite(s, im_);
     if(ok)
-        log::inf("Img save:"+s);
+        log_i("Img save:"+s);
     else 
-        log::errf(s);
+        log_ef(s);
     return ok;
 }
 

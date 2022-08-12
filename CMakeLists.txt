@@ -36,6 +36,7 @@ target_link_libraries(vsnLib
     ${OpenCV_LIBRARIES} 
     ${Eigen3_LIBRARY}    
     ${JsonCpp_LIBRARIES} 
+    -ljsoncpp
     )
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
   
