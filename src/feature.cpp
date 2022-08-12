@@ -23,7 +23,7 @@ bool FeatureMatch::onImg(const Img& im1,
     std::vector<KeyPoint> keypoints_2;
 
     // used in OpenCV3
-    Ptr<FeatureDetector> detector = ORB::create();
+    Ptr<FeatureDetector> detector = ORB::create(cfg_.N);
     Ptr<DescriptorExtractor> descriptor = ORB::create();
     // use this if you are in OpenCV2
     // Ptr<FeatureDetector> detector = FeatureDetector::create ( "ORB" );
@@ -62,7 +62,7 @@ bool FeatureMatch::onImg(const Img& im1,
     for ( int i = 0; i < descriptors_1.rows; i++ )
     {
         auto& m = match[i];
-        if ( m.distance <= max ( 2*min_dist, 30.0 ) )
+        if ( m.distance <= max ( 2*min_dist, cfg_.distTH ) )
         {
             auto& kp1 = keypoints_1[m.queryIdx].pt;
             auto& kp2 = keypoints_2[m.trainIdx].pt;

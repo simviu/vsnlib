@@ -65,6 +65,8 @@ bool TestFeature::run()
         auto p_im2 = mkSp<ocv::ImgCv>(im2);
         //---
         vsn::FeatureMatch fm;
+        fm.cfg_.distTH = 25;
+        fm.cfg_.distTH = 20;
         fm.cfg_.bShow = true;
         fm.onImg(*p_im1, *p_im2);
         auto& ms = fm.result_.ms;

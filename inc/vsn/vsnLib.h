@@ -229,6 +229,8 @@ namespace vsn{
     public:
         struct Cfg{
             bool bShow = false;
+            double distTH = 30;
+            int N=100;
         };
         Cfg cfg_;
         //----
