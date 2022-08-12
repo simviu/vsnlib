@@ -45,14 +45,21 @@ bool TestStereo::run()
             break;
         //---- split and crop
         //cv::Mat im1 = frame(rang(), range());
-        //--- dbg
+        int w = 1920;
+        int h = 1080;
         int dh = 246;
-        rectangle(frame, {0,dh}, {960, 1080/2 + dh},
+        Mat im1 = frame({dh, h/2+dh-1},{0, w/2-1});
+        Mat im2 = frame({dh, h/2+dh-1},{w/2, w-1});
+
+        //--- dbg
+        rectangle(frame, {0,dh}, {w/2, h/2 + dh},
                     Scalar(0, 0, 250),
                     1, LINE_8);
         //----
         // Display the resulting frame
-        cv::imshow( "Frame", frame );
+        //cv::imshow( "Frame", frame );
+        cv::imshow( "Left", im1 );
+        cv::imshow( "Right", im2 );
 
         // Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);
