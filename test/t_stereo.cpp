@@ -20,7 +20,7 @@ namespace{
     }lcfg_;
 }
 //--------------------------
-bool TestFeature::run()
+bool TestStereo::run()
 {
     bool ok = true;
     log_i("run TestFeature()...");   
@@ -42,7 +42,7 @@ bool TestFeature::run()
     
         // If the frame is empty, break immediately
         if (frame.empty())
-        break;
+            break;
 
         // Display the resulting frame
         cv::imshow( "Frame", frame );

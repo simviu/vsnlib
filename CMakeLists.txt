@@ -17,7 +17,7 @@ message(STATUS "JsonCpp libs: ${jsoncpp_lib}")
 
 include_directories( 
     ${EIGEN3_INCLUDE_DIR}
-    ${OpenCV_DIRS} 
+    ${OpenCV_DIRS}  
     ${JsonCpp_INCLUDE_DIR}
     #${CMAKE_PREFIX_PATH}/include
     /usr/include/jsoncpp
