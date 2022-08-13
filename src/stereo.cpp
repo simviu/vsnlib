@@ -26,12 +26,11 @@ bool StereoVO::onImg(const Img& im1,
 
     //---- trangulate feature points.
     // ( inner arry for each image)
-    vector<vector<cv::Point2d>> Qs;
+    vector<cv::Point2d> Qs1, Qs2;
     for(auto& m : fm.result_.ms)
     {
-        
-        Qs.push_back({ocv::toCv(m.p1),
-                      ocv::toCv(m.p2)});
+        Qs1.push_back(ocv::toCv(m.p1));
+        Qs2.push_back(ocv::toCv(m.p2));
     }
     //---- projection matrix P = K*T
     // We have 2 cameras.
@@ -45,10 +44,9 @@ bool StereoVO::onImg(const Img& im1,
             0, 1, 0,  0,
             0, 0, 1,  0);
 
-    vector<cv::Mat> Ps;
     cv::Mat K; cv::eigen2cv(camc.K, K); 
-    Ps.push_back(K * T1);
-    Ps.push_back(K * T2);
+    cv::Mat Ps;
+    cv::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
     
     
     return ok;
