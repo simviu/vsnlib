@@ -258,9 +258,17 @@ namespace vsn{
             double baseline = 0.50;
         };
         Cfg cfg_;
-
+        //----
+        struct Data{
+            // local points by stereo matching 
+            //   and triangulations.
+            vec3s Ps; 
+        };
+        Data data_;
+        //----
         bool onImg(const Img& im1, 
                    const Img& im2);
+
     protected:
         bool genDepth(const Img& im1,  
                       const Img& im2, Img& imd);

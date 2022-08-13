@@ -27,7 +27,9 @@ bool StereoVO::onImg(const Img& im1,
     //---- trangulate feature points.
     // ( inner arry for each image)
     vector<cv::Point2d> Qs1, Qs2;
-    for(auto& m : fm.result_.ms)
+    auto& ms = fm.result_.ms;
+    int N = ms.size();
+    for(auto& m : ms)
     {
         Qs1.push_back(ocv::toCv(m.p1));
         Qs2.push_back(ocv::toCv(m.p2));
@@ -35,11 +37,11 @@ bool StereoVO::onImg(const Img& im1,
     //---- projection matrix P = K*T
     // We have 2 cameras.
     double b = cfg_.baseline;
-    cv::Mat T1 = (cv::Mat_<double>(3,3) << 
+    cv::Mat T1 = (cv::Mat_<double>(3,4) << 
             1, 0, 0,  -b*0.5,
             0, 1, 0,  0,
             0, 0, 1,  0);
-    cv::Mat T2 = (cv::Mat_<double>(3,3) << 
+    cv::Mat T2 = (cv::Mat_<double>(3,4) << 
             1, 0, 0,  b*0.5,
             0, 1, 0,  0,
             0, 0, 1,  0);
@@ -47,8 +49,19 @@ bool StereoVO::onImg(const Img& im1,
     cv::Mat K; cv::eigen2cv(camc.K, K); 
     cv::Mat Ps;
     cv::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
-    
-    
+    log_d("Triangulate pnts: "+to_string(N));
+
+    //---- De-homoge
+    stringstream s;
+    for(int i=0;i<N;i++)
+    {
+        vec4 h = ocv::toVec4(Ps.col(i));
+        vec3 v; 
+        if(!egn::normalize(h, v))continue;
+        s << v << ";  " << endl;
+    }
+    log_d(s.str());
+
     return ok;
 }
 //-----------

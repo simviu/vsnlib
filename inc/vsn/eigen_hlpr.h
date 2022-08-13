@@ -28,7 +28,12 @@ namespace egn{
     using quat = Eigen::Quaterniond;
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
-
+    inline bool normalize(const vec4& i, vec3& o)
+    { 
+      if(i(3)==0) return false;
+      o << i(0)/i(3), i(1)/i(3), i(2)/i(3);
+      return true;
+    }
     //--- to strin
     extern string str(const vec2& v, int deci=2);
     extern string str(const vec3& v, int deci=2);

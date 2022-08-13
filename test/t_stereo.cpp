@@ -26,8 +26,10 @@ bool TestStereo::run()
 {
     bool ok = true;
     log_i("run TestFeature()...");   
-    // Create a VideoCapture object and open the input file
-    // If the input is the web camera, pass 0 instead of the video file name
+    CamCfg camc;
+    if(!camc.load(lcfg_.sf_camc))
+        return false;
+    //----
     cv::VideoCapture cap(lcfg_.sf_cap); 
     
     // Check if camera opened successfully
@@ -68,9 +70,7 @@ bool TestStereo::run()
         
         //---- stereo VO test
         StereoVO vo;
-        CamCfg camc;
-        if(!camc.load(lcfg_.sf_camc))
-            return false;
+        
         vo.cfg_.bShow = true;
         vo.cfg_.camc = camc;
         vo.onImg(*p_im1, *p_im2);

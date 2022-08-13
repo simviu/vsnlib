@@ -54,6 +54,13 @@ namespace ocv{
     { vec2 v; v<<c.x, c.y; return v;}
     inline vec2 toVec(const Point2f& c)
     { vec2 v; v<<c.x, c.y; return v;}
+    inline vec4 toVec4(const cv::Mat& v)
+    { vec4 e; 
+      e << v.at<double>(0,0), v.at<double>(1,0), 
+           v.at<double>(2,0), v.at<double>(3,0);
+      return e;
+      }
+
     //------------
     // ImgCv
     //------------
