@@ -12,6 +12,8 @@ bool StereoVO::onImg(const Img& im1,
     bool ok = true;
     FeatureMatch fm;
     fm.cfg_.bShow = cfg_.bShow;
+    fm.cfg_.N = 20;
+
     ok &= fm.onImg(im1, im2);
 
     //---------------
@@ -31,7 +33,7 @@ bool StereoVO::onImg(const Img& im1,
         sgbm.P1 = 600;
         sgbm.P2 = 2400;
     */
-    
+    /* setting (1)
     auto p_sgbm = cv::StereoSGBM::create(
         -64, //  int minDisparity = 0, 
         16, // int numDisparities = 16, 
@@ -45,10 +47,10 @@ bool StereoVO::onImg(const Img& im1,
         2 // int speckleRange = 0,
         // int mode = StereoSGBM::MODE_SGBM
     );
+    */
+    // Setting (2)
+    auto p_sgbm =  cv::StereoSGBM::create(0, 96, 9, 8 * 9 * 9, 32 * 9 * 9, 1, 63, 10, 100, 32); // tested parameters
     auto& sgbm = *p_sgbm;
-
-    
-
 
     //---------------
     cv::Mat im_disp, im_disp2;
@@ -56,6 +58,7 @@ bool StereoVO::onImg(const Img& im1,
 
     //---- display
     cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);
+    //im_disp2 = im_disp*10;
 
     if(cfg_.bShow)
     {

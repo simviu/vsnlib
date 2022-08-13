@@ -70,6 +70,7 @@ bool TestStereo::run()
         CamCfg camc;
         if(!camc.load(lcfg_.sf_camc))
             return false;
+        vo.cfg_.bShow = true;
         vo.cfg_.camc = camc;
         vo.onImg(*p_im1, *p_im2);
         //------ Press  ESC on keyboard to exit
