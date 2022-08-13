@@ -255,11 +255,16 @@ namespace vsn{
         struct Cfg{
             CamCfg camc;
             bool bShow = false;
+            double baseline = 0.50;
         };
         Cfg cfg_;
 
         bool onImg(const Img& im1, 
                    const Img& im2);
+    protected:
+        bool genDepth(const Img& im1,  
+                      const Img& im2, Img& imd);
+
     };
 
 }

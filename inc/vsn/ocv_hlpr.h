@@ -28,6 +28,8 @@
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgproc.hpp>
 
+
+
 #include "vsn/vsnLib.h"
 
 namespace ocv{
@@ -46,8 +48,10 @@ namespace ocv{
     //---------
     inline Scalar toCv(const Color& c)
     { return Scalar(c.b, c.g, c.r); }
-    inline Point2f toCv(const vec2& v)
-    { return Point2f(v.x(), v.y()); }
+    inline Point2d toCv(const vec2& v)
+    { return Point2d(v.x(), v.y()); }
+    inline vec2 toVec(const Point2d& c)
+    { vec2 v; v<<c.x, c.y; return v;}
     inline vec2 toVec(const Point2f& c)
     { vec2 v; v<<c.x, c.y; return v;}
     //------------
@@ -61,7 +65,7 @@ namespace ocv{
         {  
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
         }
-        
+
         virtual bool load(ut::CStr& s) override;
         virtual bool save(ut::CStr& s) override;
         virtual bool val()const override

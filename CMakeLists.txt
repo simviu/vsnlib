@@ -12,8 +12,9 @@ find_package(OpenCV REQUIRED)
 find_package(Gflags REQUIRED)
 
 message(STATUS "Eigen3 inc dir: ${EIGEN3_INCLUDE_DIR}")
-message(STATUS "JsonCpp libdir: ${JsonCpp_LIB_DIR}")
-message(STATUS "JsonCpp libs: ${jsoncpp_lib}")
+message(STATUS "JsonCpp libdir: ${JsonCpp_INCLUDE_DIR}")
+message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
+message(STATUS "OpenCV inc dirs: ${OpenCV_INCLUDE_DIRS}")
 
 include_directories( 
     ${EIGEN3_INCLUDE_DIR}

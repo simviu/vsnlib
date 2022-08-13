@@ -1,21 +1,70 @@
 #include "vsn/vsnLib.h"
 #include "vsn/ocv_hlpr.h"
+#include <opencv2/sfm/triangulation.hpp>
+
+/*
+*/
+
+
 using namespace vsn;
 
+//-----------
 bool StereoVO::onImg(const Img& im1,  
                      const Img& im2)
 {
+    auto& camc = cfg_.camc;
 
-    auto& imc1 = reinterpret_cast<const ocv::ImgCv*>(&im1)->im_;
-    auto& imc2 = reinterpret_cast<const ocv::ImgCv*>(&im2)->im_;
+    ocv::ImgCv imc1(im1);
+    ocv::ImgCv imc2(im2);
 
     bool ok = true;
+    //---- do feature matching of L/R
     FeatureMatch fm;
     fm.cfg_.bShow = cfg_.bShow;
     fm.cfg_.N = 20;
-
     ok &= fm.onImg(im1, im2);
 
+    //---- trangulate feature points.
+    // ( inner arry for each image)
+    vector<vector<cv::Point2d>> Qs;
+    for(auto& m : fm.result_.ms)
+    {
+        
+        Qs.push_back({ocv::toCv(m.p1),
+                      ocv::toCv(m.p2)});
+    }
+    //---- projection matrix P = K*T
+    // We have 2 cameras.
+    double b = cfg_.baseline;
+    cv::Mat T1 = (cv::Mat_<double>(3,3) << 
+            1, 0, 0,  -b*0.5,
+            0, 1, 0,  0,
+            0, 0, 1,  0);
+    cv::Mat T2 = (cv::Mat_<double>(3,3) << 
+            1, 0, 0,  b*0.5,
+            0, 1, 0,  0,
+            0, 0, 1,  0);
+
+    vector<cv::Mat> Ps;
+    cv::Mat K; cv::eigen2cv(camc.K, K); 
+    Ps.push_back(K * T1);
+    Ps.push_back(K * T2);
+    
+    
+    return ok;
+}
+//-----------
+bool StereoVO::genDepth(const Img& im1,  
+                        const Img& im2, Img& imd)
+{
+    ocv::ImgCv imc1(im1);
+    ocv::ImgCv imc2(im2);
+
+//    auto& imc1 = reinterpret_cast<const ocv::ImgCv*>(&im1)->im_;
+  //  auto& imc2 = reinterpret_cast<const ocv::ImgCv*>(&im2)->im_;
+
+    bool ok = true;
+   
     //---------------
     // Setting Ref : 
     //   https://jayrambhia.com/blog/disparity-mpas
@@ -54,7 +103,7 @@ bool StereoVO::onImg(const Img& im1,
 
     //---------------
     cv::Mat im_disp, im_disp2;
-    sgbm.compute(imc1, imc2, im_disp);
+    sgbm.compute(imc1.im_, imc2.im_, im_disp);
 
     //---- display
     cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);

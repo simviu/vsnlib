@@ -18,6 +18,7 @@ namespace{
     const struct{
         string sf_camc = "testd/cam.yml";
         string sf_cap = "testd/cur_video.m4v";
+        double baseline = 0.255;
     }lcfg_;
 }
 //--------------------------
