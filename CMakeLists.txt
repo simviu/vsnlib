@@ -52,3 +52,5 @@ FILE(GLOB  SRC_VSNTEST apps/*.cpp)
 add_executable(vsntool ${SRC_VSNTEST})
 target_link_libraries(vsntool  ${OpenCV_LIBRARIES} vsnLib)
 
+#---- calib tool
+add_subdirectory(calib)

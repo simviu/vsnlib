@@ -4,9 +4,9 @@ cmake_minimum_required(VERSION 3.4)
 SET(CMAKE_CXX_STANDARD 14)
 
 find_package(OpenCV REQUIRED)
-include_directories( ${OpenCV_DIRS} )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 #FILE(GLOB  SRC_ALL *.cpp)
-add_executable(calib calib_charuco.cpp)
+add_executable(calib calibrate_camera_charuco.cpp)
 target_link_libraries(calib   ${OpenCV_LIBRARIES})
 
