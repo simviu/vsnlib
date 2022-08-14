@@ -42,9 +42,9 @@ void ImgCv::undistort(const CamCfg& cc)
 
 
 //-----------------
-bool ImgCv::load(ut::CStr& s)
+bool ImgCv::load(ut::CStr& s, int cvFlag)
 {
-    im_ = cv::imread(s);
+    im_ = cv::imread(s, cvFlag);
     bool ok = val();
     if(ok)
         log_i("Img load:"+s);

@@ -73,7 +73,7 @@ namespace ocv{
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
         }
 
-        virtual bool load(ut::CStr& s) override;
+        virtual bool load(ut::CStr& s, int cvFlag) override;
         virtual bool save(ut::CStr& s) override;
         virtual bool val()const override
         { return (im_.rows>0) && (im_.cols>0);}

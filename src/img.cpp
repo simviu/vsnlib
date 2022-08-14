@@ -18,3 +18,13 @@ Sp<Img> Img::create()
     return make_shared<ocv::ImgCv>();
 }
 
+//-----
+Sp<Img> Img::loadFile(const string& sf, int cvFlags)
+{
+    auto p = Img::create();
+    if(p->load(sf))
+      return p;
+    return nullptr;
+
+}
+

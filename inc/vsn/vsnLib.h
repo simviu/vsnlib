@@ -116,7 +116,7 @@ namespace vsn{
         typedef shared_ptr<Img> Ptr;
         typedef shared_ptr<const Img> CPtr;
 
-        virtual bool load(CStr& s)=0;
+        virtual bool load(CStr& s, int cvFlag=1)=0;
         virtual bool save(CStr& s)=0;
         virtual bool val()const =0;
         operator bool(){ return val(); }
@@ -141,6 +141,8 @@ namespace vsn{
         virtual Sp<Img> copy()const =0;
         //---- img operations
         virtual void rot(double dgr)=0;
+        //---- 
+        static Sp<Img> loadFile(const string& sf, int cvFlags=1);
     protected:
     };
     //-------------

@@ -16,8 +16,9 @@ using namespace cv;
 
 namespace{
     const struct{
-        string sf_camc = "testd/cam.yml";
-        string sf_cap = "testd/cur_video.m4v";
+        string sf_camc = "vsntd/cam.yml";
+        string sf_seqL = "vsntd/seq/image_0";
+        string sf_seqR = "vsntd/seq/image_1";
         double baseline = 0.255;
     }lcfg_;
 }
@@ -25,64 +26,47 @@ namespace{
 bool TestStereo::run()
 {
     bool ok = true;
-    log_i("run TestFeature()...");   
+    log_i("run TestStereo()...");   
+    vector<string> sfLs, sfRs;
+    cv::glob(lcfg_.sf_seqL, sfLs);
+    cv::glob(lcfg_.sf_seqR, sfRs);
     CamCfg camc;
     if(!camc.load(lcfg_.sf_camc))
         return false;
-    //----
-    cv::VideoCapture cap(lcfg_.sf_cap); 
     
-    // Check if camera opened successfully
-    if(!cap.isOpened()){
-        cout << "Error opening video stream or file" << endl;
-        return -1;
-    }
-        
-    while(1){
-
-        cv::Mat frame;
-        // Capture frame-by-frame
-        cap >> frame;
+    //---- main loop
+    int N = sfLs.size();
+    if(N>sfRs.size())
+        N = sfRs.size();
+    log_i("seq has total imgs:"+to_string(N));
     
-        // If the frame is empty, break immediately
-        if (frame.empty())
-            break;
-        //---- split and crop
-        //cv::Mat im1 = frame(rang(), range());
-        int w = 1920;
-        int h = 1080;
-        int dh = 246;
-        Mat im1 = frame({dh, h/2+dh-1},{0, w/2-1});
-        Mat im2 = frame({dh, h/2+dh-1},{w/2, w-1});
-
-        //--- dbg
-        rectangle(frame, {0,dh}, {w/2, h/2 + dh},
-                    Scalar(0, 0, 250),
-                    1, LINE_8);
-        //----
-        // Display the resulting frame
-        //cv::imshow( "Frame", frame );
-       // cv::imshow( "Left", im1 );
-       // cv::imshow( "Right", im2 );
-
-        auto p_im1 = mkSp<ocv::ImgCv>(im1);
-        auto p_im2 = mkSp<ocv::ImgCv>(im2);
-        
+    //-----
+    for(int i=0;i<N;i++)
+    {
+        //---- load image
+        int lf = cv::IMREAD_GRAYSCALE;
+        auto p1 = Img::loadFile(sfLs[i], lf);
+        auto p2 = Img::loadFile(sfRs[i], lf);
+        if((p1==nullptr)||(p2==nullptr))
+        {
+            log_e("Failed load image '"+ 
+                sfLs[i] + "' or '" + sfRs[i] +"'");
+            return false;
+        }
+        auto& im1 = *p1;
+        auto& im2 = *p2;
         //---- stereo VO test
         StereoVO vo;
         
         vo.cfg_.bShow = true;
         vo.cfg_.camc = camc;
-        vo.onImg(*p_im1, *p_im2);
+        vo.onImg(im1, im2);
         //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);
         if(c==27)
         break;
     }
     
-    // When everything done, release the video capture object
-    cap.release();
-
     // Closes all the frames
     cv::destroyAllWindows();
         
