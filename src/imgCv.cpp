@@ -102,3 +102,8 @@ void ImgCv::axis(const CamCfg& cc,
     }
 }
 
+//--------
+void ImgCv::toGray()
+{
+    cv::cvtColor(im_, im_,cv::COLOR_BGR2GRAY);
+}
