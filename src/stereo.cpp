@@ -66,7 +66,7 @@ bool StereoVO::onImg(const Img& im1,
 }
 //-----------
 bool StereoVO::genDepth(const Img& im1,  
-                        const Img& im2, Img& imd)
+                        const Img& im2)
 {
     ocv::ImgCv imc1(im1);
     ocv::ImgCv imc2(im2);
@@ -119,6 +119,7 @@ bool StereoVO::genDepth(const Img& im1,
     //---- display
     cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);
     //im_disp2 = im_disp*10;
+    data_.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
 
     if(cfg_.bShow)
     {

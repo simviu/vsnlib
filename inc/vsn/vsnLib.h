@@ -265,15 +265,18 @@ namespace vsn{
             // local points by stereo matching 
             //   and triangulations.
             vec3s Ps; 
+            //---- depth disparity map
+            Sp<Img> p_imd_ = nullptr;
+
         };
         Data data_;
         //----
         bool onImg(const Img& im1, 
                    const Img& im2);
 
-    protected:
         bool genDepth(const Img& im1,  
-                      const Img& im2, Img& imd);
+                      const Img& im2);
+    protected:
 
     };
 

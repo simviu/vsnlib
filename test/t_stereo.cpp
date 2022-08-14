@@ -61,6 +61,11 @@ bool TestStereo::run()
         vo.cfg_.bShow = true;
         vo.cfg_.camc = camc;
         vo.onImg(im1, im2);
+
+        //---- gen and show depth
+        auto p_imd = Img::create();
+        vo.genDepth(im1, im2);
+
         //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);
         if(c==27)
