@@ -7,9 +7,16 @@
 using namespace vsn;
 using namespace ut;
 using namespace cv;
+
+//--- Factory
+Sp<FeatureMatch> FeatureMatch::create()
+{
+    return mkSp<FeatureMatchCv>();
+}
+
 //-------
-bool FeatureMatch::onImg(const Img& im1,
-                         const Img& im2)
+bool FeatureMatchCv::onImg(const Img& im1,
+                           const Img& im2)
 {
     auto& imc1 = reinterpret_cast<const ocv::ImgCv*>(&im1)->im_;
     auto& imc2 = reinterpret_cast<const ocv::ImgCv*>(&im2)->im_;
@@ -56,7 +63,7 @@ bool FeatureMatch::onImg(const Img& im1,
   //  printf ( "-- Max dist : %f \n", max_dist );
   //  printf ( "-- Min dist : %f \n", min_dist );
 
-    auto& ms = result_.ms;
+    auto& ms = data_.ms;
     ms.clear();
     //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
     for ( int i = 0; i < descriptors_1.rows; i++ )

@@ -64,12 +64,13 @@ bool TestFeature::run()
         auto p_im1 = mkSp<ocv::ImgCv>(im1);
         auto p_im2 = mkSp<ocv::ImgCv>(im2);
         //---
-        vsn::FeatureMatch fm;
+        auto p_fm = vsn::FeatureMatch::create();
+        auto& fm = *p_fm;
         fm.cfg_.distTH = 25;
         fm.cfg_.distTH = 20;
         fm.cfg_.bShow = true;
         fm.onImg(*p_im1, *p_im2);
-        auto& ms = fm.result_.ms;
+        auto& ms = fm.data_.ms;
         log_d("features match:"+to_string(ms.size()));
         //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);

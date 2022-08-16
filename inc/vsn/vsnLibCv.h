@@ -69,12 +69,26 @@ namespace vsn
         Sp<cv::VideoWriter> p_vwr = nullptr;
 
     };
+
+    //----------
+    // FeatureMatchCv
+    //----------
+    class FeatureMatchCv : public FeatureMatch{
+    public:
+        virtual bool onImg(const Img& im1,
+                           const Img& im2)override;
+    };
     //------------
     // StereoVO_cv
     //------------
     //Stereo video odometry
     class StereoVOcv : public StereoVO{
     public:
+        //--- cv data
+        struct Data{
+
+        };
+        Data data_;
         //----
         virtual bool onImg(const Img& im1, 
                            const Img& im2)override;

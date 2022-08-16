@@ -23,7 +23,8 @@ bool StereoVOcv::onImg(const Img& im1,
 
     bool ok = true;
     //---- do feature matching of L/R
-    FeatureMatch fm;
+    auto p_fm = FeatureMatch::create();
+    auto& fm = *p_fm;
     fm.cfg_.bShow = cfg_.bShow;
     fm.cfg_.N = 20;
     ok &= fm.onImg(im1, im2);
@@ -31,7 +32,7 @@ bool StereoVOcv::onImg(const Img& im1,
     //---- trangulate feature points.
     // ( inner arry for each image)
     vector<cv::Point2d> Qs1, Qs2;
-    auto& ms = fm.result_.ms;
+    auto& ms = fm.data_.ms;
     int N = ms.size();
     for(auto& m : ms)
     {
@@ -120,7 +121,7 @@ bool StereoVOcv::genDepth(const Img& im1,
     //---- display
     cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);
     //im_disp2 = im_disp*10;
-    data_.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
+    StereoVO::data_.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
 
     if(cfg_.bShow)
     {

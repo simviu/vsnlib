@@ -230,6 +230,7 @@ namespace vsn{
     //----------
     class FeatureMatch{
     public:
+        static Sp<FeatureMatch> create();
         struct Cfg{
             bool bShow = false;
             double distTH = 30;
@@ -241,13 +242,13 @@ namespace vsn{
             vec2 p1, p2;
         };
         //----
-        struct Result{ 
+        struct Data{ 
             vector<Match> ms;
         };
-        Result result_;
+        Data data_;
         //----
-        bool onImg(const Img& im1,
-                   const Img& im2);
+        virtual bool onImg(const Img& im1,
+                           const Img& im2)=0;
     };
     //------------
     // StereoVO
