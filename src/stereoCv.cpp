@@ -1,6 +1,6 @@
 #include "vsn/vsnLibCv.h"
 #include <opencv2/sfm/triangulation.hpp>
-
+#include <opencv2/calib3d/calib3d.hpp>
 /*
 */
 
@@ -56,7 +56,11 @@ bool StereoVOcv::onImg(const Img& im1,
     cv::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
     log_d("Triangulate pnts: "+to_string(N));
 
-    //---- De-homoge
+    //---- construct frm
+    auto p_frm = mkSp<Frm>();
+    auto& frm = *p_frm;
+    frm.p_fm = p_fm;
+    //---- De-homoge and fill triangulation result
     stringstream s;
     for(int i=0;i<N;i++)
     {
@@ -64,18 +68,40 @@ bool StereoVOcv::onImg(const Img& im1,
         vec3 v; 
         if(!egn::normalize(h, v))continue;
         s << v << ";  " << endl;
+        frm.Ps.push_back(v);
     }
     log_d(s.str());
-    //---- save previous
-    data_.p_fm_prev = p_fm;
+    
+    
+    //---- save previous frm
+    data_.p_frm_prev = p_frm;
     return ok;
 }
 
 //-----------------
-bool StereoVOcv::odometry(const FeatureMatchCv& fm1,
-                          const FeatureMatchCv& fm2)
+bool StereoVOcv::odometry(const Frm& frm1,
+                          const Frm& frm2)const
 {
-    auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
+    vector<cv::Point3f> pts_3d;
+    vector<cv::Point2f> pts_2d;
+//    auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
+    auto& fm1 = *frm1.p_fm;
+    auto& fm2 = *frm2.p_fm;
+
+    FeatureMatchCv fmL, fmR;
+    auto& fmd1 = fm1.data_;
+    auto& fmd2 = fm2.data_;
+    vector<cv::DMatch> dmsL, dmsR;
+    fmL.match(fmd1.kps1, fmd2.kps1, dmsL);
+    fmR.match(fmd1.kps2, fmd2.kps2, dmsR);
+    //---- find corresponding
+    //---- solve PnP
+    cv::Mat inlrs;
+    cv::Mat K; cv::cv2eigen(cfg_.camc.K, K);
+
+    cv::Mat r(3,1,cv::DataType<double>::type);
+    cv::Mat t(3,1,cv::DataType<double>::type);
+    cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs);
 
     return true;
     
@@ -133,6 +159,7 @@ bool StereoVOcv::genDepth(const Img& im1,
     //---- display
     cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);
     //im_disp2 = im_disp*10;
+
     StereoVO::data_.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
 
     if(cfg_.bShow)

@@ -80,7 +80,7 @@ bool FeatureMatchCv::onImg(const Img& im1,
 bool FeatureMatchCv::match(
             const KeyPnts& kps1,
             const KeyPnts& kps2,
-            vector<cv::DMatch> dms)const
+            vector<cv::DMatch>& dms)const
 {
     dms.clear();
     // BFMatcher matcher ( NORM_HAMMING );
