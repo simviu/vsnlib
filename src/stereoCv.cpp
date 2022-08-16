@@ -1,4 +1,3 @@
-#include "vsn/vsnLib.h"
 #include "vsn/vsnLibCv.h"
 #include <opencv2/sfm/triangulation.hpp>
 
@@ -8,9 +7,14 @@
 
 using namespace vsn;
 
+//---- Factory
+Sp<StereoVO> StereoVO::create()
+{
+    return mkSp<StereoVOcv>();
+}
 //-----------
-bool StereoVO::onImg(const Img& im1,  
-                     const Img& im2)
+bool StereoVOcv::onImg(const Img& im1,  
+                       const Img& im2)
 {
     auto& camc = cfg_.camc;
 
@@ -65,14 +69,11 @@ bool StereoVO::onImg(const Img& im1,
     return ok;
 }
 //-----------
-bool StereoVO::genDepth(const Img& im1,  
-                        const Img& im2)
+bool StereoVOcv::genDepth(const Img& im1,  
+                          const Img& im2)
 {
     ocv::ImgCv imc1(im1);
     ocv::ImgCv imc2(im2);
-
-//    auto& imc1 = reinterpret_cast<const ocv::ImgCv*>(&im1)->im_;
-  //  auto& imc2 = reinterpret_cast<const ocv::ImgCv*>(&im2)->im_;
 
     bool ok = true;
    

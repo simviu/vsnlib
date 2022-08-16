@@ -69,5 +69,17 @@ namespace vsn
         Sp<cv::VideoWriter> p_vwr = nullptr;
 
     };
+    //------------
+    // StereoVO_cv
+    //------------
+    //Stereo video odometry
+    class StereoVOcv : public StereoVO{
+    public:
+        //----
+        virtual bool onImg(const Img& im1, 
+                           const Img& im2)override;
 
+        virtual bool genDepth(const Img& im1,  
+                              const Img& im2)override;
+    };
 }

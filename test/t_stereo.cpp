@@ -56,7 +56,8 @@ bool TestStereo::run()
         auto& im1 = *p1;
         auto& im2 = *p2;
         //---- stereo VO test
-        StereoVO vo;
+        auto p_vo = StereoVO::create();
+        auto& vo = *p_vo;
         
         vo.cfg_.bShow = true;
         vo.cfg_.camc = camc;

@@ -255,6 +255,8 @@ namespace vsn{
     //Stereo video odometry
     class StereoVO{
     public:
+        static Sp<StereoVO> create();
+        //----
         struct Cfg{
             CamCfg camc;
             bool bShow = false;
@@ -272,11 +274,11 @@ namespace vsn{
         };
         Data data_;
         //----
-        bool onImg(const Img& im1, 
-                   const Img& im2);
+        virtual bool onImg(const Img& im1, 
+                           const Img& im2)=0;
 
-        bool genDepth(const Img& im1,  
-                      const Img& im2);
+        virtual bool genDepth(const Img& im1,  
+                              const Img& im2)=0;
     protected:
 
     };
