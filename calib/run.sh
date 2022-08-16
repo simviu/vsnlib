@@ -1,8 +1,2 @@
-cd build
-#   ./calib  -w=6 -h=6 scl=0.5 -o=cam.yml -n=5 -d=200 
 
-#   ./calib  -w=6 -h=6 scl=0.25-o=cam.yml -n=5 -d=100 
-#   ./calib  -w=6 -h=6 -o=cam.yml imgs.xml
-
-   ./calib  -w=4 -h=4 -o=imgs/cam.yml -n=5 imgs/para_imgs.xml
-
+./calib -a=1 --sc --pc --ml=20.5 --sl=34.5 -d=0 -w=5 -h=7 --zt -v=$1 cam.yml 
