@@ -25,10 +25,14 @@ bool FeatureMatchCv::onImg(const Img& im1,
     //
     //  
     //-- 初始化
-    Mat descriptors_1, descriptors_2;
-    std::vector<KeyPoint> keypoints_1;
-    std::vector<KeyPoint> keypoints_2;
-
+    //Mat descriptors_1, descriptors_2;
+    //std::vector<KeyPoint> keypoints_1;
+    //std::vector<KeyPoint> keypoints_2;
+    auto& descriptors_1 = data_.desc1;
+    auto& descriptors_2 = data_.desc2;
+    auto& keypoints_1 = data_.kpnts1;
+    auto& keypoints_2 = data_.kpnts2;
+    
     // used in OpenCV3
     Ptr<FeatureDetector> detector = ORB::create(cfg_.N);
     Ptr<DescriptorExtractor> descriptor = ORB::create();
@@ -45,7 +49,8 @@ bool FeatureMatchCv::onImg(const Img& im1,
     descriptor->compute ( imc2, keypoints_2, descriptors_2 );
 
     //-- 第三步:对两幅图像中的BRIEF描述子进行匹配，使用 Hamming 距离
-    vector<DMatch> match;
+    //vector<DMatch> match;
+    auto& match = data_.matches;
     // BFMatcher matcher ( NORM_HAMMING );
     matcher->match ( descriptors_1, descriptors_2, match );
 
@@ -63,7 +68,7 @@ bool FeatureMatchCv::onImg(const Img& im1,
   //  printf ( "-- Max dist : %f \n", max_dist );
   //  printf ( "-- Min dist : %f \n", min_dist );
 
-    auto& ms = data_.ms;
+    auto& ms = FeatureMatch::data_.ms;
     ms.clear();
     //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
     for ( int i = 0; i < descriptors_1.rows; i++ )

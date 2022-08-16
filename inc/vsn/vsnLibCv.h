@@ -75,6 +75,15 @@ namespace vsn
     //----------
     class FeatureMatchCv : public FeatureMatch{
     public:
+        //---- cv data
+        struct Data{
+            cv::Mat desc1, desc2;
+            vector<cv::KeyPoint> kpnts1;
+            vector<cv::KeyPoint> kpnts2;
+            vector<cv::DMatch> matches;
+        };
+        Data data_;
+        //----
         virtual bool onImg(const Img& im1,
                            const Img& im2)override;
     };
