@@ -1,7 +1,7 @@
 #include <opencv2/features2d/features2d.hpp>
 
 #include "vsn/vsnLib.h"
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 
 
 using namespace vsn;

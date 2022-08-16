@@ -6,7 +6,7 @@
    Website: https://www.simviu.com
  */
 
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 
 using namespace ocv;
 

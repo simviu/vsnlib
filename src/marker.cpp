@@ -7,7 +7,7 @@
  */
 
 #include "vsn/vsnLib.h"
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 #include "json/json.h"
 
 using namespace vsn;

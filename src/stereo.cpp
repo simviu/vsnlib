@@ -1,5 +1,5 @@
 #include "vsn/vsnLib.h"
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 #include <opencv2/sfm/triangulation.hpp>
 
 /*

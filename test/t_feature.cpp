@@ -7,7 +7,7 @@
  */
 
 #include "vsn/vsnTest.h"
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 
 using namespace vsn;
 using namespace ut;
