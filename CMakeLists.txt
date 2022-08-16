@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.4)
 
 SET(CMAKE_CXX_STANDARD 14)
 add_definitions(-fPIC)
-#find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 #set( OpenCV_STATIC ON ) 
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
@@ -42,9 +41,9 @@ target_link_libraries(vsnLib
     ${OpenCV_LIBRARIES} 
     ${Eigen3_LIBRARY}    
     ${JsonCpp_LIBRARIES} 
-    #libjsoncpp.a
     jsoncpp
     )
+    
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
   
 
