@@ -23,7 +23,7 @@ bool StereoVOcv::onImg(const Img& im1,
 
     bool ok = true;
     //---- do feature matching of L/R
-    auto p_fm = FeatureMatch::create();
+    auto p_fm = mkSp<FeatureMatchCv>();
     auto& fm = *p_fm;
     fm.cfg_.bShow = cfg_.bShow;
     fm.cfg_.N = 20;
@@ -32,7 +32,7 @@ bool StereoVOcv::onImg(const Img& im1,
     //---- trangulate feature points.
     // ( inner arry for each image)
     vector<cv::Point2d> Qs1, Qs2;
-    auto& ms = fm.data_.ms;
+    auto& ms = fm.FeatureMatch::data_.ms;
     int N = ms.size();
     for(auto& m : ms)
     {
@@ -66,9 +66,21 @@ bool StereoVOcv::onImg(const Img& im1,
         s << v << ";  " << endl;
     }
     log_d(s.str());
-
+    //---- save previous
+    data_.p_fm_prev = p_fm;
     return ok;
 }
+
+//-----------------
+bool StereoVOcv::odometry(const FeatureMatchCv& fm1,
+                          const FeatureMatchCv& fm2)
+{
+    auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
+
+    return true;
+    
+}
+
 //-----------
 bool StereoVOcv::genDepth(const Img& im1,  
                           const Img& im2)

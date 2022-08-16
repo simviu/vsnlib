@@ -75,17 +75,23 @@ namespace vsn
     //----------
     class FeatureMatchCv : public FeatureMatch{
     public:
+        //---- key point ary
+        struct KeyPnts{
+            cv::Mat desc; // feature desripiton
+            vector<cv::KeyPoint> pnts; // feature points
+        };
         //---- cv data
         struct Data{
-            cv::Mat desc1, desc2;
-            vector<cv::KeyPoint> kpnts1;
-            vector<cv::KeyPoint> kpnts2;
+            KeyPnts kps1, kps2;
             vector<cv::DMatch> matches;
         };
         Data data_;
         //----
         virtual bool onImg(const Img& im1,
                            const Img& im2)override;
+        bool match(const KeyPnts& kps1,
+                   const KeyPnts& kps2,
+                   vector<cv::DMatch> dms)const;
     };
     //------------
     // StereoVO_cv
@@ -95,7 +101,8 @@ namespace vsn
     public:
         //--- cv data
         struct Data{
-
+            //---- previous feature match
+            Sp<FeatureMatchCv> p_fm_prev = nullptr;
         };
         Data data_;
         //----
@@ -104,5 +111,8 @@ namespace vsn
 
         virtual bool genDepth(const Img& im1,  
                               const Img& im2)override;
+    protected:
+        bool odometry(const FeatureMatchCv& fm1,
+                      const FeatureMatchCv& fm2);
     };
 }

@@ -28,18 +28,15 @@ bool FeatureMatchCv::onImg(const Img& im1,
     //Mat descriptors_1, descriptors_2;
     //std::vector<KeyPoint> keypoints_1;
     //std::vector<KeyPoint> keypoints_2;
-    auto& descriptors_1 = data_.desc1;
-    auto& descriptors_2 = data_.desc2;
-    auto& keypoints_1 = data_.kpnts1;
-    auto& keypoints_2 = data_.kpnts2;
+    auto& descriptors_1 = data_.kps1.desc;
+    auto& descriptors_2 = data_.kps2.desc;
+    auto& keypoints_1 = data_.kps1.pnts;
+    auto& keypoints_2 = data_.kps2.pnts;
     
     // used in OpenCV3
     Ptr<FeatureDetector> detector = ORB::create(cfg_.N);
     Ptr<DescriptorExtractor> descriptor = ORB::create();
-    // use this if you are in OpenCV2
-    // Ptr<FeatureDetector> detector = FeatureDetector::create ( "ORB" );
-    // Ptr<DescriptorExtractor> descriptor = DescriptorExtractor::create ( "ORB" );
-    Ptr<DescriptorMatcher> matcher  = DescriptorMatcher::create ( "BruteForce-Hamming" );
+
     //-- 第一步:检测 Oriented FAST 角点位置
     detector->detect ( imc1,keypoints_1 );
     detector->detect ( imc2,keypoints_2 );
@@ -50,45 +47,26 @@ bool FeatureMatchCv::onImg(const Img& im1,
 
     //-- 第三步:对两幅图像中的BRIEF描述子进行匹配，使用 Hamming 距离
     //vector<DMatch> match;
-    auto& match = data_.matches;
-    // BFMatcher matcher ( NORM_HAMMING );
-    matcher->match ( descriptors_1, descriptors_2, match );
+    auto& dms = data_.matches;
+    dms.clear();
+    match(data_.kps1, data_.kps2, dms);
 
-    //-- 第四步:匹配点对筛选
-    double min_dist=10000, max_dist=0;
-
-    //找出所有匹配之间的最小距离和最大距离, 即是最相似的和最不相似的两组点之间的距离
-    for ( int i = 0; i < descriptors_1.rows; i++ )
-    {
-        double dist = match[i].distance;
-        if ( dist < min_dist ) min_dist = dist;
-        if ( dist > max_dist ) max_dist = dist;
-    }
-
-  //  printf ( "-- Max dist : %f \n", max_dist );
-  //  printf ( "-- Min dist : %f \n", min_dist );
-
-    auto& ms = FeatureMatch::data_.ms;
+    //---- fill result
+    auto& ms = FeatureMatch::data_.ms;    
     ms.clear();
-    //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
-    for ( int i = 0; i < descriptors_1.rows; i++ )
+    for(auto& m : dms)
     {
-        auto& m = match[i];
-        if ( m.distance <= max ( 2*min_dist, cfg_.distTH ) )
-        {
-            auto& kp1 = keypoints_1[m.queryIdx].pt;
-            auto& kp2 = keypoints_2[m.trainIdx].pt;
-
-            //matches.push_back ( match[i] );
-            Match fm;
-            fm.p1 << kp1.x, kp1.y;
-            fm.p2 << kp2.x, kp2.y;
-            ms.push_back(fm);
-        }
+        auto& kp1 = keypoints_1[m.queryIdx].pt;
+        auto& kp2 = keypoints_2[m.trainIdx].pt;
+        Match fm;
+        fm.p1 << kp1.x, kp1.y;
+        fm.p2 << kp2.x, kp2.y;
+        ms.push_back(fm);       
     }
+
     //---- dbg show img
     Mat img_match;
-    drawMatches(imc1, keypoints_1, imc2, keypoints_2, match, img_match);
+    drawMatches(imc1, keypoints_1, imc2, keypoints_2, dms, img_match);
     if (cfg_.bShow)
     {
         string sName = "featureMatch";
@@ -98,6 +76,41 @@ bool FeatureMatchCv::onImg(const Img& im1,
     }
     return true;        
 }
+//-------
+bool FeatureMatchCv::match(
+            const KeyPnts& kps1,
+            const KeyPnts& kps2,
+            vector<cv::DMatch> dms)const
+{
+    dms.clear();
+    // BFMatcher matcher ( NORM_HAMMING );
+    Ptr<DescriptorMatcher> matcher  = DescriptorMatcher::create ( "BruteForce-Hamming" );
+    vector<cv::DMatch> dms_pre;
+    matcher->match ( kps1.desc, kps2.desc, dms_pre );
 
+    //-- 第四步:匹配点对筛选
+    double min_dist=10000, max_dist=0;
+
+    //找出所有匹配之间的最小距离和最大距离, 即是最相似的和最不相似的两组点之间的距离
+    for ( int i = 0; i < kps1.desc.rows; i++ )
+    {
+        double dist = dms_pre[i].distance;
+        if ( dist < min_dist ) min_dist = dist;
+        if ( dist > max_dist ) max_dist = dist;
+    }
+
+  //  printf ( "-- Max dist : %f \n", max_dist );
+  //  printf ( "-- Min dist : %f \n", min_dist );
+    
+    //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
+    for ( int i = 0; i < kps1.desc.rows; i++ )
+    {
+        auto& m = dms_pre[i];
+        if ( m.distance > max ( 2*min_dist, cfg_.distTH ) )
+            continue;
+        dms.push_back(m);
+    }
+    return true;
+}
 
 
