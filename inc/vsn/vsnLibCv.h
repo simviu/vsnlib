@@ -80,10 +80,14 @@ namespace vsn
             cv::Mat desc; // feature desripiton
             vector<cv::KeyPoint> pnts; // feature points
         };
+
         //---- cv data
         struct Data{
             KeyPnts kps1, kps2;
             vector<cv::DMatch> matches;
+            // lookup map keypnt index to matches index
+            map<int, int> i1_mi;
+            map<int, int> i2_mi;
         };
         Data data_;
         //----
@@ -105,10 +109,20 @@ namespace vsn
             vec3s Ps; // Local triangulation points.
 
         };
+        //--- Stereo match pnt
+        struct SPnt{
+            //--- index of feature match pnt
+            // on L/R img 
+            int fi1=-1; // -1 as invalid flag
+            int fi2=-1;
+            vec3 P; // 3d triangulation pnt
+        };
         //--- cv data
         struct Data{
             //---- previous feature match
             Sp<Frm> p_frm_prev = nullptr;
+            //---- L/R matched feature pnt
+            vector<SPnt> sps;
         };
         Data data_;
         //----

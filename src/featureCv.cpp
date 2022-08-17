@@ -108,6 +108,9 @@ bool FeatureMatchCv::match(
         auto& m = dms_pre[i];
         if ( m.distance > max ( 2*min_dist, cfg_.distTH ) )
             continue;
+        int i1 = m.queryIdx;
+        int i2 = m.trainIdx;
+
         dms.push_back(m);
     }
     return true;
