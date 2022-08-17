@@ -28,10 +28,33 @@ bool StereoVOcv::onImg(const Img& im1,
     auto p_fm = mkSp<FeatureMatchCv>();
     auto& fm = *p_fm;
     fm.cfg_.bShow = cfg_.bShow;
-    fm.cfg_.N = 20;
+    fm.cfg_.N = 500;
     ok &= fm.onImg(im1, im2);
 
+    //---- construct frm
+    auto p_frm = mkSp<Frm>();
+    auto& frm = *p_frm;
+    frm.p_fm = p_fm;
+
     //---- trangulate feature points.
+    ok &= triangulate(fm, frm.P_fst);
+    
+    //---- do odometry
+    auto p_frmp = data_.p_frm_prev;
+    if(p_frmp!=nullptr)
+        odometry(*p_frmp, *p_frm);
+
+    //---- save to previous frm
+    data_.p_frm_prev = p_frm;
+    return ok;
+}
+//-----------------
+bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
+                             vector<cv::Point3f>& P_fst)const
+{
+    bool ok = true;
+    auto& camc = cfg_.camc;
+    P_fst.clear();
     // ( inner arry for each image)
     vector<cv::Point2d> Qs1, Qs2;
     auto& ms = fm.FeatureMatch::data_.ms;
@@ -57,26 +80,21 @@ bool StereoVOcv::onImg(const Img& im1,
     cv::Mat Ps;
     cv::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
     log_d("Triangulate pnts: "+to_string(N));
-
-    //---- construct frm
-    auto p_frm = mkSp<Frm>();
-    auto& frm = *p_frm;
-    frm.p_fm = p_fm;
+    
     //---- De-homoge and fill triangulation result
     stringstream s;
     for(int i=0;i<N;i++)
     {
         vec4 h = ocv::toVec4(Ps.col(i));
         vec3 v; 
-        if(!egn::normalize(h, v))continue;
-        s << v << ";  " << endl;
-        frm.Ps.push_back(v);
+        if(!egn::normalize(h, v))
+            v << 0,0,0;
+        cv::Point3f vc(v[0], v[1], v[2]);
+        P_fst.push_back(vc);
+      //  s << v << ";  " << endl;
+       // frm.Ps.push_back(v);
     }
-    log_d(s.str());
-    
-    
-    //---- save previous frm
-    data_.p_frm_prev = p_frm;
+    //log_d(s.str());
     return ok;
 }
 

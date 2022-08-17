@@ -112,8 +112,8 @@ namespace vsn
         //--- frm data
         struct Frm{
             Sp<FeatureMatchCv> p_fm = nullptr;
-            vec3s Ps; // Local triangulation points.
-
+            // 3d triangulation of matched feature points.
+            vector<cv::Point3f> P_fst; 
         };
         //--- Stereo match pnt
         struct SPnt{
@@ -137,8 +137,11 @@ namespace vsn
 
         virtual bool genDepth(const Img& im1,  
                               const Img& im2)override;
+                            
     protected:
         bool odometry(const Frm& frm1,
                       const Frm& frm2)const;
+        bool triangulate(const FeatureMatchCv& fm,
+                         vector<cv::Point3f>& P_fs)const;
     };
 }
