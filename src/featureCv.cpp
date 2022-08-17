@@ -25,13 +25,14 @@ bool FeatureMatchCv::onImg(const Img& im1,
     //
     //  
     //-- 初始化
+    //---- origin
     //Mat descriptors_1, descriptors_2;
     //std::vector<KeyPoint> keypoints_1;
     //std::vector<KeyPoint> keypoints_2;
-    auto& descriptors_1 = data_.kps1.desc;
-    auto& descriptors_2 = data_.kps2.desc;
-    auto& keypoints_1 = data_.kps1.pnts;
-    auto& keypoints_2 = data_.kps2.pnts;
+    auto& descriptors_1 = data_.fs1.desc;
+    auto& descriptors_2 = data_.fs2.desc;
+    auto& keypoints_1 = data_.fs1.pnts;
+    auto& keypoints_2 = data_.fs2.pnts;
     
     // used in OpenCV3
     Ptr<FeatureDetector> detector = ORB::create(cfg_.N);
@@ -47,13 +48,13 @@ bool FeatureMatchCv::onImg(const Img& im1,
 
     //-- 第三步:对两幅图像中的BRIEF描述子进行匹配，使用 Hamming 距离
     //vector<DMatch> match;
-    auto& dms = data_.matches;
-    dms.clear();
-    match(data_.kps1, data_.kps2, dms);
+
+    match(data_.fs1, data_.fs2, data_.md);
 
     //---- fill result
     auto& ms = FeatureMatch::data_.ms;    
     ms.clear();
+    auto& dms = data_.md.dms;
     for(auto& m : dms)
     {
         auto& kp1 = keypoints_1[m.queryIdx].pt;
@@ -78,21 +79,22 @@ bool FeatureMatchCv::onImg(const Img& im1,
 }
 //-------
 bool FeatureMatchCv::match(
-            const KeyPnts& kps1,
-            const KeyPnts& kps2,
-            vector<cv::DMatch>& dms)const
+            const Features& fs1,
+            const Features& fs2,
+            MatchDt& md)const
 {
+    auto& dms = md.dms;
     dms.clear();
     // BFMatcher matcher ( NORM_HAMMING );
     Ptr<DescriptorMatcher> matcher  = DescriptorMatcher::create ( "BruteForce-Hamming" );
     vector<cv::DMatch> dms_pre;
-    matcher->match ( kps1.desc, kps2.desc, dms_pre );
+    matcher->match ( fs1.desc, fs2.desc, dms_pre );
 
     //-- 第四步:匹配点对筛选
     double min_dist=10000, max_dist=0;
 
     //找出所有匹配之间的最小距离和最大距离, 即是最相似的和最不相似的两组点之间的距离
-    for ( int i = 0; i < kps1.desc.rows; i++ )
+    for ( int i = 0; i < fs1.desc.rows; i++ )
     {
         double dist = dms_pre[i].distance;
         if ( dist < min_dist ) min_dist = dist;
@@ -103,14 +105,18 @@ bool FeatureMatchCv::match(
   //  printf ( "-- Min dist : %f \n", min_dist );
     
     //当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限.
-    for ( int i = 0; i < kps1.desc.rows; i++ )
+    for ( int i = 0; i < fs1.desc.rows; i++ )
     {
         auto& m = dms_pre[i];
         if ( m.distance > max ( 2*min_dist, cfg_.distTH ) )
             continue;
         int i1 = m.queryIdx;
         int i2 = m.trainIdx;
-
+        //--- mi : index of result matches
+        int mi = dms.size();
+        // put into lookup table
+        md.i1_mi[i1] = mi;
+        md.i2_mi[i2] = mi;
         dms.push_back(m);
     }
     return true;

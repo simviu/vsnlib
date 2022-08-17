@@ -75,27 +75,33 @@ namespace vsn
     //----------
     class FeatureMatchCv : public FeatureMatch{
     public:
-        //---- key point ary
-        struct KeyPnts{
+        //---- Features
+        struct Features{
             cv::Mat desc; // feature desripiton
             vector<cv::KeyPoint> pnts; // feature points
+            void onImg(const ImgCv& im);
         };
-
-        //---- cv data
-        struct Data{
-            KeyPnts kps1, kps2;
-            vector<cv::DMatch> matches;
+        //---- MatchDt
+        struct MatchDt{
+            vector<cv::DMatch> dms;
             // lookup map keypnt index to matches index
             map<int, int> i1_mi;
             map<int, int> i2_mi;
+
+        };
+        
+        //---- cv data
+        struct Data{
+            Features fs1, fs2;
+            MatchDt md;
         };
         Data data_;
         //----
         virtual bool onImg(const Img& im1,
                            const Img& im2)override;
-        bool match(const KeyPnts& kps1,
-                   const KeyPnts& kps2,
-                   vector<cv::DMatch>& dms)const;
+        bool match(const Features& fs1,
+                   const Features& fs2,
+                   MatchDt& md)const;
     };
     //------------
     // StereoVO_cv

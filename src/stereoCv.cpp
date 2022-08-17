@@ -20,6 +20,8 @@ bool StereoVOcv::onImg(const Img& im1,
 
     ocv::ImgCv imc1(im1);
     ocv::ImgCv imc2(im2);
+    imc1.undistort(camc);
+    imc1.undistort(camc);
 
     bool ok = true;
     //---- do feature matching of L/R
@@ -91,13 +93,14 @@ bool StereoVOcv::odometry(const Frm& frm1,
     FeatureMatchCv fmL, fmR;
     auto& fmd1 = fm1.data_;
     auto& fmd2 = fm2.data_;
-    vector<cv::DMatch> dmsL, dmsR;
-    fmL.match(fmd1.kps1, fmd2.kps1, dmsL);
-    fmR.match(fmd1.kps2, fmd2.kps2, dmsR);
+    FeatureMatchCv::MatchDt mdL, mdR;
+    fmL.match(fmd1.fs1, fmd2.fs1, mdL);
+    fmR.match(fmd1.fs2, fmd2.fs2, mdR);
     //---- find corresponding
     //---- solve PnP
     cv::Mat inlrs;
-    cv::Mat K; cv::cv2eigen(cfg_.camc.K, K);
+    cv::Mat K; 
+    cv::eigen2cv(cfg_.camc.K, K);
 
     cv::Mat r(3,1,cv::DataType<double>::type);
     cv::Mat t(3,1,cv::DataType<double>::type);
