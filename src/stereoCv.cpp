@@ -12,6 +12,22 @@ Sp<StereoVO> StereoVO::create()
 {
     return mkSp<StereoVOcv>();
 }
+
+//-----------
+bool StereoVOcv::Frm::find(int i, bool bLeft, MPnt& mpnt)const
+{
+    if(p_fm==nullptr) return false;
+    auto& fm = *p_fm;
+    auto& md = fm.data_.md;
+    auto& i_mi = (bLeft)?md.i1_mi : md.i2_mi;
+    auto it = i_mi.find(i);
+    if(it==i_mi.end())return false;
+    int mi = it->second;
+    if(mi >= mpnts.size()) return false;
+    mpnt = mpnts[mi];
+    return true;
+}
+
 //-----------
 bool StereoVOcv::onImg(const Img& im1,  
                        const Img& im2)
@@ -37,7 +53,7 @@ bool StereoVOcv::onImg(const Img& im1,
     frm.p_fm = p_fm;
 
     //---- trangulate feature points.
-    ok &= triangulate(fm, frm.P_fst);
+    ok &= triangulate(fm, frm.mpnts);
     
     //---- do odometry
     auto p_frmp = data_.p_frm_prev;
@@ -50,11 +66,11 @@ bool StereoVOcv::onImg(const Img& im1,
 }
 //-----------------
 bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
-                             vector<cv::Point3f>& P_fst)const
+                             vector<MPnt>& mpnts)const
 {
     bool ok = true;
     auto& camc = cfg_.camc;
-    P_fst.clear();
+    mpnts.clear();
     // ( inner arry for each image)
     vector<cv::Point2d> Qs1, Qs2;
     auto& ms = fm.FeatureMatch::data_.ms;
@@ -89,10 +105,10 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
         vec3 v; 
         if(!egn::normalize(h, v))
             v << 0,0,0;
-        cv::Point3f vc(v[0], v[1], v[2]);
-        P_fst.push_back(vc);
+        MPnt p;        
+        p.Pt = cv::Point3f(v[0], v[1], v[2]);
+        mpnts.push_back(p);
       //  s << v << ";  " << endl;
-       // frm.Ps.push_back(v);
     }
     //log_d(s.str());
     return ok;
@@ -102,8 +118,6 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
 bool StereoVOcv::odometry(const Frm& frm1,
                           const Frm& frm2)const
 {
-    vector<cv::Point3f> pts_3d;
-    vector<cv::Point2f> pts_2d;
 //    auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
     auto& fm1 = *frm1.p_fm;
     auto& fm2 = *frm2.p_fm;
@@ -111,6 +125,10 @@ bool StereoVOcv::odometry(const Frm& frm1,
     FeatureMatchCv fmL, fmR;
     auto& fmd1 = fm1.data_;
     auto& fmd2 = fm2.data_;
+
+    //---- 
+    // mdL is match of L channel 
+    // mdR is match of R channel
     FeatureMatchCv::MatchDt mdL, mdR;
     fmL.match(fmd1.fs1, fmd2.fs1, mdL);
     fmR.match(fmd1.fs2, fmd2.fs2, mdR);
@@ -119,7 +137,29 @@ bool StereoVOcv::odometry(const Frm& frm1,
     cv::Mat inlrs;
     cv::Mat K; 
     cv::eigen2cv(cfg_.camc.K, K);
+    //auto& P_fst = frm1.P_fst;
 
+    //---- to be filled
+    vector<cv::Point3f> pts_3d;
+    vector<cv::Point2f> pts_2d;
+
+    //---- Left odometry
+    auto& i_mi = mdL.i1_mi;
+    
+    
+    for(auto& m : mdL.dms)
+    {
+        int i1 = m.queryIdx;
+        int i2 = m.trainIdx;
+        // i1 is previous frm,
+        //   search i1 for 3d pnt
+        MPnt mpnt;
+        if(frm1.find(i1, true, mpnt))
+            continue;
+
+    }
+
+    //---- do solving
     cv::Mat r(3,1,cv::DataType<double>::type);
     cv::Mat t(3,1,cv::DataType<double>::type);
     cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs);

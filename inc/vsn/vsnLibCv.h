@@ -109,26 +109,25 @@ namespace vsn
     //Stereo video odometry
     class StereoVOcv : public StereoVO{
     public:
+        //--- Stereo match pnt
+        struct MPnt{
+            cv::Point3f Pt; // 3d triangulation pnt
+            cv::Point3f Pd; // 3d pnt by depth
+        };
+
         //--- frm data
         struct Frm{
             Sp<FeatureMatchCv> p_fm = nullptr;
             // 3d triangulation of matched feature points.
-            vector<cv::Point3f> P_fst; 
-        };
-        //--- Stereo match pnt
-        struct SPnt{
-            //--- index of feature match pnt
-            // on L/R img 
-            int fi1=-1; // -1 as invalid flag
-            int fi2=-1;
-            vec3 P; // 3d triangulation pnt
+            vector<MPnt> mpnts; 
+            //--- find mpnt by feature index
+            bool find(int i, bool bLeft, MPnt& mpnt)const;
         };
         //--- cv data
         struct Data{
             //---- previous feature match
             Sp<Frm> p_frm_prev = nullptr;
-            //---- L/R matched feature pnt
-            vector<SPnt> sps;
+            
         };
         Data data_;
         //----
@@ -142,6 +141,6 @@ namespace vsn
         bool odometry(const Frm& frm1,
                       const Frm& frm2)const;
         bool triangulate(const FeatureMatchCv& fm,
-                         vector<cv::Point3f>& P_fs)const;
+                         vector<MPnt>& mpnts)const;
     };
 }
