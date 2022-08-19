@@ -265,6 +265,8 @@ namespace vsn{
             struct Odom{
                 // 1:triangulation , 2:depth
                 int mpnt_sel=1;
+                // z threshold
+                double z_TH = 50;
             }; Odom odom;
             struct Feature{
                 int Nf = 100;

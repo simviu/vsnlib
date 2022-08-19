@@ -7,8 +7,9 @@
             "Nf":1000
         },
         "odometry":{
-            "comment":"mpnt_sel: mpnt src, 1-triangulation, 2-depth",
-            "mpnt_sel":1
+            "comment":"mpnt_sel: mpnt src, 1-triangulation, 2-depth;  z_TH: z threshhold",
+            "mpnt_sel":1,
+            "z_TH" :30.0
         }
 
     }

@@ -43,6 +43,8 @@ bool StereoVO::Cfg::load(const string& sf)
         //----
         auto& jo = js["odometry"];
         odom.mpnt_sel = jo["mpnt_sel"].asInt();
+        odom.z_TH = jo["z_TH"].asDouble();
+
         //----
         auto& jf = js["feature"];
         feature.Nf = jf["Nf"].asInt();
@@ -139,7 +141,7 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
 
     cv::Mat K; cv::eigen2cv(camc.K, K); 
     cv::Mat Ps;
-    cv::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
+    cv::sfm::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
     log_d("Triangulate pnts: "+to_string(N));
     
     //---- De-homoge and fill triangulation result
@@ -165,6 +167,7 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
 bool StereoVOcv::odometry(const Frm& frm1,
                           const Frm& frm2)const
 {
+    auto& odomc = cfg_.odom;
 //    auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
     auto& fm1 = *frm1.p_fm;
     auto& fm2 = *frm2.p_fm;
@@ -188,7 +191,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
     //---- Left odometry
     auto& i_mi = mdL.i1_mi;
     bool bLeft = true;
-    int mpnt_sel = cfg_.odom.mpnt_sel;
+
     for(auto& m : mdL.dms)
     {
         int i1 = m.queryIdx; // fi frm1
@@ -201,8 +204,10 @@ bool StereoVOcv::odometry(const Frm& frm1,
         // got mpnt is match pnt also
         //   of L/R in frm1.
         // Which has been triangulated.
-        auto P1 = (mpnt_sel==1)?
+        auto P1 = (odomc.mpnt_sel==1)?
             mpnt.Pt : mpnt.Pd;
+        if(P1.z > odomc.z_TH)
+            continue;
 
         pts_3d.push_back(P1);
         // 2d pnt in 2nd frm, left cam
@@ -224,13 +229,23 @@ bool StereoVOcv::odometry(const Frm& frm1,
     if(!cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs))
     {
         log_e("  solvePnPRansac() failed");
-        if(0)
-            for(int i=0;i<N;i++)
-                s << "  2d/3d:(" << pts_2d[i] 
-                    << ") -> ("  << pts_3d[i]  
-                    << ")" << endl; 
         return false;
     }
+    //-------
+    // ref : https://answers.opencv.org/question/196562/solvepnpransac-getting-inliers-from-the-2d-and-3d-points/
+    if(1)
+    {
+        s << "Inliers: " << endl;
+        for (int i = 0; i < inlrs.rows; i++)
+        {
+            int k = inlrs.at<int>(i, 0);
+            cv::Point3f Pc = pts_3d[k];
+            s << "  2d/3d:(" << pts_2d[k] 
+                << ") -> ("  << pts_3d[k]  
+                << ")" << endl; 
+        }
+    }
+    //-------
     cv::Mat R;
     cv::Rodrigues(r, R); 
     // R/t is relative motion from frm1 to frm2
