@@ -1,0 +1,10 @@
+{
+    "stereo":{
+        "comment":"Kitti 2015 GrayScale Stereo Setting",
+        "baseline":0.537
+
+    }
+}
+
+
+
