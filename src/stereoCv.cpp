@@ -119,13 +119,18 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
     auto& camc = cfg_.camc;
     mpnts.clear();
     // ( inner arry for each image)
-    vector<cv::Point2d> Qs1, Qs2;
+  //vector<cv::Point2d> Qs1, Qs2; // for calib triangulation
+    vector<cv::Point2d> Qs;// for sfm triangulation
     auto& ms = fm.FeatureMatch::data_.ms;
     int N = ms.size();
     for(auto& m : ms)
     {
-        Qs1.push_back(ocv::toCv(m.p1));
-        Qs2.push_back(ocv::toCv(m.p2));
+        auto Q1 = ocv::toCv(m.p1);
+        auto Q2 = ocv::toCv(m.p2);
+    //  Qs1.push_back(Q1);
+    //  Qs2.push_back(Q2);
+        Qs.push_back(Q1);
+        Qs.push_back(Q2);
     }
     //---- projection matrix P = K*T
     // We have 2 cameras.
@@ -140,8 +145,12 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
             0, 0, 1,  0);
 
     cv::Mat K; cv::eigen2cv(camc.K, K); 
+//   1) calib3d triangulation function
     cv::Mat Ps;
-    cv::sfm::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
+//    cv::triangulatePoints(K*T1, K*T2, Qs1, Qs2, Ps);
+ //  2) sfm triangulation function
+    vector<cv::Mat> projMats{K*T1, K*T2};
+    cv::sfm::triangulatePoints(projMats, Qs, Ps);
     log_d("Triangulate pnts: "+to_string(N));
     
     //---- De-homoge and fill triangulation result
@@ -149,17 +158,18 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
     //s << "  Triangulate: " << endl;
     for(int i=0;i<N;i++)
     {
-        vec4 h = ocv::toVec4(Ps.col(i));
-        vec3 v; 
-        if(!egn::normalize(h, v))
-            v << 0,0,0;
+    //    vec4 h = ocv::toVec4(Ps.col(i));
+    //    vec3 v; 
+    //    if(!egn::normalize(h, v))
+    //        v << 0,0,0;
         MPnt p;        
+        vec3 v; cv::cv2eigen(Ps.col(i), v);
         p.Pt = cv::Point3f(v[0], v[1], v[2]);
         mpnts.push_back(p);
         
-     //   s << "(" << v.transpose() << "), ";
+        s << "(" << v.transpose() << "), ";
     }
-    //log_d(s.str());
+    log_d(s.str());
     return ok;
 }
 
@@ -233,7 +243,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
     }
     //-------
     // ref : https://answers.opencv.org/question/196562/solvepnpransac-getting-inliers-from-the-2d-and-3d-points/
-    if(1)
+    if(0)
     {
         s << "Inliers: " << endl;
         for (int i = 0; i < inlrs.rows; i++)
@@ -250,7 +260,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
     cv::Rodrigues(r, R); 
     // R/t is relative motion from frm1 to frm2
     cv::Mat e = r*180.0/M_PI; // to degree
-    s << "Relative pose: e=" << e << ", t=" << t << endl; 
+    s << "Relative motion: e=" << e << ", t=" << t << endl; 
     log_d(s.str());
     return true;
     
