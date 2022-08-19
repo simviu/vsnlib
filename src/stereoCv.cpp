@@ -1,8 +1,8 @@
 #include "vsn/vsnLibCv.h"
 #include <opencv2/sfm/triangulation.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
-/*
-*/
+#include "json/json.h"
+
 
 
 using namespace vsn;
@@ -11,6 +11,49 @@ using namespace vsn;
 Sp<StereoVO> StereoVO::create()
 {
     return mkSp<StereoVOcv>();
+}
+//-----------
+bool StereoVO::Cfg::loadCfg(const string& sf)
+{
+    ifstream ifs(sf);
+    if(!ifs)
+    {
+        log_ef(sf);
+        return false;
+    }
+    //----
+    try{
+
+        Json::Reader rdr;
+        Json::Value jd;
+        rdr.parse(ifs, jd);
+        auto& jm = jd["marker_cfg"];
+        auto& jgs = jm["groups"];
+        sDict_ = jm["aruco_dict"].asString();
+        dict_id_ = jm["aruco_dict_id"].asInt();
+        for(auto& jg : jgs)
+        {
+            Grp g;
+            g.w = jg["w"].asDouble();
+            //----
+            auto jids = jg["ids"];
+            for(auto& ji : jids)
+                g.ids.insert(ji.asInt());
+            //----
+            grps_.push_back(g);
+        } 
+        //
+        //cout << " name " << obj["name"].asString() << endl;
+    }
+    catch(exception& e)
+    {
+        log_e("exception caught:"+string(e.what()));
+        return false;
+    }
+    //---- dbg
+    string s = this->str();
+    log_d(s);
+    return true;
 }
 
 //-----------
