@@ -40,6 +40,9 @@ bool StereoVO::Cfg::load(const string& sf)
         rdr.parse(ifs, jd);
         auto& js = jd["stereo"];
         baseline = js["baseline"].asDouble();
+        //----
+        auto& jo = js["odom"];
+        odom.mpnt_sel = jo["mpnt_sel"].asInt();
 
     }
     catch(exception& e)
@@ -186,17 +189,25 @@ bool StereoVOcv::odometry(const Frm& frm1,
     //---- Left odometry
     auto& i_mi = mdL.i1_mi;
     
-    
+    int mpnt_sel = cfg_.odom.mpnt_sel;
     for(auto& m : mdL.dms)
     {
-        int i1 = m.queryIdx;
-        int i2 = m.trainIdx;
-        // i1 is previous frm,
+        int i1 = m.queryIdx; // fi frm1
+        int i2 = m.trainIdx; // fi frm2
+        // i2 is previous frm,
         //   search i1 for 3d pnt
         MPnt mpnt;
         if(frm1.find(i1, true, mpnt))
             continue;
-
+        // got mpnt is match pnt also
+        //   of L/R in frm1.
+        // Which has been triangulated.
+        auto P1 = (mpnt_sel==1)?
+            mpnt.Pt : mpnt.Pd;
+        pts_3d.push_back(P1);
+        // 2d pnt in 2nd frm
+        auto Q2 = fmd2.fs1.pnts[i2].pt;
+        pts_2d.push_back(Q2);
     }
 
     //---- do solving

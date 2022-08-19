@@ -262,6 +262,10 @@ namespace vsn{
             CamCfg camc;
             bool bShow = false;
             double baseline = 0.50;
+            struct Odom{
+                // 1:triangulation , 2:depth
+                int mpnt_sel=1;
+            }; Odom odom;
             bool load(const string& sf);
             string str()const;
         };
