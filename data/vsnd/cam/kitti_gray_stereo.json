@@ -2,8 +2,12 @@
     "stereo":{
         "comment":"Kitti 2015 GrayScale Stereo Setting",
         "baseline":0.537,
+        "feature":{
+            "comment":"Nf: N of features; ",
+            "Nf":1000
+        },
         "odometry":{
-            "mpnt_sel_comment":"mpnt src: 1:triangulation, 2:depth",
+            "comment":"mpnt_sel: mpnt src, 1-triangulation, 2-depth",
             "mpnt_sel":1
         }
 

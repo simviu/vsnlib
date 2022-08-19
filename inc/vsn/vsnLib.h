@@ -266,6 +266,10 @@ namespace vsn{
                 // 1:triangulation , 2:depth
                 int mpnt_sel=1;
             }; Odom odom;
+            struct Feature{
+                int Nf = 100;
+            }; Feature feature;
+            //----
             bool load(const string& sf);
             string str()const;
         };

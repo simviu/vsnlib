@@ -41,9 +41,11 @@ bool StereoVO::Cfg::load(const string& sf)
         auto& js = jd["stereo"];
         baseline = js["baseline"].asDouble();
         //----
-        auto& jo = js["odom"];
+        auto& jo = js["odometry"];
         odom.mpnt_sel = jo["mpnt_sel"].asInt();
-
+        //----
+        auto& jf = js["feature"];
+        feature.Nf = jf["Nf"].asInt();
     }
     catch(exception& e)
     {
@@ -142,6 +144,7 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
     
     //---- De-homoge and fill triangulation result
     stringstream s;
+    //s << "  Triangulate: " << endl;
     for(int i=0;i<N;i++)
     {
         vec4 h = ocv::toVec4(Ps.col(i));
@@ -151,7 +154,8 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
         MPnt p;        
         p.Pt = cv::Point3f(v[0], v[1], v[2]);
         mpnts.push_back(p);
-      //  s << v << ";  " << endl;
+        
+     //   s << "(" << v.transpose() << "), ";
     }
     //log_d(s.str());
     return ok;
@@ -168,6 +172,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
     FeatureMatchCv fmL, fmR;
     auto& fmd1 = fm1.data_;
     auto& fmd2 = fm2.data_;
+    stringstream s;
 
     //---- 
     // mdL is match of L channel 
@@ -175,12 +180,6 @@ bool StereoVOcv::odometry(const Frm& frm1,
     FeatureMatchCv::MatchDt mdL, mdR;
     fmL.match(fmd1.fs1, fmd2.fs1, mdL);
     fmR.match(fmd1.fs2, fmd2.fs2, mdR);
-    //---- find corresponding
-    //---- solve PnP
-    cv::Mat inlrs;
-    cv::Mat K; 
-    cv::eigen2cv(cfg_.camc.K, K);
-    //auto& P_fst = frm1.P_fst;
 
     //---- to be filled
     vector<cv::Point3f> pts_3d;
@@ -188,7 +187,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
 
     //---- Left odometry
     auto& i_mi = mdL.i1_mi;
-    
+    bool bLeft = true;
     int mpnt_sel = cfg_.odom.mpnt_sel;
     for(auto& m : mdL.dms)
     {
@@ -197,24 +196,47 @@ bool StereoVOcv::odometry(const Frm& frm1,
         // i2 is previous frm,
         //   search i1 for 3d pnt
         MPnt mpnt;
-        if(frm1.find(i1, true, mpnt))
+        if(!frm1.find(i1, bLeft, mpnt))
             continue;
         // got mpnt is match pnt also
         //   of L/R in frm1.
         // Which has been triangulated.
         auto P1 = (mpnt_sel==1)?
             mpnt.Pt : mpnt.Pd;
+
         pts_3d.push_back(P1);
-        // 2d pnt in 2nd frm
-        auto Q2 = fmd2.fs1.pnts[i2].pt;
+        // 2d pnt in 2nd frm, left cam
+        auto& fs2 = fmd2.fs1;
+        auto Q2 = fs2.pnts[i2].pt;
         pts_2d.push_back(Q2);
     }
+    //--- dbg
+    int N = pts_2d.size();
+    
 
     //---- do solving
+    //---- solve PnP
+    cv::Mat inlrs;
+    cv::Mat K; 
+    cv::eigen2cv(cfg_.camc.K, K);
     cv::Mat r(3,1,cv::DataType<double>::type);
     cv::Mat t(3,1,cv::DataType<double>::type);
-    cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs);
-
+    if(!cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs))
+    {
+        log_e("  solvePnPRansac() failed");
+        if(0)
+            for(int i=0;i<N;i++)
+                s << "  2d/3d:(" << pts_2d[i] 
+                    << ") -> ("  << pts_3d[i]  
+                    << ")" << endl; 
+        return false;
+    }
+    cv::Mat R;
+    cv::Rodrigues(r, R); 
+    // R/t is relative motion from frm1 to frm2
+    cv::Mat e = r*180.0/M_PI; // to degree
+    s << "Relative pose: e=" << e << ", t=" << t << endl; 
+    log_d(s.str());
     return true;
     
 }
