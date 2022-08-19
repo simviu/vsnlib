@@ -17,6 +17,7 @@ using namespace cv;
 namespace{
     const struct{
         string sf_camc = "vsntd/cam.yml";
+        string sf_stereoc = "vsntd/stereo.json";
         string sf_seqL = "vsntd/seq/image_0";
         string sf_seqR = "vsntd/seq/image_1";
         double baseline = 0.255;
@@ -33,7 +34,16 @@ bool TestStereo::run()
     CamCfg camc;
     if(!camc.load(lcfg_.sf_camc))
         return false;
-    
+    //---- load stereo cfg
+    //---- stereo VO test
+    auto p_vo = StereoVO::create();
+    auto& vo = *p_vo;
+    if(!vo.cfg_.load(lcfg_.sf_stereoc))
+        return false;
+
+    vo.cfg_.bShow = true;
+    vo.cfg_.camc = camc;
+   
     //---- main loop
     int N = sfLs.size();
     if(N>sfRs.size())
@@ -55,22 +65,14 @@ bool TestStereo::run()
         }
         auto& im1 = *p1;
         auto& im2 = *p2;
-        //---- stereo VO test
-        auto p_vo = StereoVO::create();
-        auto& vo = *p_vo;
-        
-        vo.cfg_.bShow = true;
-        vo.cfg_.camc = camc;
-        vo.onImg(im1, im2);
 
-        //---- gen and show depth
-        auto p_imd = Img::create();
-        vo.genDepth(im1, im2);
+        //--- process img        
+        vo.onImg(im1, im2);
 
         //------ Press  ESC on keyboard to exit
         char c=(char)cv::waitKey(25);
         if(c==27)
-        break;
+            break;
     }
     
     // Closes all the frames

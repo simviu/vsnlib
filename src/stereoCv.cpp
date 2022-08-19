@@ -13,8 +13,19 @@ Sp<StereoVO> StereoVO::create()
     return mkSp<StereoVOcv>();
 }
 //-----------
-bool StereoVO::Cfg::loadCfg(const string& sf)
+string StereoVO::Cfg::str()const
 {
+    stringstream s;
+    s << "{stereo:{";
+    s << "baseline:" << baseline;
+    s << "}}" << endl;
+    return s.str();
+}
+
+//-----------
+bool StereoVO::Cfg::load(const string& sf)
+{
+    log_i("Load StereoVO cfg :'"+sf+"'");
     ifstream ifs(sf);
     if(!ifs)
     {
@@ -27,23 +38,9 @@ bool StereoVO::Cfg::loadCfg(const string& sf)
         Json::Reader rdr;
         Json::Value jd;
         rdr.parse(ifs, jd);
-        auto& jm = jd["marker_cfg"];
-        auto& jgs = jm["groups"];
-        sDict_ = jm["aruco_dict"].asString();
-        dict_id_ = jm["aruco_dict_id"].asInt();
-        for(auto& jg : jgs)
-        {
-            Grp g;
-            g.w = jg["w"].asDouble();
-            //----
-            auto jids = jg["ids"];
-            for(auto& ji : jids)
-                g.ids.insert(ji.asInt());
-            //----
-            grps_.push_back(g);
-        } 
-        //
-        //cout << " name " << obj["name"].asString() << endl;
+        auto& js = jd["stereo"];
+        baseline = js["baseline"].asDouble();
+
     }
     catch(exception& e)
     {

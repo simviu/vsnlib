@@ -262,6 +262,8 @@ namespace vsn{
             CamCfg camc;
             bool bShow = false;
             double baseline = 0.50;
+            bool load(const string& sf);
+            string str()const;
         };
         Cfg cfg_;
         //----
