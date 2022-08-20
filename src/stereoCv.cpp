@@ -136,13 +136,15 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
     }
     //---- projection matrix P = K*T
     // We have 2 cameras.
+    //  ( Note, projMat for cam coordinate, 
+    //     so reverse transform)
     double b = cfg_.baseline;
     cv::Mat T1 = (cv::Mat_<double>(3,4) << 
-            1, 0, 0,  -b*0.5,
+            1, 0, 0,  b*0.5,
             0, 1, 0,  0,
             0, 0, 1,  0);
     cv::Mat T2 = (cv::Mat_<double>(3,4) << 
-            1, 0, 0,  b*0.5,
+            1, 0, 0,  -b*0.5,
             0, 1, 0,  0,
             0, 0, 1,  0);
 
@@ -172,10 +174,10 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
         MPnt p;        
         p.Pt = cv::Point3f(v[0], v[1], v[2]);
         mpnts.push_back(p);
-        s << "Pair:" << Qs1[i] << " | " << Qs2[i] << " => ";
-        s << "(" << v.transpose() << ")" << endl;
+    //    s << "Pair:" << Qs1[i] << " | " << Qs2[i] << " => ";
+      //  s << "(" << v.transpose() << ")" << endl;
     }
-    log_d(s.str());
+    //log_d(s.str());
     return ok;
 }
 
