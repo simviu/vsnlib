@@ -16,10 +16,10 @@ using namespace cv;
 
 namespace{
     const struct{
-        string sf_camc = "vsntd/cam.yml";
-        string sf_stereoc = "vsntd/stereo.json";
-        string sf_seqL = "vsntd/seq/image_0";
-        string sf_seqR = "vsntd/seq/image_1";
+        string sf_camc    = "stereo_td/cam.yml";
+        string sf_stereoc = "stereo_td/stereo.json";
+        string sf_seqL = "seq/image_0";
+        string sf_seqR = "seq/image_1";
         double baseline = 0.255;
     }lcfg_;
 }
