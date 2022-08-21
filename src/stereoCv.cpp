@@ -49,6 +49,10 @@ bool StereoVO::Cfg::load(const string& sf)
         //----
         auto& jf = js["feature"];
         feature.Nf = jf["Nf"].asInt();
+
+        //----
+        auto& jr = js["run"];
+        run.bShow = jr["show"].asBool();
     }
     catch(exception& e)
     {
@@ -336,17 +340,19 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
 
         }
     }
+    int Ni = inlrs.rows;
+    s << "  solvePnP() inliers: " << Ni << " of " << N << endl;
     //-------
 //  cv::Mat R;
 //  cv::Rodrigues(r, R); 
     cv::Mat e = r*180.0/M_PI; // to degree
     cv::Mat e1,t1; 
     cv::transpose(e, e1); cv::transpose(t, t1);
-//    s << " cam " << (bLeft?"L":"R") << " motion: ";
-//    s << "e=" << e1 << ", t=" << t1 << endl; 
+    s << " cam " << (bLeft?"L":"R") << " motion: ";
+    s << "e=" << e1 << ", t=" << t1 << endl; 
 
     // R/t is relative motion from frm1 to frm2
-//    log_d(s.str());
+    log_d(s.str());
     return true;
     
 }

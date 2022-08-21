@@ -4,7 +4,7 @@
         "baseline":0.537,
         "feature":{
             "comments":["Nf: N of features"],
-            "Nf":1500
+            "Nf":3000
         },
         "odometry":{
             "comments":[

@@ -81,7 +81,6 @@ bool TestKittiStereo::run()
     if (!vo.cfg_.load(lcfg_.sf_stereoc))
         return false;
 
-    vo.cfg_.bShow = true;
     vo.cfg_.camc = camc;
 
     //---- Open Kitti output

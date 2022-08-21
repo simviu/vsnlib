@@ -272,6 +272,9 @@ namespace vsn{
             struct Feature{
                 int Nf = 100;
             }; Feature feature;
+            struct Run{
+                bool bShow=false;
+            }; Run run;
             //----
             bool load(const string& sf);
             string str()const;
