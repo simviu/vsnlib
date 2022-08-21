@@ -140,6 +140,10 @@ namespace vsn
     protected:
         bool odometry(const Frm& frm1,
                       const Frm& frm2)const;
+        bool cam_motion(const Frm& frm1,
+                        const Frm& frm2,
+                        bool bLeft,
+                        cv::Mat& R, cv::Mat& t)const;
         bool triangulate(const FeatureMatchCv& fm,
                          vector<MPnt>& mpnts)const;
     };

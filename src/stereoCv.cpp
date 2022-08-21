@@ -181,9 +181,25 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
     return ok;
 }
 
+
 //-----------------
 bool StereoVOcv::odometry(const Frm& frm1,
                           const Frm& frm2)const
+{
+    stringstream s;
+
+    //---- cam motion for left/right
+    cv::Mat RL,RR,tL,tR;
+    bool okL = cam_motion(frm1, frm2, true,  RL, tL);
+    bool okR = cam_motion(frm1, frm2, false, RR, tR);
+    return okL | okR;    
+}
+
+//-----------------
+bool StereoVOcv::cam_motion(const Frm& frm1,
+                            const Frm& frm2,
+                            bool bLeft,
+                            cv::Mat& R, cv::Mat& t)const
 {
     auto& odomc = cfg_.odom;
 //  auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
@@ -207,10 +223,9 @@ bool StereoVOcv::odometry(const Frm& frm1,
     vector<cv::Point2f> pts_2d;
 
     //---- Left odometry
-    auto& i_mi = mdL.i1_mi;
-    bool bLeft = true;
-
-    for(auto& m : mdL.dms)
+  //  auto& i_mi = mdL.i1_mi;
+    auto& md = bLeft?mdL:mdR;
+    for(auto& m : md.dms)
     {
         int i1 = m.queryIdx; // fi frm1
         int i2 = m.trainIdx; // fi frm2
@@ -229,8 +244,9 @@ bool StereoVOcv::odometry(const Frm& frm1,
 
         pts_3d.push_back(P);
         // 2d pnt in 2nd frm, left cam
-        auto& fs2 = fmd2.fs1;
-        auto Q = fs2.pnts[i2].pt;
+        auto& fmdQ = fmd2;
+        auto& fs = bLeft?fmdQ.fs1 : fmdQ.fs2;
+        auto Q = fs.pnts[i2].pt;
         pts_2d.push_back(Q);
     }
     //--- dbg
@@ -242,9 +258,9 @@ bool StereoVOcv::odometry(const Frm& frm1,
     cv::Mat inlrs;
     cv::Mat K; 
     cv::eigen2cv(cfg_.camc.K, K);
-    s << "K=" << K << endl;
+//  s << "K=" << K << endl;
     cv::Mat r(3,1,cv::DataType<double>::type);
-    cv::Mat t(3,1,cv::DataType<double>::type);
+//  cv::Mat t(3,1,cv::DataType<double>::type);
     if(!cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs))
     {
         log_e("  solvePnPRansac() failed");
@@ -265,11 +281,14 @@ bool StereoVOcv::odometry(const Frm& frm1,
         }
     }
     //-------
-    cv::Mat R;
+//  cv::Mat R;
     cv::Rodrigues(r, R); 
-    // R/t is relative motion from frm1 to frm2
     cv::Mat e = r*180.0/M_PI; // to degree
-    s << "Relative motion: e=" << e << ", t=" << t << endl; 
+    cv::Mat e1,t1; cv::transpose(e, e1); cv::transpose(t, t1);
+    s << " cam " << (bLeft?"L":"R") << " motion: ";
+    s << "e=" << e1 << ", t=" << t1 << endl; 
+
+    // R/t is relative motion from frm1 to frm2
     log_d(s.str());
     return true;
     
