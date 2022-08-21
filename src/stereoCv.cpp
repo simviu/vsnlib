@@ -250,10 +250,9 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
     {
         int i1 = m.queryIdx; // fi frm1
         int i2 = m.trainIdx; // fi frm2
-        // i2 is previous frm,
-        //   search i1 for 3d pnt
+        //   search frm2 for 3d pnt
         MPnt mpnt;
-        if(!frm1.find(i1, bLeft, mpnt))
+        if(!frm2.find(i2, bLeft, mpnt))
             continue;
         // got mpnt is match pnt also
         //   of L/R in frm1.
@@ -264,10 +263,10 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
             continue;
 
         pts_3d.push_back(P);
-        // 2d pnt in 2nd frm, left cam
-        auto& fmdQ = fmd2;
+        // Find 2d pnt of previous frm
+        auto& fmdQ = fmd1;
         auto& fs = bLeft?fmdQ.fs1 : fmdQ.fs2;
-        auto Q = fs.pnts[i2].pt;
+        auto Q = fs.pnts[i1].pt;
         pts_2d.push_back(Q);
     }
     //--- dbg
