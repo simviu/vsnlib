@@ -222,16 +222,16 @@ bool StereoVOcv::odometry(const Frm& frm1,
         // got mpnt is match pnt also
         //   of L/R in frm1.
         // Which has been triangulated.
-        auto P1 = (odomc.mpnt_sel==1)?
+        auto P = (odomc.mpnt_sel==1)?
             mpnt.Pt : mpnt.Pd;
-        if(P1.z > odomc.z_TH)
+        if(P.z > odomc.z_TH)
             continue;
 
-        pts_3d.push_back(P1);
+        pts_3d.push_back(P);
         // 2d pnt in 2nd frm, left cam
         auto& fs2 = fmd2.fs1;
-        auto Q2 = fs2.pnts[i2].pt;
-        pts_2d.push_back(Q2);
+        auto Q = fs2.pnts[i2].pt;
+        pts_2d.push_back(Q);
     }
     //--- dbg
     int N = pts_2d.size();
