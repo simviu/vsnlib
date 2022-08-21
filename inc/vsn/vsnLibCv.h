@@ -139,7 +139,7 @@ namespace vsn
         virtual void reset()override;     
     protected:
         bool odometry(const Frm& frm1,
-                      const Frm& frm2)const;
+                      const Frm& frm2);
         bool cam_motion(const Frm& frm1,
                         const Frm& frm2,
                         bool bLeft,

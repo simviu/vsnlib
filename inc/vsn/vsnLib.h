@@ -286,8 +286,9 @@ namespace vsn{
                 
                 mat3 R;
                 vec3 t;
+                vec3 e; // euler angle
                 void reset()
-                { R = mat3::Identity(); t << 0,0,0; }
+                { R = mat3::Identity(); t << 0,0,0; e << 0,0,0; }
             }; Odom odom;
 
             void reset(){ odom.reset(); }           

@@ -196,7 +196,7 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
 
 //-----------------
 bool StereoVOcv::odometry(const Frm& frm1,
-                          const Frm& frm2)const
+                          const Frm& frm2)
 {
     stringstream s;
 
@@ -215,14 +215,37 @@ bool StereoVOcv::odometry(const Frm& frm1,
                 okL ? tL : tR;
     cv::Mat R;
     cv::Rodrigues(r, R); 
-    //---
+
+    //------
     cv::Mat e = r*180.0/M_PI; // to degree
     cv::Mat e1,t1; 
     cv::transpose(e, e1); cv::transpose(t, t1);
     s << "  Odometry result:  ";
     s << "e=" << e1 << ", t=" << t1 << endl; 
-
     // R/t is relative motion from frm1 to frm2
+    //---- Update R/t global
+    auto& odom = StereoVO::data_.odom;
+    cv::Mat Rw,tw;
+    cv::eigen2cv(odom.R, Rw);
+    cv::eigen2cv(odom.t, tw);
+    
+    tw = tw + Rw * t;
+    Rw = Rw * R;
+    
+    //---- Euler pose
+    cv::Mat rw;
+    cv::Rodrigues(Rw, rw); 
+    cv::Mat ew = rw*180.0/M_PI; // to degree
+
+    //--- convert back
+    
+    cv::cv2eigen(Rw, odom.R);
+    cv::cv2eigen(tw, odom.t);
+    cv::cv2eigen(ew, odom.e);
+    //---
+    cv::Mat ew1, tw1; 
+    cv::transpose(ew, ew1); cv::transpose(tw, tw1);
+    s << "  Global odom: ew=" << ew1 << ", tw=" << tw1 << endl;
     log_d(s.str());
 
     return true;    
@@ -310,6 +333,7 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
             s << "  2d/3d:(" << pts_2d[k] 
                 << ") -> ("  << pts_3d[k]  
                 << ")" << endl; 
+
         }
     }
     //-------
@@ -318,11 +342,11 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
     cv::Mat e = r*180.0/M_PI; // to degree
     cv::Mat e1,t1; 
     cv::transpose(e, e1); cv::transpose(t, t1);
-    s << " cam " << (bLeft?"L":"R") << " motion: ";
-    s << "e=" << e1 << ", t=" << t1 << endl; 
+//    s << " cam " << (bLeft?"L":"R") << " motion: ";
+//    s << "e=" << e1 << ", t=" << t1 << endl; 
 
     // R/t is relative motion from frm1 to frm2
-    log_d(s.str());
+//    log_d(s.str());
     return true;
     
 }
