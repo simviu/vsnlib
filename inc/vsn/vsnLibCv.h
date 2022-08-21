@@ -127,7 +127,7 @@ namespace vsn
         struct Data{
             //---- previous feature match
             Sp<Frm> p_frm_prev = nullptr;
-            
+            void reset(){ p_frm_prev = nullptr;}
         };
         Data data_;
         //----
@@ -136,7 +136,7 @@ namespace vsn
 
         virtual bool genDepth(const Img& im1,  
                               const Img& im2)override;
-                            
+        virtual void reset()override;     
     protected:
         bool odometry(const Frm& frm1,
                       const Frm& frm2)const;
