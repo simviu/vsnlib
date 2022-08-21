@@ -103,7 +103,7 @@ bool StereoVOcv::onImg(const Img& im1,
     auto p_fm = mkSp<FeatureMatchCv>();
     auto& fm = *p_fm;
     fm.cfg_.bShow = cfg_.bShow;
-    fm.cfg_.N = 500;
+    fm.cfg_.N = cfg_.feature.Nf;
     ok &= fm.onImg(im1, im2);
 
     //---- construct frm
@@ -189,7 +189,7 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
     //    s << "Pair:" << Qs1[i] << " | " << Qs2[i] << " => ";
       //  s << "(" << v.transpose() << ")" << endl;
     }
-    //log_d(s.str());
+    log_d(s.str());
     return ok;
 }
 

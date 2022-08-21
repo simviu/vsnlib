@@ -24,7 +24,7 @@ namespace test{
     public:
         virtual bool run() override;
     }; //------
-    class TestStereo : public Test
+    class TestKittiStereo : public Test
     {
     public:
         virtual bool run() override;

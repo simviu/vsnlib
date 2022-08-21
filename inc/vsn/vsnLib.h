@@ -296,7 +296,6 @@ namespace vsn{
             Sp<Img> p_imd_ = nullptr;
 
         };
-        Data data_;
         //----
         virtual bool onImg(const Img& im1, 
                            const Img& im2)=0;
@@ -304,7 +303,9 @@ namespace vsn{
         virtual bool genDepth(const Img& im1,  
                               const Img& im2)=0;
         virtual void reset();
+        auto& getData()const{ return data_; }
     protected:
+        Data data_;
 
     };
 
