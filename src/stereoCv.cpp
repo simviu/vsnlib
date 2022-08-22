@@ -246,8 +246,9 @@ bool StereoVOcv::odometry(const Frm& frm1,
     //---- calc global points and fill
     auto p_frm = mkSp<StereoVO::Frm>();
     StereoVO::data_.p_frm = p_frm;
-    calc_pnts(frm2, inliers, p_frm->Pws);
-    
+    auto& Pws = p_frm->Pws;
+    calc_pnts(frm2, inliers, Pws);
+    s << " calc points:" << Pws.size() << endl;
     //---
     s << "  Global odom: ew=" << ew.transpose() 
         << ", tw=" << tw.transpose() << endl;
