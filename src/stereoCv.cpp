@@ -64,17 +64,7 @@ bool StereoVO::Cfg::load(const string& sf)
     log_d(s);
     return true;
 }
-//-----------
-void StereoVO::reset()
-{
-    data_.reset(); // StereoVO::Data reset
-}
-//-----------
-void StereoVOcv::reset()
-{
-    StereoVO::reset();
-    data_.reset(); // StereoVOcv::Data reset
-}
+
 //------------------- StereoVOcv --------------
 //-----------
 bool StereoVOcv::Frm::find(int i, bool bLeft, MPnt& mpnt)const

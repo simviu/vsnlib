@@ -256,7 +256,7 @@ namespace vsn{
     //Stereo video odometry
     class StereoVO{
     public:
-        StereoVO(){ reset(); }
+
         static Sp<StereoVO> create();
         //----
         struct Cfg{
@@ -286,7 +286,7 @@ namespace vsn{
             //   and triangulations.
             //---
             struct Odom{
-                
+                Odom(){ reset(); }
                 mat3 R;
                 vec3 t;
                 vec3 e; // euler angle
@@ -300,7 +300,6 @@ namespace vsn{
                 vec3s Pfs; 
             }; Points pnts;
 
-            void reset(){ odom.reset(); }           
             //---- depth disparity map
             Sp<Img> p_imd_ = nullptr;
 
@@ -311,7 +310,7 @@ namespace vsn{
 
         virtual bool genDepth(const Img& im1,  
                               const Img& im2)=0;
-        virtual void reset();
+
         auto& getData()const{ return data_; }
     protected:
         Data data_;
