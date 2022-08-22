@@ -18,12 +18,13 @@ using namespace cv;
 namespace
 {
     const struct
-    {
-        string sf_camc = "stereo_td/cam.yml";
-        string sf_stereoc = "stereo_td/stereo.json";
-        string sf_seqL = "seq/image_0";
-        string sf_seqR = "seq/image_1";
-        string sf_Tw = "Tw.txt";
+    {   
+        
+        string sf_camc    = "stereo_td/cfg/cam.yml";
+        string sf_stereoc = "stereo_td/cfg/stereo.json";
+        string sf_seqL    = "stereo_td/seq/image_0";
+        string sf_seqR    = "stereo_td/seq/image_1";
+        string sf_Tw      = "Tw.txt";
         double baseline = 0.255;
     } lcfg_;
     //--------------
