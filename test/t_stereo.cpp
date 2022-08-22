@@ -129,7 +129,11 @@ bool TestKittiStereo::run()
         int idx = getIdx(sfLs[i]);
         oftw << kitti_line(Rw, tw, idx);
 
-        //--- write 
+        //--- write points
+        auto p_frm = vo.getData().p_frm;
+        if(p_frm!=nullptr)
+            for(auto& P : p_frm->Pws)
+                ofps << P.x() << " " << P.y() << " " << P.z() << endl;
 
         //------ Press  ESC on keyboard to exit
         char c = (char)cv::waitKey(25);
