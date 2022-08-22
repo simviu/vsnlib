@@ -265,7 +265,7 @@ namespace vsn{
             double baseline = 0.50;
             struct Odom{
                 // 1:triangulation , 2:depth
-                int mpnt_sel=1;
+                int mode=1;
                 // z threshold
                 double z_TH = 50;
             }; Odom odom;
@@ -275,6 +275,10 @@ namespace vsn{
             struct Run{
                 bool bShow=false;
             }; Run run;
+            struct PointCloud{
+                double z_TH = 40;
+            }; PointCloud pntCloud;
+
             //----
             bool load(const string& sf);
             string str()const;

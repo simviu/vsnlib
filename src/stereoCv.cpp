@@ -41,16 +41,17 @@ bool StereoVO::Cfg::load(const string& sf)
         rdr.parse(ifs, jd);
         auto& js = jd["stereo"];
         baseline = js["baseline"].asDouble();
-        //----
+
         auto& jo = js["odometry"];
-        odom.mpnt_sel = jo["mpnt_sel"].asInt();
+        odom.mode = jo["mode"].asInt();
         odom.z_TH = jo["z_TH"].asDouble();
 
-        //----
         auto& jf = js["feature"];
         feature.Nf = jf["Nf"].asInt();
 
-        //----
+        auto& jpc = js["point_cloud"];
+        pntCloud.z_TH = jpc["z_TH"].asDouble();
+
         auto& jr = js["run"];
         run.bShow = jr["show"].asBool();
     }
@@ -300,7 +301,7 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
         // got mpnt is match pnt also
         //   of L/R in frm1.
         // Which has been triangulated.
-        auto P = (odomc.mpnt_sel==1)?
+        auto P = (odomc.mode==1)?
             mpnt.Pt : mpnt.Pd;
         if(P.z > odomc.z_TH)
             continue;
@@ -360,6 +361,7 @@ void StereoVOcv::calc_pnts(const Frm& frmc,
                            vec3s& Ps)const
 {
     auto& odomc = cfg_.odom;
+    auto& pcldc = cfg_.pntCloud;
     auto& odom = StereoVO::data_.odom;
 
     auto& Rw = odom.Rw;
@@ -370,9 +372,14 @@ void StereoVOcv::calc_pnts(const Frm& frmc,
         MPnt mpnt;
         if(!frmc.at(mi, mpnt))
             continue;
-        auto Pc = (odomc.mpnt_sel==1)?
+        auto Pc = (odomc.mode==1)?
             mpnt.Pt : mpnt.Pd; 
+        //--- Threshhold and check
+        if(Pc.z > pcldc.z_TH)continue;
+        if(Pc.z <0)continue;
+        //----
         vec3 Pe; Pe << Pc.x, Pc.y, Pc.z;
+
         auto P = Rw*Pe + tw;
         Ps.push_back(P);
     }
