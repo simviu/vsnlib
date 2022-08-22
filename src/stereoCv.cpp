@@ -90,7 +90,15 @@ bool StereoVOcv::Frm::find(int i, bool bLeft, MPnt& mpnt)const
     mpnt = mpnts[mi];
     return true;
 }
-
+//-----------
+bool StereoVOcv::Frm::at(int mi, MPnt& mpnt)const
+{
+    if(mi<0 || mi>= mpnts.size())
+        return false;
+    mpnt = mpnts[mi];
+    return true;
+}
+ 
 //-----------
 bool StereoVOcv::onImg(const Img& im1,  
                        const Img& im2)
@@ -187,7 +195,8 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
         vec3 v; 
         if(!egn::normalize(h, v))
            v << 0,0,0;
-        MPnt p;        
+        MPnt p;   
+        p.mi = i;     
         p.Pt = cv::Point3f(v[0], v[1], v[2]);
         mpnts.push_back(p);
     //    s << "Pair:" << Qs1[i] << " | " << Qs2[i] << " => ";
@@ -206,8 +215,9 @@ bool StereoVOcv::odometry(const Frm& frm1,
  
     //---- cam motion for left/right
     cv::Mat rL,rR,tL,tR;
-    bool okL = solve_2d3d(frm1, frm2, true,  rL, tL);
-    bool okR = solve_2d3d(frm1, frm2, false, rR, tR);
+    set<int> inliers;
+    bool okL = solve_2d3d(frm1, frm2, true,  rL, tL, inliers);
+    bool okR = solve_2d3d(frm1, frm2, false, rR, tR, inliers);
     if(!(okL | okR)) {
         log_e("stereo odometry failed");
         return false;
@@ -259,7 +269,8 @@ bool StereoVOcv::odometry(const Frm& frm1,
 bool StereoVOcv::solve_2d3d(const Frm& frm1,
                             const Frm& frm2,
                             bool bLeft,
-                            cv::Mat& r, cv::Mat& t)const
+                            cv::Mat& r, cv::Mat& t,
+                            set<int>& inliers)const
 {
     auto& odomc = cfg_.odom;
 //  auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
@@ -285,6 +296,7 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     //---- Left odometry
   //  auto& i_mi = mdL.i1_mi;
     auto& md = bLeft?mdL:mdR;
+    vector<int> mi_ary; // save index
     for(auto& m : md.dms)
     {
         int i1 = m.queryIdx; // fi frm1
@@ -300,7 +312,7 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
             mpnt.Pt : mpnt.Pd;
         if(P.z > odomc.z_TH)
             continue;
-
+        mi_ary.push_back(mpnt.mi);
         pts_3d.push_back(P);
         // Find 2d pnt of previous frm
         auto& fmdQ = fmd1;
@@ -317,9 +329,6 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     cv::Mat inlrs;
     cv::Mat K; 
     cv::eigen2cv(cfg_.camc.K, K);
-//  s << "K=" << K << endl;
-//  cv::Mat r(3,1,cv::DataType<double>::type);
-//  cv::Mat t(3,1,cv::DataType<double>::type);
     if(!cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs))
     {
         log_e("  solvePnPRansac() failed");
@@ -330,8 +339,6 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     int Ni = inlrs.rows;
     s << "  solvePnP() inliers: " << Ni << " of " << N << endl;
     //-------
-//  cv::Mat R;
-//  cv::Rodrigues(r, R); 
     cv::Mat e = r*180.0/M_PI; // to degree
     cv::Mat e1,t1; 
     cv::transpose(e, e1); cv::transpose(t, t1);
@@ -342,13 +349,13 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     {
         int k = inlrs.at<int>(i, 0);
         cv::Point3f Pc = pts_3d[k];
+        int mi = mi_ary[k];
+        inliers.insert(mi);
         /*
         s << "  2d/3d:(" << pts_2d[k] 
             << ") -> ("  << pts_3d[k]  
             << ")" << endl; 
             */
-
-
     }
     // R/t is relative motion from frm1 to frm2
     log_d(s.str());

@@ -109,8 +109,10 @@ namespace vsn
     //Stereo video odometry
     class StereoVOcv : public StereoVO{
     public:
-        //--- Stereo match pnt
+        //--- Triangulation 3d pnt of
+        // Stereo match pnt
         struct MPnt{
+            int mi=-1; // index to matches
             cv::Point3f Pt; // 3d triangulation pnt
             cv::Point3f Pd; // 3d pnt by depth
         };
@@ -121,8 +123,12 @@ namespace vsn
             // 3d triangulation of matched feature points.
             // (size of mpnts same as matched feature pairs)
             vector<MPnt> mpnts; 
+
+            //--- inliers mi set after solving 2d/3d
+            //set<int> inliers;
             //--- find mpnt by feature index
             bool find(int i, bool bLeft, MPnt& mpnt)const;
+            bool at(int mi, MPnt& mpnt)const;
         };
         //--- cv data
         struct Data{
@@ -144,7 +150,8 @@ namespace vsn
         bool solve_2d3d(const Frm& frm1,
                         const Frm& frm2,
                         bool bLeft,
-                        cv::Mat& r, cv::Mat& t)const;
+                        cv::Mat& r, cv::Mat& t,
+                        set<int>& inliers)const;
         bool triangulate(const FeatureMatchCv& fm,
                          vector<MPnt>& mpnts)const;
     };
