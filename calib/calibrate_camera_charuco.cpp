@@ -172,7 +172,8 @@ int main(int argc, char *argv[]) {
         vector< vector< Point2f > > corners, rejected;
 
         // detect markers
-        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
+//        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
+        aruco::detectMarkers(image, dictionary, corners, ids);
 
         // refind strategy to detect more markers
         if(refindStrategy) aruco::refineDetectedMarkers(image, board, corners, ids, rejected);
