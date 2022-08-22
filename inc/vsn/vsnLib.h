@@ -293,6 +293,12 @@ namespace vsn{
                 void reset()
                 { R = mat3::Identity(); t << 0,0,0; e << 0,0,0; }
             }; Odom odom;
+            //---- points
+            struct Points{
+                // Triangulated feature points
+                //  in global space.
+                vec3s Pfs; 
+            }; Points pnts;
 
             void reset(){ odom.reset(); }           
             //---- depth disparity map

@@ -203,11 +203,11 @@ bool StereoVOcv::odometry(const Frm& frm1,
                           const Frm& frm2)
 {
     stringstream s;
-
+ 
     //---- cam motion for left/right
     cv::Mat rL,rR,tL,tR;
-    bool okL = cam_motion(frm1, frm2, true,  rL, tL);
-    bool okR = cam_motion(frm1, frm2, false, rR, tR);
+    bool okL = solve_2d3d(frm1, frm2, true,  rL, tL);
+    bool okR = solve_2d3d(frm1, frm2, false, rR, tR);
     if(!(okL | okR)) {
         log_e("stereo odometry failed");
         return false;
@@ -256,7 +256,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
 }
 
 //-----------------
-bool StereoVOcv::cam_motion(const Frm& frm1,
+bool StereoVOcv::solve_2d3d(const Frm& frm1,
                             const Frm& frm2,
                             bool bLeft,
                             cv::Mat& r, cv::Mat& t)const
@@ -327,19 +327,6 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
     }
     //-------
     // ref : https://answers.opencv.org/question/196562/solvepnpransac-getting-inliers-from-the-2d-and-3d-points/
-    if(0)
-    {
-        s << "Inliers: " << endl;
-        for (int i = 0; i < inlrs.rows; i++)
-        {
-            int k = inlrs.at<int>(i, 0);
-            cv::Point3f Pc = pts_3d[k];
-            s << "  2d/3d:(" << pts_2d[k] 
-                << ") -> ("  << pts_3d[k]  
-                << ")" << endl; 
-
-        }
-    }
     int Ni = inlrs.rows;
     s << "  solvePnP() inliers: " << Ni << " of " << N << endl;
     //-------
@@ -350,7 +337,19 @@ bool StereoVOcv::cam_motion(const Frm& frm1,
     cv::transpose(e, e1); cv::transpose(t, t1);
     s << " cam " << (bLeft?"L":"R") << " motion: ";
     s << "e=" << e1 << ", t=" << t1 << endl; 
+    // fill inliers
+    for (int i = 0; i < inlrs.rows; i++)
+    {
+        int k = inlrs.at<int>(i, 0);
+        cv::Point3f Pc = pts_3d[k];
+        /*
+        s << "  2d/3d:(" << pts_2d[k] 
+            << ") -> ("  << pts_3d[k]  
+            << ")" << endl; 
+            */
 
+
+    }
     // R/t is relative motion from frm1 to frm2
     log_d(s.str());
     return true;

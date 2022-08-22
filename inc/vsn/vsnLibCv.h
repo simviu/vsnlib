@@ -119,6 +119,7 @@ namespace vsn
         struct Frm{
             Sp<FeatureMatchCv> p_fm = nullptr;
             // 3d triangulation of matched feature points.
+            // (size of mpnts same as matched feature pairs)
             vector<MPnt> mpnts; 
             //--- find mpnt by feature index
             bool find(int i, bool bLeft, MPnt& mpnt)const;
@@ -140,7 +141,7 @@ namespace vsn
     protected:
         bool odometry(const Frm& frm1,
                       const Frm& frm2);
-        bool cam_motion(const Frm& frm1,
+        bool solve_2d3d(const Frm& frm1,
                         const Frm& frm2,
                         bool bLeft,
                         cv::Mat& r, cv::Mat& t)const;

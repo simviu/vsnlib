@@ -25,6 +25,7 @@ namespace
         string sf_seqL    = "stereo_td/seq/image_0";
         string sf_seqR    = "stereo_td/seq/image_1";
         string sf_Tw      = "Tw.txt";
+        string sf_pnts    = "points.xyz";
         double baseline = 0.255;
     } lcfg_;
     //--------------
@@ -86,7 +87,9 @@ bool TestKittiStereo::run()
 
     //---- Open Kitti output
     ofstream oftw(lcfg_.sf_Tw);
-    if(!oftw.is_open())
+    ofstream ofps(lcfg_.sf_pnts);
+    if(!(oftw.is_open() ||
+         ofps.is_open()))
     {
         log_ef(lcfg_.sf_Tw);
         return false;
@@ -125,6 +128,8 @@ bool TestKittiStereo::run()
         cv::eigen2cv(odom.t, tw);
         int idx = getIdx(sfLs[i]);
         oftw << kitti_line(Rw, tw, idx);
+
+        //--- write 
 
         //------ Press  ESC on keyboard to exit
         char c = (char)cv::waitKey(25);
