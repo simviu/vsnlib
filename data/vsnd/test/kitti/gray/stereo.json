@@ -8,11 +8,14 @@
         },
         "odometry":{
             "comments":[
-                "mpnt_sel: mpnt src, 1-triangulation, 2-depth",
+                "mode: 1-triangulation, 2-depth",
                 "z_TH: z threshhold"
             ],
-            "mpnt_sel":1,
+            "mode":1,
             "z_TH" :50.0
+        },
+        "point_cloud":{
+            "z_TH": 21.0
         },
         "run":{
             "show":false
