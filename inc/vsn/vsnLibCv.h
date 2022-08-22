@@ -152,5 +152,8 @@ namespace vsn
                         set<int>& inliers)const;
         bool triangulate(const FeatureMatchCv& fm,
                          vector<MPnt>& mpnts)const;
+        void calc_pnts(const Frm& frmc,
+                       const set<int>& mi_ary,
+                       vec3s& Ps)const;
     };
 }

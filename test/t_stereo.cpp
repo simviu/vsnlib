@@ -124,8 +124,8 @@ bool TestKittiStereo::run()
         //--- log Kitti Tw to file
         auto& odom = vo.getData().odom;
         cv::Mat Rw, tw;
-        cv::eigen2cv(odom.R, Rw);
-        cv::eigen2cv(odom.t, tw);
+        cv::eigen2cv(odom.Rw, Rw);
+        cv::eigen2cv(odom.tw, tw);
         int idx = getIdx(sfLs[i]);
         oftw << kitti_line(Rw, tw, idx);
 

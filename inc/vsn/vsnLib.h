@@ -280,26 +280,28 @@ namespace vsn{
             string str()const;
         };
         Cfg cfg_;
+        //---- Frm data
+        struct Frm{
+            // Triangulated feature points
+            //  in global space.
+            vec3s Pws; 
+        };
         //----
         struct Data{
+            
             // local points by stereo matching 
             //   and triangulations.
             //---
             struct Odom{
                 Odom(){ reset(); }
-                mat3 R;
-                vec3 t;
-                vec3 e; // euler angle
+                mat3 Rw;
+                vec3 tw;
+                vec3 ew; // euler angle
                 void reset()
-                { R = mat3::Identity(); t << 0,0,0; e << 0,0,0; }
+                { Rw = mat3::Identity(); tw << 0,0,0; ew << 0,0,0; }
             }; Odom odom;
-            //---- points
-            struct Points{
-                // Triangulated feature points
-                //  in global space.
-                vec3s Pfs; 
-            }; Points pnts;
-
+            //---- current Frm result
+            Sp<Frm> p_frm = nullptr;
             //---- depth disparity map
             Sp<Img> p_imd_ = nullptr;
 

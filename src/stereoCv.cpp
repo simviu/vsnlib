@@ -202,7 +202,7 @@ bool StereoVOcv::odometry(const Frm& frm1,
                           const Frm& frm2)
 {
     stringstream s;
- 
+    auto& odomc = cfg_.odom;
     //---- cam motion for left/right
     cv::Mat rL,rR,tL,tR;
     set<int> inliers;
@@ -213,43 +213,44 @@ bool StereoVOcv::odometry(const Frm& frm1,
         return false;
     }
     //---- Average or select
-    cv::Mat r = (okL && okR)? (rL + rR)*0.5 :
+    cv::Mat rc = (okL && okR)? (rL + rR)*0.5 :
                 okL ? rL : rR;
-    cv::Mat t =  (okL && okR)? (tL + tR)*0.5 :
+    cv::Mat tc =  (okL && okR)? (tL + tR)*0.5 :
                 okL ? tL : tR;
-    cv::Mat R;
-    cv::Rodrigues(r, R); 
+    cv::Mat Rc;
+    cv::Rodrigues(rc, Rc); 
 
     //------
-    cv::Mat e = r*180.0/M_PI; // to degree
-    cv::Mat e1,t1; 
-    cv::transpose(e, e1); cv::transpose(t, t1);
-    s << "  Odometry result:  ";
-    s << "e=" << e1 << ", t=" << t1 << endl; 
+    cv::Mat ec = rc * 180.0/M_PI; // to degree
+    cv::Mat ec1, tc1; 
+    cv::transpose(ec, ec1); cv::transpose(tc, tc1);
+    s << "  Relative motion:  ";
+    s << "ec=" << ec1 << ", tc=" << tc1 << endl; 
     // R/t is relative motion from frm1 to frm2
     //---- Update R/t global
     auto& odom = StereoVO::data_.odom;
-    cv::Mat Rw,tw;
-    cv::eigen2cv(odom.R, Rw);
-    cv::eigen2cv(odom.t, tw);
-    
-    tw = tw + Rw * t;
-    Rw = Rw * R;
-    
+    mat3 Re; cv::cv2eigen(Rc, Re);
+    vec3 te; cv::cv2eigen(tc, te);
+    auto& Rw = odom.Rw;
+    auto& tw = odom.tw;
+    auto& ew = odom.ew;
+    tw = tw + Rw * te;
+    Rw = Rw * Re;
     //---- Euler pose
-    cv::Mat rw;
-    cv::Rodrigues(Rw, rw); 
-    cv::Mat ew = rw*180.0/M_PI; // to degree
-
-    //--- convert back
+    cv::Mat Rwc, rwc;
+    cv::eigen2cv(Rw, Rwc);
+    cv::Rodrigues(Rwc, rwc); 
+    cv::Mat ewc = rwc*180.0/M_PI; // to degree
+    cv::cv2eigen(ewc, ew);
+   
+    //---- calc global points and fill
+    auto p_frm = mkSp<StereoVO::Frm>();
+    StereoVO::data_.p_frm = p_frm;
+    calc_pnts(frm2, inliers, p_frm->Pws);
     
-    cv::cv2eigen(Rw, odom.R);
-    cv::cv2eigen(tw, odom.t);
-    cv::cv2eigen(ew, odom.e);
     //---
-    cv::Mat ew1, tw1; 
-    cv::transpose(ew, ew1); cv::transpose(tw, tw1);
-    s << "  Global odom: ew=" << ew1 << ", tw=" << tw1 << endl;
+    s << "  Global odom: ew=" << ew.transpose() 
+        << ", tw=" << tw.transpose() << endl;
     log_d(s.str());
 
     return true;    
@@ -263,6 +264,7 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
                             set<int>& inliers)const
 {
     auto& odomc = cfg_.odom;
+
 //  auto pm = cv::DescriptorMatcher::create ( "BruteForce-Hamming" );
     auto& fm1 = *frm1.p_fm;
     auto& fm2 = *frm2.p_fm;
@@ -351,6 +353,29 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     log_d(s.str());
     return true;
     
+}
+//-----------
+void StereoVOcv::calc_pnts(const Frm& frmc,
+                           const set<int>& mi_ary,
+                           vec3s& Ps)const
+{
+    auto& odomc = cfg_.odom;
+    auto& odom = StereoVO::data_.odom;
+
+    auto& Rw = odom.Rw;
+    auto& tw = odom.tw;
+    //---- calc global points with inliers
+    for(auto& mi : mi_ary)
+    {
+        MPnt mpnt;
+        if(!frmc.at(mi, mpnt))
+            continue;
+        auto Pc = (odomc.mpnt_sel==1)?
+            mpnt.Pt : mpnt.Pd; 
+        vec3 Pe; Pe << Pc.x, Pc.y, Pc.z;
+        auto P = Rw*Pe + tw;
+        Ps.push_back(P);
+    }
 }
 
 //-----------
