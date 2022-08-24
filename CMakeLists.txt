@@ -10,6 +10,7 @@ find_package (jsoncpp REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(Gflags REQUIRED)
 
+message(STATUS "CMAKE_SYSTEM_PREFIX_PATH = ${CMAKE_SYSTEM_PREFIX_PATH}")
 message(STATUS "Eigen3 inc dir: ${EIGEN3_INCLUDE_DIR}")
 message(STATUS "JsonCpp_LIBRARIES =: ${JsonCpp_LIBRARIES}")
 message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
