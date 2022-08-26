@@ -93,6 +93,7 @@ Line2d CamCfg::proj(const Line& l)const
     return ll;
 }
 //-----
+// ref : https://blog.csdn.net/jonathanzh/article/details/104418758
 void CamCfg::undis(const vec2s& vds, vec2s& vs)const
 {
     vector<Point2f> cds;
@@ -168,6 +169,7 @@ bool CamCfg::toLense(Lense& l)const
     vec2s qs;
     undis({qd}, qs);
     vec2 q = qs[0];
+    //q = qd; // debug
     stringstream s;
     //--- proj corner point on
     //  unit focal length 1.0

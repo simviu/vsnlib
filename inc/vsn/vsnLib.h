@@ -66,9 +66,9 @@ namespace vsn{
             p1(v(2)),p2(v(3)),k3(v(4)){}
             double k1=0;
             double k2=0;
-            double k3=0;
             double p1=0;
             double p2=0;
+            double k3=0;
             vec5 V()const
             { vec5 v; v << k1,k2,p1,p2,k3; return v;}
             string str()const;
