@@ -45,23 +45,26 @@ Sp<Img> VideoCv::read()
     return p;
 }
 //-----        
-bool VideoCv::createWr(CStr& sf, const Cfg& cfg)
+bool VideoCv::createWr(CStr& sf)
 {
-    Sz sz = cfg.sz;
+    Sz sz = cfg_.sz;
     p_vwr = mkSp<VideoWriter>(sf, 
         cv::VideoWriter::fourcc('M','J','P','G'), 
     //  cv::VideoWriter::fourcc('H','2','6','4'), 
-        cfg.fps, Size(sz.w,sz.h));
+    //  cv::VideoWriter::fourcc('m','p','4','v'), 
+    //  cv::VideoWriter::fourcc('P','I','M','1'), 
+        cfg_.fps, Size(sz.w,sz.h));
     return p_vwr->isOpened();
 }
 
-//-----        
+//-----  static
 Sp<Video> Video::create(CStr& sf, const Cfg& cfg)
 {
     log_i("create video:'"+sf+"'...");
 
     auto p = mkSp<VideoCv>();
-    bool ok = p->createWr(sf, cfg);
+    p->cfg_ = cfg;
+    bool ok = p->createWr(sf);
     if(!ok)
         log_ef(sf);
     else log_i("create video OK");
@@ -77,7 +80,8 @@ bool VideoCv::write(const Img& im)
         return false;
     //p_vwr->write(imc.im_);
     auto& vw = *p_vwr;
-    vw << imc.im_;
+    Mat imw; imc.im_.copyTo(imw);
+    vw.write(imw);
     return true;
 }
 //-----

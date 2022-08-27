@@ -61,7 +61,7 @@ namespace vsn
         virtual Sp<Img> read()override;
         
         bool isOpen() { return cap_.isOpened(); }
-        bool createWr(CStr& sf, const Cfg& cfg);
+        bool createWr(CStr& sf);
         virtual bool write(const Img& im)override;
         virtual void close()override;
 
