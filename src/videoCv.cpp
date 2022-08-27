@@ -49,8 +49,8 @@ bool VideoCv::createWr(CStr& sf, const Cfg& cfg)
 {
     Sz sz = cfg.sz;
     p_vwr = mkSp<VideoWriter>(sf, 
-    //  cv::VideoWriter::fourcc('M','J','P','G'), 
-        cv::VideoWriter::fourcc('H','2','6','4'), 
+        cv::VideoWriter::fourcc('M','J','P','G'), 
+    //  cv::VideoWriter::fourcc('H','2','6','4'), 
         cfg.fps, Size(sz.w,sz.h));
     return p_vwr->isOpened();
 }
@@ -75,7 +75,15 @@ bool VideoCv::write(const Img& im)
         return false;
     if(!p_vwr->isOpened())
         return false;
-    p_vwr->write(imc.im_);
+    //p_vwr->write(imc.im_);
+    auto& vw = *p_vwr;
+    vw << imc.im_;
     return true;
+}
+//-----
+void VideoCv::close()
+{
+    if(p_vwr==nullptr)
+        p_vwr->release();
 }
 

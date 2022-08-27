@@ -161,6 +161,7 @@ namespace vsn{
         static Sp<Video> create(CStr& sf, const Cfg& cfg);
         virtual Sp<Img> read()=0;
         virtual bool write(const Img& im)=0;
+        virtual void close()=0;
         Cfg cfg_;
     };
 

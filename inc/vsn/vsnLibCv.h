@@ -63,6 +63,7 @@ namespace vsn
         bool isOpen() { return cap_.isOpened(); }
         bool createWr(CStr& sf, const Cfg& cfg);
         virtual bool write(const Img& im)override;
+        virtual void close()override;
 
     protected:
         cv::VideoCapture cap_;
