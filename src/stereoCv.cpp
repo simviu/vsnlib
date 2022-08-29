@@ -3,9 +3,14 @@
 #include <opencv2/calib3d/calib3d.hpp>
 #include "json/json.h"
 
-
-
 using namespace vsn;
+
+//----
+namespace{
+    const struct{
+        int N_th_pnp = 4;
+    }lcfg_;
+}
 
 //---- Factory
 Sp<StereoVO> StereoVO::create()
@@ -116,6 +121,10 @@ bool StereoVOcv::onImg(const Img& im1,
 
     //---- trangulate feature points.
     ok &= triangulate(fm, frm.mpnts);
+
+    //---- gen depth
+    if(cfg_.run.enDepth)
+        ok &= genDepth(im1, im2);
     
     //---- do odometry
     auto p_frmp = data_.p_frm_prev;
@@ -316,7 +325,8 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     }
     //--- dbg
     int N = pts_2d.size();
-    
+    if(N < lcfg_.N_th_pnp)
+        return false;
 
     //---- do solving
     //---- solve PnP

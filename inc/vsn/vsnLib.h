@@ -275,6 +275,7 @@ namespace vsn{
             }; Feature feature;
             struct Run{
                 bool bShow=false;
+                bool enDepth = false;
             }; Run run;
             struct PointCloud{
                 double z_TH = 40;
