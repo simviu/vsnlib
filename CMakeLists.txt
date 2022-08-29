@@ -7,7 +7,7 @@ add_definitions(-fPIC)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.5 REQUIRED)
 find_package(Gflags REQUIRED)
 
 message(STATUS "CMAKE_SYSTEM_PREFIX_PATH = ${CMAKE_SYSTEM_PREFIX_PATH}")
@@ -63,4 +63,4 @@ target_link_libraries(vsntool
     vsnLib)
 
 #---- calib tool
-add_subdirectory(calib)
+#add_subdirectory(calib)

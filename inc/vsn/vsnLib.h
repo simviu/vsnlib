@@ -112,7 +112,7 @@ namespace vsn{
     // Img
     //------------
     struct Img{
-        Img(){}
+
         typedef shared_ptr<Img> Ptr;
         typedef shared_ptr<const Img> CPtr;
 

@@ -11,7 +11,7 @@ namespace vsn
     // Implementation of Img
     struct ImgCv : public vsn::Img{
         ImgCv(){}
-        ImgCv(cv::Mat im):im_(im){};
+        ImgCv(cv::Mat& im):im_(im){};
         ImgCv(const Img& im)
         {  
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
