@@ -149,6 +149,7 @@ bool TestKittiStereo::run()
 
     // Closes all the frames
     cv::destroyAllWindows();
+    vo.onFinish();
     //ofps.close();
     //oftw.close();
     return ok;
