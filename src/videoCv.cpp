@@ -26,13 +26,19 @@ Sp<Video> Video::open(CStr& s)
 {
     
     auto p = mkSp<VideoCv>(s);
-    if(p->isOpen()) 
+    if(!p->isOpen()) 
     {
-        log_i("Open OK video:"+s);
-        return p;
+        log_e("Failed to open video:"+s);
+        return nullptr;
     }
-    log_e("Failed to open video:"+s);
-    return nullptr;
+    stringstream ss;
+    ss << "Open OK video:" << s << endl;
+    auto& c = p->cfg_;
+    ss << "  size:" << c.sz.w << "x" << c.sz.h << ", ";
+    ss << "fps:" << c.fps << endl;
+
+    log_i(ss.str());
+    return p;
 }
 //--------
 Sp<Img> VideoCv::read()
