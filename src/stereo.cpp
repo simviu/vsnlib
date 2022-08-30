@@ -20,7 +20,7 @@ namespace{
         s << idx ; // current frame index
 
         mat3x4 Tw;
-
+        Tw << Rw, tw;
         for(int i=0; i<Tw.rows(); i++)
             for(int j=0; j<Tw.cols(); j++)
                 s << " " << Tw(i, j);
