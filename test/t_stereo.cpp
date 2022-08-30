@@ -23,8 +23,8 @@ namespace
         string sf_stereoc = "cfg/stereo.json";
         string sf_seqL    = "seq/image_0";
         string sf_seqR    = "seq/image_1";
-        string sf_Tw      = "Tw.txt";
-        string sf_pnts    = "points.xyz";
+    //    string sf_Tw      = "Tw.txt";
+    //    string sf_pnts    = "points.xyz";
         double baseline = 0.255;
     } lcfg_;
     //--------------
@@ -41,6 +41,7 @@ namespace
         int i = std::stoi(s);
         return i;
     }
+    /*
     //---- Kitti format T 3x4, for evaluation.
     string kitti_line(const cv::Mat& Rw, 
                       const cv::Mat& tw, 
@@ -62,6 +63,7 @@ namespace
         string sr = s.str();
         return sr;
     }
+    */
 
 }
 //--------------------------
@@ -85,6 +87,7 @@ bool TestKittiStereo::run()
     vo.cfg_.camc = camc;
 
     //---- Open Kitti output
+    /*
     ofstream oftw(lcfg_.sf_Tw);
     ofstream ofps(lcfg_.sf_pnts);
     if(!(oftw.is_open() ||
@@ -93,7 +96,7 @@ bool TestKittiStereo::run()
         log_ef(lcfg_.sf_Tw);
         return false;
     }
-
+    */
     //---- main loop
     int N = sfLs.size();
     if (N > sfRs.size())
@@ -118,22 +121,26 @@ bool TestKittiStereo::run()
         auto &im2 = *p2;
 
         //--- process img
+        int fi = getIdx(sfLs[i]);
+        vo.setFrmIdx(fi);
         vo.onImg(im1, im2);
 
         //--- log Kitti Tw to file
+        /*
         auto& odom = vo.getData().odom;
         cv::Mat Rw, tw;
         cv::eigen2cv(odom.Rw, Rw);
         cv::eigen2cv(odom.tw, tw);
         int idx = getIdx(sfLs[i]);
         oftw << kitti_line(Rw, tw, idx);
-
+        */
         //--- write points
+        /*
         auto p_frm = vo.getData().p_frm;
         if(p_frm!=nullptr)
             for(auto& P : p_frm->Pws)
                 ofps << P.x() << " " << P.y() << " " << P.z() << endl;
-
+        */
         //------ Press  ESC on keyboard to exit
         char c = (char)cv::waitKey(25);
         if (c == 27)
@@ -142,7 +149,7 @@ bool TestKittiStereo::run()
 
     // Closes all the frames
     cv::destroyAllWindows();
-    ofps.close();
-    oftw.close();
+    //ofps.close();
+    //oftw.close();
     return ok;
 }

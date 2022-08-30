@@ -1,7 +1,7 @@
 #include "vsn/vsnLibCv.h"
 #include <opencv2/sfm/triangulation.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
-#include "json/json.h"
+
 
 using namespace vsn;
 
@@ -10,7 +10,9 @@ namespace{
     const struct{
         int N_th_pnp = 4;
     }lcfg_;
+
 }
+
 
 //---- Factory
 Sp<StereoVO> StereoVO::create()
@@ -18,60 +20,6 @@ Sp<StereoVO> StereoVO::create()
     return mkSp<StereoVOcv>();
 }
 
-//-----------
-string StereoVO::Cfg::str()const
-{
-    stringstream s;
-    s << "{stereo:{";
-    s << "baseline:" << baseline;
-    s << "}}" << endl;
-    return s.str();
-}
-
-//-----------
-bool StereoVO::Cfg::load(const string& sf)
-{
-    log_i("Load StereoVO cfg :'"+sf+"'");
-    ifstream ifs(sf);
-    if(!ifs)
-    {
-        log_ef(sf);
-        return false;
-    }
-    //----
-    try{
-
-        Json::Reader rdr;
-        Json::Value jd;
-        rdr.parse(ifs, jd);
-        auto& js = jd["stereo"];
-        baseline = js["baseline"].asDouble();
-
-        auto& jo = js["odometry"];
-        odom.mode = jo["mode"].asInt();
-        odom.z_TH = jo["z_TH"].asDouble();
-
-        auto& jf = js["feature"];
-        feature.Nf = jf["Nf"].asInt();
-
-        auto& jpc = js["point_cloud"];
-        pntCloud.z_TH = jpc["z_TH"].asDouble();
-
-        auto& jr = js["run"];
-        run.bShow = jr["show"].asBool();
-    }
-    catch(exception& e)
-    {
-        log_e("exception caught:"+string(e.what()));
-        return false;
-    }
-    //---- dbg
-    string s = this->str();
-    log_d(s);
-    return true;
-}
-
-//------------------- StereoVOcv --------------
 //-----------
 bool StereoVOcv::Frm::find(int i, bool bLeft, MPnt& mpnt)const
 {
@@ -100,7 +48,14 @@ bool StereoVOcv::onImg(const Img& im1,
                        const Img& im2)
 {
     auto& camc = cfg_.camc;
+    auto& vod = StereoVO::data_;
+    auto& fi = vod.frmIdx;
+    fi++;
+    //--- initial file wr
+    if(fi<=1 && cfg_.run.enWr) 
+        vod.wr.open();
 
+    //---- img undistort
     ocv::ImgCv imc1(im1);
     ocv::ImgCv imc2(im2);
     imc1.undistort(camc);
@@ -130,6 +85,10 @@ bool StereoVOcv::onImg(const Img& im1,
     auto p_frmp = data_.p_frm_prev;
     if(p_frmp!=nullptr)
         odometry(*p_frmp, *p_frm);
+
+    //--- write data
+    if(cfg_.run.enWr)
+        vod.wrData();
 
     //---- save to previous frm
     data_.p_frm_prev = p_frm;

@@ -18,7 +18,9 @@
             "z_TH": 21.0
         },
         "run":{
-            "show":false
+            "show":false,
+            "enDepth":false,
+            "enWr":true
         }
 
     }

@@ -276,6 +276,7 @@ namespace vsn{
             struct Run{
                 bool bShow=false;
                 bool enDepth = false;
+                bool enWr = false;
             }; Run run;
             struct PointCloud{
                 double z_TH = 40;
@@ -294,7 +295,14 @@ namespace vsn{
         };
         //----
         struct Data{
-            
+            int frmIdx = 0;
+            //----
+            struct Wr{
+                ofstream ofs_xyz;
+                ofstream ofs_Tw;
+                bool open();
+                void close();
+            }; Wr wr;
             // local points by stereo matching 
             //   and triangulations.
             //---
@@ -311,6 +319,9 @@ namespace vsn{
             //---- depth disparity map
             Sp<Img> p_imd_ = nullptr;
 
+            // wr data
+            bool wrData();
+            void close(){ wr.close(); }
         };
         //----
         virtual bool onImg(const Img& im1, 
@@ -320,9 +331,10 @@ namespace vsn{
                               const Img& im2)=0;
 
         auto& getData()const{ return data_; }
+        void onFinish(){ data_.close(); }
+        void setFrmIdx(int i){ data_.frmIdx=i; }
     protected:
         Data data_;
-
     };
 
 }
