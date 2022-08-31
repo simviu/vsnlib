@@ -65,7 +65,7 @@ bool StereoVOcv::onImg(const Img& im1,
     //---- do feature matching of L/R
     auto p_fm = mkSp<FeatureMatchCv>();
     auto& fm = *p_fm;
-    fm.cfg_.bShow = cfg_.bShow;
+    fm.cfg_.bShow = cfg_.run.bShow;
     fm.cfg_.N = cfg_.feature.Nf;
     ok &= fm.onImg(im1, im2);
 
@@ -410,7 +410,7 @@ bool StereoVOcv::genDepth(const Img& im1,
 
     StereoVO::data_.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
 
-    if(cfg_.bShow)
+    if(cfg_.run.bShow)
     {
         string sName = "depth";
         cv::namedWindow(sName, cv::WINDOW_KEEPRATIO);

@@ -265,7 +265,7 @@ namespace vsn{
         //----
         struct Cfg{
             CamCfg camc;
-            bool bShow = false;
+          //  bool bShow = false;
             double baseline = 0.50;
             struct Odom{
                 // 1:triangulation , 2:depth

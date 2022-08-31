@@ -93,7 +93,7 @@ bool VideoCv::write(const Img& im)
 //-----
 void VideoCv::close()
 {
-    if(p_vwr==nullptr)
-        p_vwr->release();
+   // if(p_vwr==nullptr)
+     //   p_vwr->release();
 }
 
