@@ -12,6 +12,12 @@
 using namespace vsn;
 
 namespace test{
+     //------
+    class TestImg : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
     //------
     class TestMarker : public Test
     {

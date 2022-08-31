@@ -53,7 +53,8 @@ namespace {
         // Draw detected blobs as red circles.
         // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
         Mat im_with_keypoints;
-        drawKeypoints( im, keypoints, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+//      drawKeypoints( im, keypoints, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+        drawKeypoints( im, keypoints, im_with_keypoints, Scalar(0,0,255) );
 
         // Show blobs
         imshow("keypoints", im_with_keypoints );

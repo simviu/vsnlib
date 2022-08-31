@@ -107,3 +107,8 @@ void ImgCv::toGray()
 {
     cv::cvtColor(im_, im_,cv::COLOR_BGR2GRAY);
 }
+//--------
+void ImgCv::toHsv()
+{
+    cv::cvtColor(im_, im_,cv::COLOR_BGR2HSV);
+}

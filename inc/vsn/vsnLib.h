@@ -132,6 +132,7 @@ namespace vsn{
         virtual void axis(const CamCfg& cc,
             const Pose& p, double l=1.0, double w=1.0)=0;
         virtual void toGray()=0;
+        virtual void toHsv()=0;
         //----
         static Sp<Img> create();
         //---- internal storage data (Mat)
