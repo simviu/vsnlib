@@ -32,6 +32,9 @@ namespace vsn
         virtual void axis(const CamCfg& cc,
                 const Pose& p, double l, double w)override;
         virtual void toGray()override;
+        virtual void toHsv()override;
+        virtual void filter(const Color& c0,
+                            const Color& c1) override;
         //-----
         virtual void* data()override
         { return reinterpret_cast<void*>(&(im_)); }

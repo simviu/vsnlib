@@ -132,6 +132,9 @@ namespace vsn{
         virtual void axis(const CamCfg& cc,
             const Pose& p, double l=1.0, double w=1.0)=0;
         virtual void toGray()=0;
+        virtual void toHsv()=0;
+        virtual void filter(const Color& c0,
+                            const Color& c1)=0;
         //----
         static Sp<Img> create();
         //---- internal storage data (Mat)
@@ -278,7 +281,7 @@ namespace vsn{
         //----
         struct Cfg{
             CamCfg camc;
-            bool bShow = false;
+          //  bool bShow = false;
             double baseline = 0.50;
             struct Odom{
                 // 1:triangulation , 2:depth

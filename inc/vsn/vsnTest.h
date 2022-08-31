@@ -12,6 +12,12 @@
 using namespace vsn;
 
 namespace test{
+     //------
+    class TestImg : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
     //------
     class TestMarker : public Test
     {
@@ -25,6 +31,12 @@ namespace test{
         virtual bool run() override;
     }; //------
     class TestKittiStereo : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
+    //------
+    class TestBlob : public Test
     {
     public:
         virtual bool run() override;
