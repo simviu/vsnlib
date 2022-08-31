@@ -7,7 +7,7 @@
  */
 
 #include "vsn/vsnTest.h"
-
+#include "vsn/vsnLibCv.h"
 using namespace vsn;
 using namespace ut;
 using namespace test;
@@ -29,8 +29,8 @@ bool TestImg::run()
     }
     auto& im = *p;
     
-    im.toHsv();
-    im.show("hsv");
+    im.filter({240,240,240},{255,255,255});
+    im.show("img");
     while(!vsn::cv_waitESC(10));
     return true;
 }

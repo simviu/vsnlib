@@ -112,3 +112,9 @@ void ImgCv::toHsv()
 {
     cv::cvtColor(im_, im_,cv::COLOR_BGR2HSV);
 }
+//--------
+void ImgCv::filter(const Color& c0,
+                   const Color& c1)
+{
+    cv::inRange(im_, toCv(c0), toCv(c1), im_);
+}
