@@ -29,6 +29,12 @@ namespace test{
     public:
         virtual bool run() override;
     };
+    //------
+    class TestBlob : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
 }
 
 
