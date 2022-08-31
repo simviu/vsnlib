@@ -165,6 +165,22 @@ namespace vsn{
         Cfg cfg_;
     };
 
+    //----------
+    // Instance 
+    //----------
+    // Object instancing by color filter,
+    //   Convex hull and mix of OpenCV methods.
+    class Instance{
+    public:
+        struct Cfg{
+
+        }; Cfg cfg_;
+        struct Data{
+
+        }; Data data_;
+        bool detect(const Img& im);
+
+    };
 
     //-----------
     // marker (ArUco)
