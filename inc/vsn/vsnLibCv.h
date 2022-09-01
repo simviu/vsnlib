@@ -118,8 +118,7 @@ namespace vsn
     {
         pclu::PCloud::Ptr p_cloud_ =
            pclu::PCloud::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
-        static DataPcl& cast(Points::Data& d)
-        { return reinterpret_cast<DataPcl&>(d); }
+        static DataPcl& cast(Points::Data& d);
         auto getCloud(){ return p_cloud_; }
     };
     //------------

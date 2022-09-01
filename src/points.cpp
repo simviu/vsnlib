@@ -6,7 +6,7 @@
    Website: https://www.simviu.com
  */
 
-#include "vsn/vsnLib.h"
+#include "vsn/vsnLibCv.h"
 #include "vsn/pcl_utils.h"
 #include "json/json.h"
 
@@ -31,13 +31,13 @@ bool Points::load(const string& sf)
 bool Points::save(const string& sf)
 {
     auto p = DataPcl::cast(*p_data_).getCloud();
-    pcl::io::savePCDFileASCII (sf, p);
+    pcl::io::savePCDFileASCII (sf, *p);
 
     return true;
 
 }
 void Points::show()const
 {
-    return true;
+    return ;
 
 }

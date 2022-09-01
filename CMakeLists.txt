@@ -10,10 +10,9 @@ find_package (jsoncpp REQUIRED)
 find_package(OpenCV 4.5 REQUIRED)
 find_package(Gflags REQUIRED)
 find_package(PCL 1.3 REQUIRED COMPONENTS common io)
-find_package(VTK 9.0 REQUIRED)
 
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
+
+
 add_definitions(${PCL_DEFINITIONS})
 
 #add_executable(pcd_write_test pcd_write.cpp)
@@ -25,11 +24,13 @@ message(STATUS "JsonCpp_LIBRARIES =: ${JsonCpp_LIBRARIES}")
 message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
 message(STATUS "OpenCV inc dirs: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "PCL inc dirs: ${PCL_INCLUDE_DIRS}")
+#message(STATUS "PCL libs: ${PCL_LIBRARIES}")
 
 include_directories( 
     ${EIGEN3_INCLUDE_DIR}
     ${OpenCV_DIRS}  
     ${JsonCpp_INCLUDE_DIR}
+    ${PCL_INCLUDE_DIRS}
     #${CMAKE_PREFIX_PATH}/include
     /usr/include/jsoncpp
     /opt/dep/local/include
@@ -41,6 +42,7 @@ include_directories(
 message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 link_directories(
     /opt/dep/local/lib
+    ${PCL_LIBRARY_DIRS}
     ${CMAKE_PREFIX_PATH}/lib)
 
 
@@ -53,7 +55,7 @@ target_link_libraries(vsnLib
     ${Eigen3_LIBRARY}    
     ${JsonCpp_LIBRARIES} 
     ${PCL_LIBRARIES}
-    ${VTK_LIBRARIES}
+    pcl_visualization
     jsoncpp
     )
     
@@ -64,8 +66,10 @@ set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 FILE(GLOB  SRC_VSNTEST test/*.cpp)
 add_executable(vsnTest ${SRC_VSNTEST})
 target_link_libraries(vsnTest  
+    vsnLib
     ${OpenCV_LIBRARIES} 
-    vsnLib)
+    ${PCL_LIBRARIES}
+    )
 
 #---- vsnTool
 FILE(GLOB  SRC_VSNTEST apps/*.cpp)

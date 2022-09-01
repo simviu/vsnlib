@@ -80,7 +80,7 @@ bool TestPoints::test_pcl_wr()
 
 //-------------
 // ref : https://pcl.readthedocs.io/projects/tutorials/en/latest/pcl_visualizer.html
-bool TestPoints::test_pcl_wr()
+bool TestPoints::test_pcl_vis()
 {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
     gen_cylinder(point_cloud_ptr);
