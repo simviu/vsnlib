@@ -5,3 +5,8 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+
+namespace pclu{
+    using Pnt = pcl::PointXYZRGB;
+    using PCloud = pcl::PointCloud<pcl::PointXYZRGB>;
+}

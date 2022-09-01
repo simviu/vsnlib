@@ -1,5 +1,6 @@
 #include "vsnLib.h"
 #include "ocv_hlpr.h"
+#include "vsn/pcl_utils.h"
 
 namespace vsn
 {
@@ -111,7 +112,18 @@ namespace vsn
                    MatchDt& md)const;
     };
     //------------
-    // StereoVO_cv
+    // Points::Data Imp
+    //------------
+    struct DataPcl : public Points::Data
+    {
+        pclu::PCloud::Ptr p_cloud_ =
+           pclu::PCloud::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+        static DataPcl& cast(Points::Data& d)
+        { return reinterpret_cast<DataPcl&>(d); }
+        auto getCloud(){ return p_cloud_; }
+    };
+    //------------
+    // StereoVOcv
     //------------
     //Stereo video odometry
     class StereoVOcv : public StereoVO{

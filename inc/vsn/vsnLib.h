@@ -287,9 +287,17 @@ namespace vsn{
     //------------
     class Points{
     public:
+        Points();
+        struct Data{
+
+        };
+
         bool load(const string& sf);
         bool save(const string& sf);
-        bool show()const;
+        void show()const;
+        auto getData(){ return p_data_ ; }
+    protected:
+        Sp<Data> p_data_ = nullptr;
     };
 
     //------------
