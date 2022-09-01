@@ -46,6 +46,9 @@ namespace test{
     {
     public:
         virtual bool run() override;
+    protected:
+        bool test_pcl_wr();
+        bool test_pcl_vis();
     };
 }
 
