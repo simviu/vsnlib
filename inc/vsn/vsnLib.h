@@ -188,6 +188,7 @@ namespace vsn{
                 Color c0,c1;
             }; Filter filter;
             float blurSz = 3;
+            float areaTH = 20*10;
         }; Cfg cfg_;
         struct Data{
 

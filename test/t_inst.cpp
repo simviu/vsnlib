@@ -35,7 +35,7 @@ bool TestInst::run()
     auto& c = inst.cfg_;
     c.enShow = true;
     c.filter = {{240,240,240},{255,255,255}};
-
+    c.areaTH = 60*40;
     inst.detect(im);
     
     return true;
