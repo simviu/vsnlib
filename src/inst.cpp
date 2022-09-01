@@ -38,11 +38,14 @@ bool Instance::detect(const Img& im)
     // create hull array for convex hull points
     int N = contrs.size();
     vector< vector<Point> > hull(N);
-    vector<cv::Rect> bbox(N);
+    vector<cv::Rect> bboxes;
+    
     for(int i = 0; i < contrs.size(); i++)
     {
         convexHull(Mat(contrs[i]), hull[i], false);
-        bbox[i] = boundingRect(hull[i]);        
+        cv::Rect b = boundingRect(hull[i]);  
+        if(b.area() > cfg_.areaTH)
+            bboxes.push_back(b);  
     }
 
     //---- show result
@@ -70,8 +73,13 @@ bool Instance::detect(const Img& im)
         // draw ith convex hull
         drawContours(imo, hull, i, ch, 3, 8, vector<Vec4i>(), 0, Point());
         // Bounding box
-        rectangle(imo,  bbox[i], cb, 2);
+        //rectangle(imo,  bbox[i], cb, 2);
     }
+    for(auto& b : bboxes)
+        rectangle(imo,  b, cb, 2);
+
+
+    //----
     imshow("result", imo);
 
     //---- hold 
