@@ -22,7 +22,8 @@ namespace{
 bool TestPoints::run()
 {
     // test basic
-    test_pcl_wr();
+    //test_pcl_wr();
+    test_pcl_vis();
     
     return true;
 }
