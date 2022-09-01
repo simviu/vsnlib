@@ -13,7 +13,7 @@ using namespace vsn;
 
 namespace test{
      //------
-    class TestImg : public Test
+    class TestInst : public Test
     {
     public:
         virtual bool run() override;

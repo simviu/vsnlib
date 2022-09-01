@@ -21,7 +21,7 @@ int main(int argc, char ** argv)
   //TestMarker  t; ok &= t.run();
   // TestFeature t; ok &= t.run();
   // TestKittiStereo t; ok &= t.run();
-    TestImg t; ok &= t.run();
+    TestInst t; ok &= t.run();
     if(ok) log_i("All test PASS!");
     else log_e("Failed");
     return ok?0:1;

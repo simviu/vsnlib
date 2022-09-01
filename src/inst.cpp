@@ -6,21 +6,23 @@
    Website: https://www.simviu.com
  */
 
-
 #include "vsn/vsnLib.h"
-#include "vsn/ocv_hlpr.h"
 
 using namespace vsn;
-using namespace cv;
-using namespace ocv;
 using namespace ut;
 
 //-----------------
 // detect
 //-----------------
-bool Incetance::detect(const Img& im)
+bool Instance::detect(const Img& im)
 {
+    auto p1 = im.copy();
+    auto& im1 = *p1;
+    im1.filter({240,240,240},{255,255,255});
+    im1.show("im1");
   
+    if(cfg_.enShow)
+      while(!vsn::cv_waitESC(10));
     return true;
 }
 

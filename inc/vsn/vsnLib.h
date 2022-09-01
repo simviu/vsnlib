@@ -172,11 +172,12 @@ namespace vsn{
     // Instance 
     //----------
     // Object instancing by color filter,
-    //   Convex hull and mix of OpenCV methods.
+    //   Convex hull and mix of 
+    //   OpenCV methods, without DNN.
     class Instance{
     public:
         struct Cfg{
-
+            bool enShow = false;
         }; Cfg cfg_;
         struct Data{
 

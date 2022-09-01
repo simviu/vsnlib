@@ -17,9 +17,10 @@ namespace{
         string sf_img = "img_td/1.jpg";
 
     }lc_;
+    //----
 }
 //--------------------------
-bool TestImg::run()
+bool TestInst::run()
 {
     auto p = vsn::Img::loadFile(lc_.sf_img);
     if(p==nullptr)
@@ -28,10 +29,10 @@ bool TestImg::run()
         return false;
     }
     auto& im = *p;
+    vsn::Instance inst;
+    inst.cfg_.enShow = true;
+    inst.detect(im);
     
-    im.filter({240,240,240},{255,255,255});
-    im.show("img");
-    while(!vsn::cv_waitESC(10));
     return true;
 }
 
