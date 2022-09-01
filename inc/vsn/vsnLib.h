@@ -283,6 +283,16 @@ namespace vsn{
                            const Img& im2)=0;
     };
     //------------
+    // Points
+    //------------
+    class Points{
+    public:
+        bool load(const string& sf);
+        bool save(const string& sf);
+        bool show()const;
+    };
+
+    //------------
     // StereoVO
     //------------
     //Stereo video odometry
