@@ -21,7 +21,7 @@ namespace vsn
         virtual bool save(ut::CStr& s) override;
         virtual bool val()const override
         { return (im_.rows>0) && (im_.cols>0);}
-        virtual void show(CStr& sWind)override;
+        virtual void show(CStr& sWind)const override;
 
         virtual void text(CStr& s, 
             const Px& px={30,30},

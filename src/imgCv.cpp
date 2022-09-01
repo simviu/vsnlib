@@ -66,7 +66,7 @@ bool ImgCv::save(ut::CStr& s)
 
    
 //-----
-void ImgCv::show(CStr& sWind)
+void ImgCv::show(CStr& sWind)const
 {
     cv::imshow(sWind, im_);
     cv::waitKey(1);

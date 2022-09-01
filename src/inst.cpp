@@ -6,7 +6,7 @@
    Website: https://www.simviu.com
  */
 
-#include "vsn/vsnLib.h"
+#include "vsn/vsnLibCv.h"
 
 using namespace vsn;
 using namespace ut;
@@ -16,13 +16,59 @@ using namespace ut;
 //-----------------
 bool Instance::detect(const Img& im)
 {
+    using namespace cv;
     auto p1 = im.copy();
     auto& im1 = *p1;
-    im1.filter({240,240,240},{255,255,255});
-    im1.show("im1");
-  
-    if(cfg_.enShow)
-      while(!vsn::cv_waitESC(10));
+    auto& fc = cfg_.filter;
+    im1.filter(fc.c0, fc.c1);
+
+    ImgCv im2(im1);
+    Mat imf = im2.im_;
+    Mat imb, imt;
+
+    // pre-process
+    float bsz = cfg_.blurSz;
+    blur(imf, imb, Size(bsz, bsz)); // apply blur to grayscaled image
+    threshold(imb, imt, 50, 255, THRESH_BINARY); // apply binary thresholding
+
+    // find contours
+    vector< vector<Point> > contrs; // list of contour points
+    vector<Vec4i> hier;
+    findContours(imt, contrs, hier, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    // create hull array for convex hull points
+    vector< vector<Point> > hull(contrs.size());
+    for(int i = 0; i < contrs.size(); i++)
+        convexHull(Mat(contrs[i]), hull[i], false);
+
+    //---- show result
+    if(!cfg_.enShow)
+        return true;
+
+    // show process image
+    im.show("input");
+    im1.show("filter");
+    imshow("blur", imb);
+    imshow("threshold", imt);
+
+    // result
+    // create a blank image (black image)
+    //Mat imo = Mat::zeros(imt.size(), CV_8UC3); 
+    auto p_imo = im.copy();
+    ImgCv imoc(*p_imo);
+    cv::Mat imo = imoc.im_;
+    for(int i = 0; i < contrs.size(); i++) {
+        Scalar cc = Scalar(0, 255, 0); // green - color for contours
+        Scalar ch = Scalar(255, 0, 0); // blue - color for convex hull
+        // draw ith contour
+        drawContours(imo, contrs, i, cc, 1, 8, vector<Vec4i>(), 0, Point());
+        // draw ith convex hull
+        drawContours(imo, hull, i, ch, 3, 8, vector<Vec4i>(), 0, Point());
+    }
+    imshow("result", imo);
+
+    //---- hold 
+    while(!vsn::cv_waitESC(10));
+    
     return true;
 }
 

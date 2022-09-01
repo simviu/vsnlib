@@ -121,7 +121,7 @@ namespace vsn{
         virtual bool val()const =0;
         operator bool(){ return val(); }
 
-        virtual void show(CStr& sWind)=0;
+        virtual void show(CStr& sWind)const=0;
         //---- draw functions
         virtual void text(CStr& s, 
             const Px& px={30,30},
@@ -178,6 +178,10 @@ namespace vsn{
     public:
         struct Cfg{
             bool enShow = false;
+            struct Filter{
+                Color c0,c1;
+            }; Filter filter;
+            float blurSz = 3;
         }; Cfg cfg_;
         struct Data{
 

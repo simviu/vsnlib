@@ -30,7 +30,12 @@ bool TestInst::run()
     }
     auto& im = *p;
     vsn::Instance inst;
-    inst.cfg_.enShow = true;
+
+    // cfg
+    auto& c = inst.cfg_;
+    c.enShow = true;
+    c.filter = {{240,240,240},{255,255,255}};
+
     inst.detect(im);
     
     return true;
