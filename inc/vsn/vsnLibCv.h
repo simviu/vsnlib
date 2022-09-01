@@ -31,6 +31,9 @@ namespace vsn
                           double w=1.0)override;
         virtual void axis(const CamCfg& cc,
                 const Pose& p, double l, double w)override;
+        virtual void draw(const ut::Rect& r, const Color& c, 
+                          float w=1.0)override;
+
         virtual void toGray()override;
         virtual void toHsv()override;
         virtual void filter(const Color& c0,

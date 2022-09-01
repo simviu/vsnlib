@@ -103,6 +103,19 @@ void ImgCv::axis(const CamCfg& cc,
 }
 
 //--------
+void ImgCv::draw(const ut::Rect& r, 
+                 const Color& c,  float w)
+{
+    
+    Px p0 = r.p0();
+    Px p1 = r.p1();
+    cv::rectangle(im_, 
+        Point(p0.x, p0.y), 
+        Point(p1.x, p1.y), 
+        toCv(c), w);
+}
+
+//--------
 void ImgCv::toGray()
 {
     cv::cvtColor(im_, im_,cv::COLOR_BGR2GRAY);

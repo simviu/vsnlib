@@ -36,9 +36,14 @@ bool Instance::detect(const Img& im)
     vector<Vec4i> hier;
     findContours(imt, contrs, hier, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     // create hull array for convex hull points
-    vector< vector<Point> > hull(contrs.size());
+    int N = contrs.size();
+    vector< vector<Point> > hull(N);
+    vector<cv::Rect> bbox(N);
     for(int i = 0; i < contrs.size(); i++)
+    {
         convexHull(Mat(contrs[i]), hull[i], false);
+        bbox[i] = boundingRect(hull[i]);        
+    }
 
     //---- show result
     if(!cfg_.enShow)
@@ -56,13 +61,16 @@ bool Instance::detect(const Img& im)
     auto p_imo = im.copy();
     ImgCv imoc(*p_imo);
     cv::Mat imo = imoc.im_;
-    for(int i = 0; i < contrs.size(); i++) {
-        Scalar cc = Scalar(0, 255, 0); // green - color for contours
-        Scalar ch = Scalar(255, 0, 0); // blue - color for convex hull
+    Scalar cc = Scalar(0, 255, 0); // green - color for contours
+    Scalar ch = Scalar(255, 0, 0); // blue - color for convex hull
+    Scalar cb = Scalar(0,255,0); // bbox
+    for(int i = 0; i < N; i++) {
         // draw ith contour
         drawContours(imo, contrs, i, cc, 1, 8, vector<Vec4i>(), 0, Point());
         // draw ith convex hull
         drawContours(imo, hull, i, ch, 3, 8, vector<Vec4i>(), 0, Point());
+        // Bounding box
+        rectangle(imo,  bbox[i], cb, 2);
     }
     imshow("result", imo);
 

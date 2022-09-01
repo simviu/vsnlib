@@ -162,6 +162,13 @@ namespace ut
         int w=0;
         int h=0;
     };
+    
+    struct Rect{
+        Px cntr;
+        Sz sz;
+        Px p0()const { return Px(cntr.x - sz.w*0.5, cntr.y - sz.h*0.5); }
+        Px p1()const { return Px(cntr.x + sz.w*0.5, cntr.y + sz.h*0.5); }
+    };
     //-------------
     // util stuct
     //-------------

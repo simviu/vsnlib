@@ -32,6 +32,7 @@ namespace vsn{
          vec3 p1; vec3 p2; 
          string str()const ;
     };
+    
     //-----
     struct Pose{ 
         quat q; 
@@ -122,15 +123,20 @@ namespace vsn{
         operator bool(){ return val(); }
 
         virtual void show(CStr& sWind)const=0;
-        //---- draw functions
+        //---- draw functions, 
+        //   TODO: replace with draw()
         virtual void text(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})=0;
+        
         virtual void line(const Line2d& l,
                           const Color& c={255,255,255}, 
                           double w=1.0)=0;
         virtual void axis(const CamCfg& cc,
             const Pose& p, double l=1.0, double w=1.0)=0;
+        virtual void draw(const Rect& r, const Color& c, 
+                          float w=1.0)=0;
+        //----
         virtual void toGray()=0;
         virtual void toHsv()=0;
         virtual void filter(const Color& c0,
