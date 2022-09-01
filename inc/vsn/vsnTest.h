@@ -41,6 +41,12 @@ namespace test{
     public:
         virtual bool run() override;
     };
+     //------
+    class TestPoints : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
 }
 
 
