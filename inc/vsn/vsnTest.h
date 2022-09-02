@@ -49,6 +49,7 @@ namespace test{
     protected:
         bool test_pcl_wr();
         bool test_pcl_vis();
+        bool test_basic();
     };
 }
 

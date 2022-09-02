@@ -294,20 +294,24 @@ namespace vsn{
         class Vis{
         public:
             struct Cfg{
-                string sName="points";
+                Cfg(){}
+                string sName;
                 Color bk_color;
                 float axisL=1.0;
             }; 
             void add(const Points& ps, 
                      const string& sName,
                      float pnt_sz=3);
-            static Sp<Vis> create(const Cfg& c);
+            bool spin();
+            static Sp<Vis> create(const Cfg& c=Cfg());
         };
         //----
         bool load(const string& sf);
-        bool save(const string& sf);
+        bool save(const string& sf)const;
         auto getData(){ return p_data_ ; }
         auto getData()const{ return p_data_ ; }
+        //---- samples
+        void gen_cylinder();
     protected:
         Sp<Data> p_data_ = nullptr;
     };
