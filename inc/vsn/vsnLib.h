@@ -306,10 +306,12 @@ namespace vsn{
             static Sp<Vis> create(const Cfg& c=Cfg());
         };
         //----
+        void add(const Pnt& p);
         bool load(const string& sf);
         bool save(const string& sf)const;
         auto getData(){ return p_data_ ; }
         auto getData()const{ return p_data_ ; }
+
         //---- samples
         void gen_cylinder();
     protected:

@@ -12,6 +12,20 @@
 
 using namespace vsn;
 namespace{
+    //----- utils 
+    pclu::Pnt toPcl(const Points::Pnt& in)
+    { 
+        auto& c = in.c;
+        auto& v = in.p;
+        std::uint32_t rgb = (static_cast<std::uint32_t>(c.r) << 16 |
+                    static_cast<std::uint32_t>(c.g) << 8 | static_cast<std::uint32_t>(c.b));
+        pclu::Pnt p;
+        p.rgb = *reinterpret_cast<float*>(&rgb);
+        p.x = v.x();
+        p.y = v.y();
+        p.z = v.z();
+        return p;
+    }
     //------------
     // Points::Data Imp
     //------------
@@ -19,7 +33,6 @@ namespace{
     {
         pclu::PCloud::Ptr p_cloud_ =
            pclu::PCloud::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
-        //static DataPcl& cast(const Points::Data& d);
         auto raw(){ return p_cloud_; }
         auto raw()const{ return p_cloud_; }
     };
@@ -90,6 +103,17 @@ bool Points::Vis::spin()
 Sp<Points::Vis> Points::Vis::create(const Cfg& c)
 { return mkSp<VisImp>(c); }
 
+//---------------
+// 
+//---------------
+void Points::add(const Pnt& p)
+{
+    auto pc = getRaw(*this);
+    pc->points.push_back (toPcl(p));
+    pc->width = pc->size();
+    pc->height = 1;
+
+}
 
 //---------------
 bool Points::load(const string& sf)
@@ -121,26 +145,19 @@ bool Points::save(const string& sf)const
 //----
 void Points::gen_cylinder()
 {
-    auto p = getRaw(*this);
-    std::uint8_t r(255), g(15), b(15);
+    Color c{255, 15, 15};
     for (float z(-1.0); z <= 1.0; z += 0.05)
     {
         for (float angle(0.0); angle <= 360.0; angle += 5.0)
         {
-            pcl::PointXYZRGB pnt;
-            pnt.x = 0.5 * std::cos (pcl::deg2rad(angle));
-            pnt.y = sinf (pcl::deg2rad(angle));
-            pnt.z = z;
-            std::uint32_t rgb = (static_cast<std::uint32_t>(r) << 16 |
-                    static_cast<std::uint32_t>(g) << 8 | static_cast<std::uint32_t>(b));
-            pnt.rgb = *reinterpret_cast<float*>(&rgb);
-            p->points.push_back (pnt);
+            Pnt p;
+            p.p << 0.5 * std::cos (pcl::deg2rad(angle)), sinf (pcl::deg2rad(angle)), z;
+            p.c = c;
+            add(p);
         }
-        if (z < 0.0) { r -= 12;  g += 12; }
-        else { g -= 12;  b += 12; }
+        if (z < 0.0) { c.r -= 12;  c.g += 12; }
+        else { c.g -= 12;  c.b += 12; }
     }
-    p->width = p->size ();
-    p->height = 1;
 
 }
 
