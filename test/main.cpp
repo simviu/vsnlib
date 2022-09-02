@@ -11,19 +11,47 @@
 using namespace vsn;
 using namespace ut;
 using namespace test;
+//-------
+namespace{
+    //---- test list
+    map<string, Sp<Test>> tests_
+    {
+        {"marker"   , mkSp<TestMarker>()}, 
+        {"feature"  , mkSp<TestFeature>()}, 
+        {"stereo"   , mkSp<TestKittiStereo>()}, 
+        {"inst"     , mkSp<TestInst>()}, 
+        {"points"   , mkSp<TestPoints>()}
+    };
+}
+//-------
+// main
+//-------
 int main(int argc, char ** argv)
 {
-    string s(argv[0]);
-    log_i("--- run : "+s);
+    string s_app(argv[0]);
+    log_i("--- run : "+s_app);
     log_i("cur_dir:"+sys::pwd());
     bool ok = true;
+    //--- add tests
+    Test alltest;
+    alltest.tests_ = tests_;
+
+    //----
+    stringstream s;
+    string sTests = alltest.getTestsStr();
+    if(argc<2)
+    {
+        log_e("test name not provided");
+        s << "Usage: "<< s_app <<" test_name|all" << endl;
+        s << "  Test list:" << sTests << endl;
+        log_i(s.str()); 
+        return 1;
+    }
+    string st = argv[1];
+    if(st=="all")
+        ok = alltest.run();
+    else
+        ok = alltest.run(st);
     
-  //TestMarker  t; ok &= t.run();
-  // TestFeature t; ok &= t.run();
-  // TestKittiStereo t; ok &= t.run();
-  //  TestInst t; ok &= t.run();
-    TestPoints t; ok &= t.run();
-    if(ok) log_i("All test PASS!");
-    else log_e("Failed");
     return ok?0:1;
 }

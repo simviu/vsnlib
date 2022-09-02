@@ -187,11 +187,21 @@ namespace ut
     bool fexist(CStr& sf);
 
     //-------------
-    // test
+    // Test
     //-------------
     class Test{
     public:
-        virtual bool run()=0;
+        Test(){};
+        Test(map<string, Sp<Test>>& ts):tests_(ts){}
+        virtual bool run();
+        virtual bool run(const string& s);
+        void add(const string& s, Sp<Test> p)
+        { tests_[s] = p; }
+        string getTestsStr()const;
+
+        // sub tests
+        map<string, Sp<Test>> tests_;
+
     };
 
     //-------------
