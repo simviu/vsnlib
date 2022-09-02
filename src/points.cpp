@@ -10,6 +10,7 @@
 #include "vsn/pcl_utils.h"
 #include "json/json.h"
 
+
 using namespace vsn;
 namespace{
     //----- utils 
@@ -160,4 +161,34 @@ void Points::gen_cylinder()
     }
 
 }
+//-------
+// Ref: slambook
+void Points::filter_stats(float meanK, float devTh)
+{
+    auto& d = reinterpret_cast<DataImp&>(*p_data_);
+    pclu::PCloud::Ptr p ( new pclu::PCloud );
+    pcl::StatisticalOutlierRemoval<pclu::Pnt> f;
+    f.setMeanK(meanK);
+    f.setStddevMulThresh(devTh);
+    f.setInputCloud(d.p_cloud_);
+    f.filter( *p );
+    d.p_cloud_ = p;
+    
+}
+//-------
+void Points::filter_voxel(float reso)
+{
+    auto& d = reinterpret_cast<DataImp&>(*p_data_);
+
+   // voxel filter 
+    pcl::VoxelGrid<pclu::Pnt> f; 
+    float r = reso;
+    f.setLeafSize( r, r, r );       // resolution 
+    pclu::PCloud::Ptr tmp ( new pclu::PCloud );
+    f.setInputCloud( d.p_cloud_ );
+    f.filter( *tmp );
+    tmp->swap( *d.p_cloud_ );
+    
+}
+
 

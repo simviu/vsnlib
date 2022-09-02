@@ -309,6 +309,10 @@ namespace vsn{
         void add(const Pnt& p);
         bool load(const string& sf);
         bool save(const string& sf)const;
+        //--- filter statistical or voxel
+        void filter_stats(float meanK = 50, float devTh = 1.0);
+        void filter_voxel(float reso=0.03);
+
         auto getData(){ return p_data_ ; }
         auto getData()const{ return p_data_ ; }
 

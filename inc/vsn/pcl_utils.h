@@ -12,6 +12,8 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/point_cloud_geometry_handlers.h>
 #include <pcl/visualization/impl/point_cloud_geometry_handlers.hpp>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/voxel_grid.h>
 
 namespace pclu{
     using Pnt = pcl::PointXYZRGB;
