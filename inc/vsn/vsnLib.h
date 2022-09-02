@@ -288,14 +288,26 @@ namespace vsn{
     class Points{
     public:
         Points();
-        struct Data{
-
+        struct Pnt{ vec3 p; Color c; };
+        struct Data{};// virtual
+        //----- visualization
+        class Vis{
+        public:
+            struct Cfg{
+                string sName="points";
+                Color bk_color;
+                float axisL=1.0;
+            }; 
+            void add(const Points& ps, 
+                     const string& sName,
+                     float pnt_sz=3);
+            static Sp<Vis> create(const Cfg& c);
         };
-
+        //----
         bool load(const string& sf);
         bool save(const string& sf);
-        void show()const;
         auto getData(){ return p_data_ ; }
+        auto getData()const{ return p_data_ ; }
     protected:
         Sp<Data> p_data_ = nullptr;
     };

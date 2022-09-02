@@ -20,7 +20,7 @@ namespace{
     {
      
         pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-        viewer->setBackgroundColor (0, 0, 0);
+        viewer->setBackgroundColor (0.7, 0.7, 1);
         pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
         viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
         viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");

@@ -1,6 +1,6 @@
 #include "vsnLib.h"
 #include "ocv_hlpr.h"
-#include "vsn/pcl_utils.h"
+
 
 namespace vsn
 {
@@ -111,16 +111,7 @@ namespace vsn
                    const Features& fs2,
                    MatchDt& md)const;
     };
-    //------------
-    // Points::Data Imp
-    //------------
-    struct DataPcl : public Points::Data
-    {
-        pclu::PCloud::Ptr p_cloud_ =
-           pclu::PCloud::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
-        static DataPcl& cast(Points::Data& d);
-        auto getCloud(){ return p_cloud_; }
-    };
+    
     //------------
     // StereoVOcv
     //------------
