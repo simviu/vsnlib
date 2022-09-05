@@ -49,7 +49,7 @@ namespace vsn{
     //---- open CV wait key
     extern int cv_waitkey(int MS);
     extern bool cv_waitESC(int MS);
-
+    extern void show_loop();
 
     //---------
     // cam
@@ -132,9 +132,10 @@ namespace vsn{
         virtual void line(const Line2d& l,
                           const Color& c={255,255,255}, 
                           double w=1.0)=0;
-        virtual void axis(const CamCfg& cc,
-            const Pose& p, double l=1.0, double w=1.0)=0;
-        virtual void draw(const Rect& r, const Color& c, 
+        //---- draw axis
+        struct Axis{ Pose pose; double l=1; double w=1;};
+        virtual void draw(const CamCfg& cc, const Axis& a)=0;
+        virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)=0;
         //----
         virtual void toGray()=0;
@@ -215,6 +216,7 @@ namespace vsn{
         public:
             //---- Marker cfg
             struct MCfg{
+                bool enShow = true;
                 string sDict_="aruco_dict_id0";
                 int dict_id_=0;
                 struct Grp{
@@ -238,6 +240,8 @@ namespace vsn{
             struct{ vector<Marker> ms; }result_;
             //---- detect
             bool onImg(const Img& im);
+        protected:
+            void show(const Img& im)const;
         };
         // (TODO:deprecated) Call back function that retrieve
         // marker width for pose estimation.

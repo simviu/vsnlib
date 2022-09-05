@@ -91,3 +91,7 @@ extern bool vsn::cv_waitESC(int MS)
 {
     return cv::waitKey(MS)==27;
 }
+extern void vsn::show_loop()
+{
+    while(!cv_waitESC(10));
+}

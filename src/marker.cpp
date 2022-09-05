@@ -80,6 +80,11 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
         Json::Value jd;
         rdr.parse(ifs, jd);
         auto& jm = jd["marker_cfg"];
+        //----
+        auto& jr = jm["run"];
+        enShow = jr["show"].asBool();
+
+        //----
         auto& jgs = jm["groups"];
         sDict_ = jm["aruco_dict"].asString();
         dict_id_ = jm["aruco_dict_id"].asInt();
@@ -154,8 +159,9 @@ bool Marker::PoseEstimator::onImg(const Img& im)
     ms.clear();
     
     bool ok = true;
-    int dict_id = cfg_.mcfg.dict_id_;
-    for(auto& g : cfg_.mcfg.grps_)
+    auto& mc = cfg_.mcfg;
+    int dict_id = mc.dict_id_;
+    for(auto& g : mc.grps_)
     {
         vector<Marker> gms;
         detect(im, gms, dict_id);
@@ -170,9 +176,28 @@ bool Marker::PoseEstimator::onImg(const Img& im)
             ms.push_back(m);
         }
     }
+    //----- show
+    if(mc.enShow)
+        show(im);
+    
    
     return true;
 }
+
+//-----------
+void Marker::PoseEstimator::show(const Img& im)const
+{
+    auto p_imo = im.copy();
+    auto& imo = *p_imo;
+    auto& ms = result_.ms;
+    auto& camc = cfg_.camc;
+    // Note: axis length half of marker width
+    for(auto& m : ms)
+        imo.draw(camc, {m.pose, m.w*0.5, 2});
+
+    imo.show("Marker PE");
+}
+
 
 //-----------
 bool Marker::pose_est(const CamCfg& cc, double wid)

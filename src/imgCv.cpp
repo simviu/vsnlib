@@ -88,9 +88,11 @@ void ImgCv::line(const Line2d& l, const Color& c, double w)
     cv::line(im_, p1, p2, toCv(c), w);
 }
 //-----
-void ImgCv::axis(const CamCfg& cc, 
-    const Pose& p, double l, double w)
+void ImgCv::draw(const CamCfg& cc, const Axis& a)
 {
+    auto& p = a.pose;
+    auto& l = a.l;
+    auto& w = a.w;
     
     auto ls = p.axis(l);
     Color rgb[3]{{255,0,0}, {0,255,0}, {0,0,255}};

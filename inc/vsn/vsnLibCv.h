@@ -18,6 +18,7 @@ namespace vsn
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
         }
 
+
         virtual bool load(ut::CStr& s, int cvFlag) override;
         virtual bool save(ut::CStr& s) override;
         virtual bool val()const override
@@ -30,8 +31,7 @@ namespace vsn
        virtual void line(const Line2d& l,
                           const Color& c, 
                           double w=1.0)override;
-        virtual void axis(const CamCfg& cc,
-                const Pose& p, double l, double w)override;
+        virtual void draw(const CamCfg& cc, const Axis& a)override;
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)override;
 
@@ -55,8 +55,10 @@ namespace vsn
 
         virtual void undistort(const CamCfg& cc)override;
         cv::Mat im_;
+
     protected:
     };
+    //---- cast utils
     //------------
     // VideoCv
     //------------
