@@ -193,7 +193,7 @@ void CmdMarker::draw(Img& im, const vector<Marker>& ms)const
         stringstream s;
         s << "id=" << m.id << ", ";
         s << "t=" << str(Tcm.t);
-        im.text(s.str(), px, {50,200,255});
+        im.draw(s.str(), px, {50,200,255});
         //--- draw axis
         im.draw(camc,{Tcm, m.w ,2});
     }       

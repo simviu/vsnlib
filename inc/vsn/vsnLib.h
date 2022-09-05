@@ -125,7 +125,7 @@ namespace vsn{
         virtual void show(CStr& sWind)const=0;
         //---- draw functions, 
         //   TODO: replace with draw()
-        virtual void text(CStr& s, 
+        virtual void draw(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})=0;
         

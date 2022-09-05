@@ -72,7 +72,7 @@ void ImgCv::show(CStr& sWind)const
     cv::waitKey(1);
 }
 //----
-void ImgCv::text(CStr& s, 
+void ImgCv::draw(CStr& s, 
     const Px& px,
     const Color& c)
 {

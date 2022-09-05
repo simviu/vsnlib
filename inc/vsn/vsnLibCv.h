@@ -25,7 +25,7 @@ namespace vsn
         { return (im_.rows>0) && (im_.cols>0);}
         virtual void show(CStr& sWind)const override;
 
-        virtual void text(CStr& s, 
+        virtual void draw(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})override;
        virtual void line(const Line2d& l,

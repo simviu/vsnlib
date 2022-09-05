@@ -191,9 +191,29 @@ void Marker::PoseEstimator::show(const Img& im)const
     auto& imo = *p_imo;
     auto& ms = result_.ms;
     auto& camc = cfg_.camc;
+    
+    //----
+    auto sz = camc.sz;
+    float dw = sz.w *0.05;
+    float dh = sz.h *0.05;
     // Note: axis length half of marker width
+    Color ct{0,200,255};
     for(auto& m : ms)
+    {
         imo.draw(camc, {m.pose, m.w*0.5, 2});
+        Px px0 = toPx(m.ps[0]);
+        // id
+        {
+            stringstream s; s << "id=" << m.id;
+            imo.draw(s.str(), px0, ct);
+        }
+        // t
+        {
+            string s = "t="+ egn::str(m.pose.t, 2);
+            imo.draw(s, px0 + Px(dw,dh), ct);
+        }
+
+    }
 
     imo.show("Marker PE");
 }
