@@ -82,7 +82,7 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
         auto& jm = jd["marker_cfg"];
         //----
         auto& jr = jm["run"];
-        enShow = jr["show"].asBool();
+        en_imo = jr["en_imo"].asBool();
 
         //----
         auto& jgs = jm["groups"];
@@ -177,15 +177,15 @@ bool Marker::PoseEstimator::onImg(const Img& im)
         }
     }
     //----- show
-    if(mc.enShow)
-        show(im);
+    if(mc.en_imo)
+       result_.p_imo = gen_imo(im);
     
    
     return true;
 }
 
 //-----------
-void Marker::PoseEstimator::show(const Img& im)const
+Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
 {
     auto p_imo = im.copy();
     auto& imo = *p_imo;
@@ -215,7 +215,7 @@ void Marker::PoseEstimator::show(const Img& im)const
 
     }
 
-    imo.show("Marker PE");
+    return p_imo;
 }
 
 

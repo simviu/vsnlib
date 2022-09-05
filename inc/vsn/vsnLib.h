@@ -216,7 +216,7 @@ namespace vsn{
         public:
             //---- Marker cfg
             struct MCfg{
-                bool enShow = true;
+                bool en_imo = false;
                 string sDict_="aruco_dict_id0";
                 int dict_id_=0;
                 struct Grp{
@@ -237,11 +237,16 @@ namespace vsn{
             };
             Cfg cfg_;
             //---- result
-            struct{ vector<Marker> ms; }result_;
+            struct{ 
+                vector<Marker> ms; 
+                //--- result img with 
+                // detect result draw.
+                Sp<Img> p_imo = nullptr;
+            }result_;
             //---- detect
             bool onImg(const Img& im);
         protected:
-            void show(const Img& im)const;
+            Sp<Img> gen_imo(const Img& im)const;
         };
         // (TODO:deprecated) Call back function that retrieve
         // marker width for pose estimation.
