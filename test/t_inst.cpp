@@ -15,7 +15,8 @@ using namespace test;
 namespace{
     const struct{
         string sf_img = "img_td/1.jpg";
-
+        string sfw_imo = "instSegm.jpg";
+        bool enShow = true;
     }lc_;
     //----
 }
@@ -29,15 +30,22 @@ bool TestInst::run()
         return false;
     }
     auto& im = *p;
-    vsn::Instance inst;
+    vsn::InstSegm inst;
 
     // cfg
     auto& c = inst.cfg_;
-    c.enShow = true;
+    c.en_imo = true;
     c.filter = {{240,240,240},{255,255,255}};
     c.areaTH = 100*60;
     inst.detect(im);
-    
+
+    //-------
+    if(lc_.enShow)
+    {
+        auto p_imo = inst.data_.p_imo;
+        p_imo->show("InstSegm");
+        vsn::show_loop();
+    }
     return true;
 }
 

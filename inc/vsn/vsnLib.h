@@ -176,23 +176,30 @@ namespace vsn{
     };
 
     //----------
-    // Instance 
+    // InstSegm 
     //----------
     // Object instancing by color filter,
     //   Convex hull and mix of 
     //   OpenCV methods, without DNN.
-    class Instance{
+    class InstSegm{
     public:
         struct Cfg{
-            bool enShow = false;
             struct Filter{
                 Color c0,c1;
             }; Filter filter;
             float blurSz = 3;
             float areaTH = 20*10;
+            bool en_imo = false;
         }; Cfg cfg_;
+        //----
+        struct Inst{
+            vector<vec2> hull;
+            ut::Rect box;
+        };
+        //----
         struct Data{
-
+            vector<Inst> ins;
+            Sp<Img> p_imo = nullptr;
         }; Data data_;
         bool detect(const Img& im);
 
