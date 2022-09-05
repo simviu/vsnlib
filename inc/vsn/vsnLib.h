@@ -362,6 +362,7 @@ namespace vsn{
             }; Feature feature;
             struct Run{
                 bool bShow=false;
+                bool enDense = false;
                 bool enDepth = false;
                 bool enWr = false;
             }; Run run;
@@ -379,6 +380,11 @@ namespace vsn{
             // Triangulated feature points
             //  in global space.
             vec3s Pws; 
+            //---- point cloud
+            struct PntCloud{
+                Sp<Points> p_dense_  = nullptr;
+                Sp<Points> p_sparse_ = nullptr;
+            }; PntCloud pntCloud;
         };
         //----
         struct Data{
@@ -401,6 +407,7 @@ namespace vsn{
                 void reset()
                 { Rw = mat3::Identity(); tw << 0,0,0; ew << 0,0,0; }
             }; Odom odom;
+            
             //---- current Frm result
             Sp<Frm> p_frm = nullptr;
             //---- depth disparity map

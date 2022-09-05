@@ -166,5 +166,6 @@ namespace vsn
         void calc_pnts(const Frm& frmc,
                        const set<int>& mi_ary,
                        vec3s& Ps)const;
+        bool genDense();
     };
 }

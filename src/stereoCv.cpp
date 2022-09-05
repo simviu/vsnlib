@@ -80,6 +80,9 @@ bool StereoVOcv::onImg(const Img& im1,
     //---- gen depth
     if(cfg_.run.enDepth)
         ok &= genDepth(im1, im2);
+    //---- gen denth map
+    if(cfg_.run.enDense)
+        ok &= genDense();
     
     //---- do odometry
     auto p_frmp = data_.p_frm_prev;
@@ -418,4 +421,20 @@ bool StereoVOcv::genDepth(const Img& im1,
         cv::waitKey(10);
     }
     return ok;
+}
+//------
+bool StereoVOcv::genDense()
+{
+    auto p_imd = StereoVO::data_.p_imd_;
+    if(p_imd==nullptr) return false;
+    cv::Mat imd = ImgCv(*p_imd).im_;
+    for(int y = 0; y<imd.rows; y++)
+    {
+        for(int x = 0; x<imd.cols; x++)
+        {
+            double d = imd.at<double>(y,x);
+
+        }
+    }
+    return true;
 }
