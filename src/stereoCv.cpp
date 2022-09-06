@@ -513,7 +513,7 @@ void StereoVOcv::show()const
         //cv::normalize(imd, imd2, 0, 255, cv::NORM_MINMAX, CV_8U);
         imd2 = imd.im_/ sgc.numDisparities;
         p_imd->show("Disparity");
-        cv::imshow("disparity2", imd2);
+        cv::imshow("Disparity2", imd2);
     }
 
 
