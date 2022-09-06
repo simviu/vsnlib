@@ -201,7 +201,7 @@ namespace vsn{
             vector<Inst> ins;
             Sp<Img> p_imo = nullptr;
         }; Data data_;
-        bool detect(const Img& im);
+        bool onImg(const Img& im);
 
     };
 

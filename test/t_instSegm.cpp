@@ -37,7 +37,7 @@ bool TestInst::run()
     c.en_imo = true;
     c.filter = {{240,240,240},{255,255,255}};
     c.areaTH = 100*60;
-    inst.detect(im);
+    inst.onImg(im);
 
     //-------
     if(lc_.enShow)

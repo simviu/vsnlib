@@ -21,7 +21,7 @@ namespace{
 //-----------------
 // detect
 //-----------------
-bool InstSegm::detect(const Img& im)
+bool InstSegm::onImg(const Img& im)
 {
     using namespace cv;
     auto p1 = im.copy();
