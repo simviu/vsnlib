@@ -26,7 +26,7 @@ CmdMarker::CmdMarker():
     //---- 'pose'
     {
         string sH = "detect marker and pose estimate \n";
-        sH += "Usage:pose img=<FILE> cfg=<FILE_CFG> camc=<FILE_CAM_CFG wdir=<WDIR>\n";
+        sH += "   Usage:pose img=<FILE> cfg=<FILE_CFG> camc=<FILE_CAM_CFG wdir=<WDIR>\n";
         add("pose", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_pose(args); }));
     }

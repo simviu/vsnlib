@@ -53,7 +53,7 @@ bool ImgCv::load(ut::CStr& s, int cvFlag)
     return ok;
 }
 //-----------------
-bool ImgCv::save(ut::CStr& s)
+bool ImgCv::save(ut::CStr& s)const
 {
     log_i("Save img to:"+s+"...");
     bool ok = cv::imwrite(s, im_);

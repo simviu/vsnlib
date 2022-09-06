@@ -17,13 +17,27 @@ namespace app
     //-----------
 
     //-----------
+    // CmdVideo
+    //-----------
+    class CmdVideo:public Cmd{
+    public:
+        using Cmd::Cmd;
+        CmdVideo();
+        bool run_frames(CStrs& args);
+    protected:
+        struct Data{
+            int frm_idx=0;
+        }; Data data_;
+        bool video_frm_ui(const Img& im);
+
+    };
+    //-----------
     // CmdMarker
     //-----------
     class CmdMarker:public Cmd{
     public:
         using Cmd::Cmd;
         CmdMarker();
-    protected:
         struct Cfg{
             CamCfg          camc;
             string swd; // write dir
@@ -54,6 +68,7 @@ namespace app
     protected:
         Cmd cmd_;
         void initCmd(CStrs& args);
+        
     };
 }
 

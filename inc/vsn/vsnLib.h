@@ -118,7 +118,7 @@ namespace vsn{
         typedef shared_ptr<const Img> CPtr;
 
         virtual bool load(CStr& s, int cvFlag=1)=0;
-        virtual bool save(CStr& s)=0;
+        virtual bool save(CStr& s)const=0;
         virtual bool val()const =0;
         operator bool(){ return val(); }
 
