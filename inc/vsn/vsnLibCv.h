@@ -135,7 +135,7 @@ namespace vsn
         };
 
         //--- frm data
-        struct Frm{
+        struct FrmCv{
             Sp<FeatureMatchCv> p_fm = nullptr;
             // 3d triangulation of matched feature points.
             // (size of mpnts same as matched feature pairs)
@@ -150,7 +150,7 @@ namespace vsn
         //--- cv data
         struct Data{
             //---- previous feature match
-            Sp<Frm> p_frm_prev = nullptr;
+            Sp<FrmCv> p_frm_prev = nullptr;
         };
         Data data_;
         //----
@@ -158,20 +158,31 @@ namespace vsn
                            const Img& im2)override;
 
         virtual bool genDepth(const Img& im1,  
-                              const Img& im2)override;
+                              const Img& im2,
+                              Depth& depth)override;
     protected:
-        bool odometry(const Frm& frm1,
-                      const Frm& frm2);
-        bool solve_2d3d(const Frm& frm1,
-                        const Frm& frm2,
+        bool odometry(const FrmCv& frm1,
+                      const FrmCv& frm2);
+        bool solve_2d3d(const FrmCv& frm1,
+                        const FrmCv& frm2,
                         bool bLeft,
                         cv::Mat& r, cv::Mat& t,
                         set<int>& inliers)const;
         bool triangulate(const FeatureMatchCv& fm,
                          vector<MPnt>& mpnts)const;
-        void calc_pnts(const Frm& frmc,
+        void calc_pnts(const FrmCv& frmc,
                        const set<int>& mi_ary,
                        vec3s& Ps)const;
         bool genDense();
+        void show()const;
+
+        //----
+        bool run_sgbm(const Img& im1,
+                      const Img& im2,
+                      Depth& depth);
+        bool run_quasi(const Img& im1,
+                       const Img& im2,
+                       Depth& depth);
+
     };
 }

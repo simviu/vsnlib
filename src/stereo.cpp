@@ -131,3 +131,4 @@ bool StereoVO::Data::wrData()
     }
     return true;
 }
+

@@ -2,6 +2,8 @@
 #include <opencv2/sfm/triangulation.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 
+#include <opencv2/stereo/quasi_dense_stereo.hpp>
+
 
 using namespace vsn;
 
@@ -21,7 +23,7 @@ Sp<StereoVO> StereoVO::create()
 }
 
 //-----------
-bool StereoVOcv::Frm::find(int i, bool bLeft, MPnt& mpnt)const
+bool StereoVOcv::FrmCv::find(int i, bool bLeft, MPnt& mpnt)const
 {
     if(p_fm==nullptr) return false;
     auto& fm = *p_fm;
@@ -35,7 +37,7 @@ bool StereoVOcv::Frm::find(int i, bool bLeft, MPnt& mpnt)const
     return true;
 }
 //-----------
-bool StereoVOcv::Frm::at(int mi, MPnt& mpnt)const
+bool StereoVOcv::FrmCv::at(int mi, MPnt& mpnt)const
 {
     if(mi<0 || mi>= mpnts.size())
         return false;
@@ -70,7 +72,7 @@ bool StereoVOcv::onImg(const Img& im1,
     ok &= fm.onImg(im1, im2);
 
     //---- construct frm
-    auto p_frm = mkSp<Frm>();
+    auto p_frm = mkSp<FrmCv>();
     auto& frm = *p_frm;
     frm.p_fm = p_fm;
 
@@ -78,8 +80,13 @@ bool StereoVOcv::onImg(const Img& im1,
     ok &= triangulate(fm, frm.mpnts);
 
     //---- gen depth
+    auto p_frmo = mkSp<StereoVO::Frm>();
+    auto& frmo = *p_frmo;
+    StereoVO::data_.p_frm = p_frmo;
+    auto& depth = frmo.depth;
     if(cfg_.run.enDepth)
-        ok &= genDepth(im1, im2);
+        ok &= genDepth(im1, im2, depth);
+
     //---- gen denth map
     if(cfg_.run.enDense)
         ok &= genDense();
@@ -92,6 +99,11 @@ bool StereoVOcv::onImg(const Img& im1,
     //--- write data
     if(cfg_.run.enWr)
         vod.wrData();
+
+    //---- show
+    if(cfg_.run.bShow)
+        show();
+
 
     //---- save to previous frm
     data_.p_frm_prev = p_frm;
@@ -170,8 +182,8 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
 
 
 //-----------------
-bool StereoVOcv::odometry(const Frm& frm1,
-                          const Frm& frm2)
+bool StereoVOcv::odometry(const FrmCv& frm1,
+                          const FrmCv& frm2)
 {
     stringstream s;
     auto& odomc = cfg_.odom;
@@ -216,12 +228,12 @@ bool StereoVOcv::odometry(const Frm& frm1,
     cv::cv2eigen(ewc, ew);
    
     //---- calc global points and fill
-    auto p_frm = mkSp<StereoVO::Frm>();
-    StereoVO::data_.p_frm = p_frm;
+    /* TODO: result not good, obsolete
     auto& Pws = p_frm->Pws;
     calc_pnts(frm2, inliers, Pws);
     s << " calc points:" << Pws.size() << endl;
     //---
+    */
     s << "  Global odom: ew=" << ew.transpose() 
         << ", tw=" << tw.transpose() << endl;
     log_d(s.str());
@@ -230,8 +242,8 @@ bool StereoVOcv::odometry(const Frm& frm1,
 }
 
 //-----------------
-bool StereoVOcv::solve_2d3d(const Frm& frm1,
-                            const Frm& frm2,
+bool StereoVOcv::solve_2d3d(const FrmCv& frm1,
+                            const FrmCv& frm2,
                             bool bLeft,
                             cv::Mat& r, cv::Mat& t,
                             set<int>& inliers)const
@@ -329,7 +341,7 @@ bool StereoVOcv::solve_2d3d(const Frm& frm1,
     
 }
 //-----------
-void StereoVOcv::calc_pnts(const Frm& frmc,
+void StereoVOcv::calc_pnts(const FrmCv& frmc,
                            const set<int>& mi_ary,
                            vec3s& Ps)const
 {
@@ -360,7 +372,46 @@ void StereoVOcv::calc_pnts(const Frm& frmc,
 
 //-----------
 bool StereoVOcv::genDepth(const Img& im1,  
-                          const Img& im2)
+                          const Img& im2,
+                          Depth& depth)
+{
+    bool ok = true;
+    //---- quasi slow and result not good
+ // ok &= run_quasi(im1, im2, depth);
+    ok &= run_sgbm(im1, im2, depth);
+    return ok;
+
+}
+//----------------
+bool StereoVOcv::run_quasi(const Img& im1,
+                           const Img& im2,
+                           Depth& depth)
+{
+    bool ok = true;
+
+    ocv::ImgCv imc1(im1); cv::Mat imL = imc1.im_;
+    ocv::ImgCv imc2(im2); cv::Mat imR = imc2.im_;
+    
+    cv::Size sz = imL.size();
+    cv::Ptr<cv::stereo::QuasiDenseStereo> stereo = 
+        cv::stereo::QuasiDenseStereo::create(sz);
+    stereo->process(imL, imR);
+    cv::Mat im_disp;
+    im_disp = stereo->getDisparity();
+    //cv::imshow("disparity map", disp);
+
+
+    vector<cv::stereo::MatchQuasiDense> matches;
+    stereo->getDenseMatches(matches);
+    depth.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
+    return ok;
+}
+
+
+//----------------
+bool StereoVOcv::run_sgbm(const Img& im1,
+                          const Img& im2,
+                          Depth& depth)
 {
     ocv::ImgCv imc1(im1);
     ocv::ImgCv imc2(im2);
@@ -411,20 +462,13 @@ bool StereoVOcv::genDepth(const Img& im1,
     cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);
     //im_disp2 = im_disp*10;
 
-    StereoVO::data_.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
+    depth.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
 
-    if(cfg_.run.bShow)
-    {
-        string sName = "depth";
-        cv::namedWindow(sName, cv::WINDOW_KEEPRATIO);
-        imshow(sName, im_disp2);
-        cv::waitKey(10);
-    }
-    return ok;
 }
 //------
 bool StereoVOcv::genDense()
 {
+    /*
     auto p_imd = StereoVO::data_.p_imd_;
     if(p_imd==nullptr) return false;
     cv::Mat imd = ImgCv(*p_imd).im_;
@@ -436,5 +480,22 @@ bool StereoVOcv::genDense()
 
         }
     }
+    */
     return true;
+}
+
+
+//-----
+void StereoVOcv::show()const
+{
+    auto p_frmo = StereoVO::data_.p_frm;
+    if(p_frmo==nullptr)
+        return;
+    auto& frmo = *p_frmo;
+    //---- show
+    auto p_imd = frmo.depth.p_imd_;
+    if(p_imd != nullptr)
+        p_imd->show("Disparity");
+
+
 }

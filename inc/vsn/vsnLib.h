@@ -398,16 +398,24 @@ namespace vsn{
             string str()const;
         };
         Cfg cfg_;
-        //---- Frm data
-        struct Frm{
-            // Triangulated feature points
-            //  in global space.
-            vec3s Pws; 
+        //---- Depth
+        class Depth{
+        public:
+            //---- depth disparity map
+            Sp<Img> p_imd_ = nullptr;
             //---- point cloud
             struct PntCloud{
                 Sp<Points> p_dense_  = nullptr;
                 Sp<Points> p_sparse_ = nullptr;
             }; PntCloud pntCloud;
+        };
+        //---- Frm data
+        struct Frm{
+            // Triangulated feature points
+            //  in global space.
+            vec3s Pws; 
+            //---- Depth
+            Depth depth;
         };
         //----
         struct Data{
@@ -433,8 +441,6 @@ namespace vsn{
             
             //---- current Frm result
             Sp<Frm> p_frm = nullptr;
-            //---- depth disparity map
-            Sp<Img> p_imd_ = nullptr;
 
             // wr data
             bool wrData();
@@ -445,12 +451,14 @@ namespace vsn{
                            const Img& im2)=0;
 
         virtual bool genDepth(const Img& im1,  
-                              const Img& im2)=0;
+                              const Img& im2,
+                              Depth& depth)=0;
 
         auto& getData()const{ return data_; }
         void onFinish(){ data_.close(); }
         void setFrmIdx(int i){ data_.frmIdx=i; }
     protected:
+
         Data data_;
     };
 
