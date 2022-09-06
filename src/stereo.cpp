@@ -90,7 +90,7 @@ bool StereoVO::Cfg::load(const string& sf)
 
         auto& jr = js["run"];
         run.bShow   = jr["show"].asBool();
-        run.enDense = jr["enDesnse"].asBool();
+        run.enDense = jr["enDense"].asBool();
         run.enDepth = jr["enDepth"].asBool();
         run.enWr    = jr["enWr"].asBool();
         

@@ -336,13 +336,14 @@ namespace vsn{
                 Cfg(){}
                 string sName;
                 Color bk_color;
-                float axisL=1.0;
+                float axisL=10.0;
             }; 
             void add(const Points& ps, 
                      const string& sName,
                      float pnt_sz=3);
             bool spin();
             static Sp<Vis> create(const Cfg& c=Cfg());
+            void clear();
         };
         //----
         void add(const Pnt& p);
@@ -420,9 +421,9 @@ namespace vsn{
             Sp<Img> p_imd_ = nullptr;
             //---- point cloud
             struct PntCloud{
-                Sp<Points> p_dense_  = nullptr;
-                Sp<Points> p_sparse_ = nullptr;
-            }; PntCloud pntCloud;
+                Sp<Points> p_dense  = nullptr;
+                Sp<Points> p_sparse = nullptr;
+            }; PntCloud pntc;
         };
         //---- Frm data
         struct Frm{
@@ -456,6 +457,12 @@ namespace vsn{
             
             //---- current Frm result
             Sp<Frm> p_frm = nullptr;
+
+            //---- vis
+            struct PntVis{
+
+                Sp<Points::Vis> p_vis_dense = nullptr;
+            }; PntVis pntVis;
 
             // wr data
             bool wrData();

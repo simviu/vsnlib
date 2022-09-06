@@ -34,7 +34,7 @@ namespace vsn
         virtual void draw(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})override;
-       virtual void line(const Line2d& l,
+        virtual void line(const Line2d& l,
                           const Color& c, 
                           double w=1.0)override;
         virtual void draw(const CamCfg& cc, const Axis& a)override;
@@ -173,8 +173,8 @@ namespace vsn
         void calc_pnts(const FrmCv& frmc,
                        const set<int>& mi_ary,
                        vec3s& Ps)const;
-        bool genDense();
-        void show()const;
+        bool genDense(const Img& imL);
+        void show();
 
         //----
         bool run_sgbm(const Img& im1,

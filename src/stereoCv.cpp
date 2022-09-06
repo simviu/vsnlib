@@ -11,6 +11,7 @@ using namespace vsn;
 namespace{
     const struct{
         int N_th_pnp = 4;
+        float pnt_sz = 3;
     }lcfg_;
 
 }
@@ -89,7 +90,7 @@ bool StereoVOcv::onImg(const Img& im1,
 
     //---- gen denth map
     if(cfg_.run.enDense)
-        ok &= genDense();
+        ok &= genDense(im1);
     
     //---- do odometry
     auto p_frmp = data_.p_frm_prev;
@@ -477,33 +478,64 @@ bool StereoVOcv::run_sgbm(const Img& im1,
     return true;
 }
 //------
-bool StereoVOcv::genDense()
+bool StereoVOcv::genDense(const Img& imL)
 {
-    /*
-    auto p_imd = StereoVO::data_.p_imd_;
+    auto p_frmo = StereoVO::data_.p_frm;
+    if(p_frmo==nullptr) return false;
+    auto& frmo = *p_frmo;
+    auto& depth = frmo.depth;
+    auto& pntc = depth.pntc;
+
+    //----
+    auto& camc = cfg_.camc;
+    CamCfg::Lense L; 
+    if(!camc.toLense(L)) 
+        return false;
+    
+    double b = cfg_.baseline;
+
+    //----
+    auto p_imd = depth.p_imd_;
     if(p_imd==nullptr) return false;
     cv::Mat imd = ImgCv(*p_imd).im_;
-    for(int y = 0; y<imd.rows; y++)
-    {
-        for(int x = 0; x<imd.cols; x++)
-        {
-            double d = imd.at<double>(y,x);
 
+    //----
+    auto p_dense = mkSp<Points>();
+    pntc.p_dense = p_dense;
+    for(int v = 0; v<imd.rows; v++)
+        for(int u = 0; u<imd.cols; u++)
+        {
+            double d = imd.at<float>(v,u);
+            
+            double z = d/b;
+            double x= (u-L.cx)/L.fx;
+            double y= (v-L.cy)/L.fy;
+            x *= z;
+            y *= z;
+            if(d<0) 
+                continue;
+            //else std::cout << z <<" ";
+            vec3 P; P << x,y,z;
+            Color c;
+            imL.get(Px(x,y), c);
+            p_dense->add({P,c});
         }
-    }
-    */
+    
+    
     return true;
 }
 
 
 //-----
-void StereoVOcv::show()const
+void StereoVOcv::show()
 {
     auto p_frmo = StereoVO::data_.p_frm;
     if(p_frmo==nullptr)
         return;
     auto& frmo = *p_frmo;
-    //---- show
+    auto& depth = frmo.depth;
+    auto& pntc = depth.pntc;
+    //---- show disparity img
     auto p_imd = frmo.depth.p_imd_;
     if(p_imd != nullptr)
     {
@@ -511,10 +543,25 @@ void StereoVOcv::show()const
         ImgCv imd(*p_imd); 
         cv::Mat imd2;
         //cv::normalize(imd, imd2, 0, 255, cv::NORM_MINMAX, CV_8U);
-        imd2 = imd.im_/ sgc.numDisparities;
+        imd2 = imd.im_ / sgc.numDisparities;
         p_imd->show("Disparity");
         cv::imshow("Disparity2", imd2);
     }
+
+    //---- show points dense
+    auto& pvis = StereoVO::data_.pntVis;
+    if(pvis.p_vis_dense==nullptr)
+        pvis.p_vis_dense = Points::Vis::create();
+    auto& vden = *pvis.p_vis_dense;
+    vden.clear();
+    auto p_dense = pntc.p_dense;
+    if(p_dense!=nullptr)
+    {
+        vden.add(*p_dense, "dense", lcfg_.pnt_sz);
+        vden.spin();
+    }
+    //---- show depth of point cloud
+    
 
 
 }

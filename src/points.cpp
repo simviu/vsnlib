@@ -93,13 +93,19 @@ void Points::Vis::add(const Points& pd,
     vi.addPointCloud<pcl::PointXYZRGB> (p, rgb, sName);
     vi.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, pnt_sz, sName);
 }
+//----
 bool Points::Vis::spin()
 {
     auto p = getRaw(*this);
     p->spinOnce (100);
     return !(p->wasStopped());
 }
-
+//----
+void Points::Vis::clear()
+{
+    auto p = getRaw(*this);
+    p->removeAllPointClouds();
+}
 //----- factory
 Sp<Points::Vis> Points::Vis::create(const Cfg& c)
 { return mkSp<VisImp>(c); }
