@@ -153,11 +153,21 @@ namespace ut
         {  x -= d.x; y -= d.y; }
         void operator += (const Px& d)
         {  x += d.x; y += d.y; }
+        string str()const 
+        { stringstream s; 
+          s << x <<","<< y; return s.str(); } 
     };
-    struct Color{unsigned char r=0;
-                 unsigned char g=0; 
-                 unsigned char b=0;
-                 unsigned char a=255;};
+    struct Color{
+        uint8_t r=0;
+        uint8_t g=0; 
+        uint8_t b=0;
+        uint8_t a=255;
+        string str()const 
+        { stringstream s; 
+          s << (int)r <<","<< (int)g << ","
+             << (int)b << "," << (int)a; 
+          return s.str(); } 
+    };
     struct Sz{
         int w=0;
         int h=0;

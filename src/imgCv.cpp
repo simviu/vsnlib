@@ -87,6 +87,31 @@ void ImgCv::line(const Line2d& l, const Color& c, double w)
     Point p2(l.p2.x(), l.p2.y());
     cv::line(im_, p1, p2, toCv(c), w);
 }
+//----- set/get
+void ImgCv::set(const Px& px, const Color& c) 
+{
+    Sz sz = size();
+    int x = px.x; int y = px.y;
+    if(x<0 || y<0 || x>=sz.w || y>=sz.h)
+        return;
+
+    im_.ptr<BGR>(x)[y] = BGR(c);
+}
+bool ImgCv::get(const Px& px, Color& c)const
+{
+    int x = px.x; int y = px.y;
+    Sz sz = size();
+    if(x<0 || y<0 || x>=sz.w || y>=sz.h)
+    {
+        c = {0,0,0,};
+        return false;
+    }
+    auto& bgr = im_.ptr<const BGR>(x)[y];
+    c = bgr.toUt();
+    return true;
+}
+
+
 //-----
 void ImgCv::draw(const CamCfg& cc, const Axis& a)
 {

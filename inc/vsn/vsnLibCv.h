@@ -18,12 +18,18 @@ namespace vsn
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
         }
 
+        virtual Sz size()const override
+        {  return {im_.rows, im_.cols}; }
 
         virtual bool load(ut::CStr& s, int cvFlag) override;
         virtual bool save(ut::CStr& s)const override;
         virtual bool val()const override
         { return (im_.rows>0) && (im_.cols>0);}
         virtual void show(CStr& sWind)const override;
+        virtual void set(const Px& px,
+                         const Color& c) override;
+        virtual bool get(const Px& px,
+                         Color& c)const override;
 
         virtual void draw(CStr& s, 
             const Px& px={30,30},

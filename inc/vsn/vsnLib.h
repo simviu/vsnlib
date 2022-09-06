@@ -32,7 +32,23 @@ namespace vsn{
          vec3 p1; vec3 p2; 
          string str()const ;
     };
-    
+    //---- BGR can be used to access image BGR
+    // elements directly.
+    struct BGR {
+        uint8_t b=0;
+        uint8_t g=0;
+        uint8_t r=0;  
+        BGR(){}
+        BGR(const Color& c):b(c.b), g(c.g), r(c.r){}
+        Color toUt()const{ return {r,g,b,255}; }
+    }; 
+    struct HSV {
+        uint8_t h=0;
+        uint8_t s=0;
+        uint8_t v=0;  
+        HSV(){}
+    };
+
     //-----
     struct Pose{ 
         quat q; 
@@ -117,12 +133,19 @@ namespace vsn{
         typedef shared_ptr<Img> Ptr;
         typedef shared_ptr<const Img> CPtr;
 
+        virtual Sz size()const=0;
         virtual bool load(CStr& s, int cvFlag=1)=0;
         virtual bool save(CStr& s)const=0;
         virtual bool val()const =0;
         operator bool(){ return val(); }
 
         virtual void show(CStr& sWind)const=0;
+        //----
+        virtual void set(const Px& px,
+                         const Color& c)=0;
+        virtual bool get(const Px& px,
+                         Color& c)const=0;
+            // note: return false if out of img dimention
         //---- draw functions, 
         //   TODO: replace with draw()
         virtual void draw(CStr& s, 

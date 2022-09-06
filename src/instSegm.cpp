@@ -35,7 +35,7 @@ bool InstSegm::onImg(const Img& im)
     Mat imf = imi2.im_;
     Mat imh, imb, imt;
 
-	//cv::cvtColor(bright, brightHSV, cv::COLOR_BGR2HSV);
+	cv::cvtColor(im1, imh, cv::COLOR_BGR2HSV);
     // pre-process
     float bsz = cfg_.blurSz;
     blur(imf, imb, Size(bsz, bsz)); // apply blur to grayscaled image
@@ -71,6 +71,7 @@ bool InstSegm::onImg(const Img& im)
     imi1.show("filter");
     imshow("blur", imb);
     imshow("threshold", imt);
+    imshow("hsv", imh);
 
     // result
     // create a blank image (black image)
