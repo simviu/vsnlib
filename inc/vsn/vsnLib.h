@@ -369,6 +369,19 @@ namespace vsn{
     public:
 
         static Sp<StereoVO> create();
+        //---- SGBM cfg
+        struct SGBM_cfg{
+            int  	minDisparity = 0;
+            int  	numDisparities = 16;
+            int  	blockSize = 3;
+            int  	P1 = 0;
+            int  	P2 = 0;
+            int  	disp12MaxDiff = 0;
+            int  	preFilterCap = 0;
+            int  	uniquenessRatio = 0;
+            int  	speckleWindowSize = 0;
+            int  	speckleRange = 0;
+        };
         //----
         struct Cfg{
             CamCfg camc;
@@ -389,6 +402,8 @@ namespace vsn{
                 bool enDepth = false;
                 bool enWr = false;
             }; Run run;
+            // stereo mathing cfg
+            SGBM_cfg sgbm;
             struct PointCloud{
                 double z_TH = 40;
             }; PointCloud pntCloud;

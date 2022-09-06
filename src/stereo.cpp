@@ -28,6 +28,23 @@ namespace{
         string sr = s.str();
         return sr;
     }
+    //---- load SGBM json cfg
+    bool decode(const Json::Value& j,
+                StereoVO::SGBM_cfg& c)
+    {
+        c.minDisparity = j["minDisparity"].asInt();
+        c.numDisparities = j["numDisparities"].asInt();
+        c.blockSize = j["blockSize"].asInt();
+        c.P1 = j["P1"].asInt();
+        c.P2 = j["P2"].asInt();
+        c.disp12MaxDiff = j["disp12MaxDiff"].asInt();
+        c.preFilterCap = j["preFilterCap"].asInt();
+        c.uniquenessRatio = j["uniquenessRatio"].asInt();
+        c.speckleWindowSize = j["speckleWindowSize"].asInt();
+        c.speckleRange = j["speckleRange"].asInt();
+        return true;
+    
+    }
 }
 
 //-----------
@@ -65,6 +82,8 @@ bool StereoVO::Cfg::load(const string& sf)
 
         auto& jf = js["feature"];
         feature.Nf = jf["Nf"].asInt();
+        //--- sgbm
+        decode(js["sgbm"], sgbm);
 
         auto& jpc = js["point_cloud"];
         pntCloud.z_TH = jpc["z_TH"].asDouble();

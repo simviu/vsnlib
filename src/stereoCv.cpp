@@ -104,7 +104,6 @@ bool StereoVOcv::onImg(const Img& im1,
     if(cfg_.run.bShow)
         show();
 
-
     //---- save to previous frm
     data_.p_frm_prev = p_frm;
     return ok;
@@ -450,20 +449,32 @@ bool StereoVOcv::run_sgbm(const Img& im1,
         // int mode = StereoSGBM::MODE_SGBM
     );
     */
-    // Setting (2)
-    auto p_sgbm =  cv::StereoSGBM::create(0, 96, 9, 8 * 9 * 9, 32 * 9 * 9, 1, 63, 10, 100, 32); // tested parameters
+    
+    
+    //auto p_sgbm =  cv::StereoSGBM::create(
+    //    0, 96, 9, 8 * 9 * 9, 32 * 9 * 9, 1, 63, 10, 100, 32); // tested parameters
+    
+    auto& c = cfg_.sgbm;
+    auto p_sgbm =  cv::StereoSGBM::create(
+              	c.minDisparity ,
+              	c.numDisparities ,
+              	c.blockSize ,
+              	c.P1 ,
+              	c.P2 ,
+              	c.disp12MaxDiff ,
+              	c.preFilterCap ,
+              	c.uniquenessRatio ,
+              	c.speckleWindowSize ,
+              	c.speckleRange );
+
     auto& sgbm = *p_sgbm;
 
     //---------------
-    cv::Mat im_disp, im_disp2;
-    sgbm.compute(imc1.im_, imc2.im_, im_disp);
-
-    //---- display
-    cv::normalize(im_disp, im_disp2, 0, 255, cv::NORM_MINMAX, CV_8U);
-    //im_disp2 = im_disp*10;
-
+    cv::Mat im_sgbm, im_disp;
+    sgbm.compute(imc1.im_, imc2.im_, im_sgbm);
+    im_sgbm.convertTo(im_disp, CV_32F, 1.0 / 16.0f);
     depth.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
-
+    return true;
 }
 //------
 bool StereoVOcv::genDense()
@@ -495,7 +506,15 @@ void StereoVOcv::show()const
     //---- show
     auto p_imd = frmo.depth.p_imd_;
     if(p_imd != nullptr)
+    {
+        auto& sgc = cfg_.sgbm;
+        ImgCv imd(*p_imd); 
+        cv::Mat imd2;
+        //cv::normalize(imd, imd2, 0, 255, cv::NORM_MINMAX, CV_8U);
+        imd2 = imd.im_/ sgc.numDisparities;
         p_imd->show("Disparity");
+        cv::imshow("disparity2", imd2);
+    }
 
 
 }
