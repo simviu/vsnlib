@@ -30,6 +30,9 @@ namespace vsn{
         BGR(){}
         BGR(const Color& c):b(c.b), g(c.g), r(c.r){}
         Color toUt()const{ return {r,g,b,255}; }
+        string str()const
+        { stringstream s; s << b << "," << g << "," << r; 
+          return s.str(); }
     }; 
 
     struct HSV {
@@ -39,6 +42,9 @@ namespace vsn{
         uint8_t h=0;
         uint8_t s=0;
         uint8_t v=0;  
+        string str()const
+        { stringstream ss; ss << (int)h << "," << (int)s << "," << (int)v; 
+          return ss.str(); }
     };
 
     //------------
