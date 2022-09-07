@@ -41,33 +41,10 @@ namespace
         int i = std::stoi(s);
         return i;
     }
-    /*
-    //---- Kitti format T 3x4, for evaluation.
-    string kitti_line(const cv::Mat& Rw, 
-                      const cv::Mat& tw, 
-                      int idx)
-    {
-        stringstream s;
-        s.precision(16);
-        s << std::fixed;
-        s << idx ; // current frame index
-
-        cv::Mat_<double> Tw(3,4);
-        for(int i=0;i<3;i++)
-        Rw.col(i).copyTo(Tw.col(i));
-        tw.copyTo(Tw.col(3));
-        for(int i=0; i<Tw.rows; i++)
-        for(int j=0; j<Tw.cols; j++)
-            s << " " << Tw.at<double>(i, j);
-        s << endl;
-        string sr = s.str();
-        return sr;
-    }
-    */
 
 }
 //--------------------------
-bool TestKittiStereo::run()
+bool TestStereo::testKittyGray()const
 {
     bool ok = true;
     log_i("run TestStereo()...");
@@ -86,17 +63,6 @@ bool TestKittiStereo::run()
 
     vo.cfg_.camc = camc;
 
-    //---- Open Kitti output
-    /*
-    ofstream oftw(lcfg_.sf_Tw);
-    ofstream ofps(lcfg_.sf_pnts);
-    if(!(oftw.is_open() ||
-         ofps.is_open()))
-    {
-        log_ef(lcfg_.sf_Tw);
-        return false;
-    }
-    */
     //---- main loop
     int N = sfLs.size();
     if (N > sfRs.size())
@@ -154,3 +120,11 @@ bool TestKittiStereo::run()
     //oftw.close();
     return ok;
 }
+
+//----------
+bool TestStereo::run()
+{
+  //  return testKittyGray();    
+    return test_sgbm();    
+}
+

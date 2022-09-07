@@ -30,10 +30,13 @@ namespace test{
     public:
         virtual bool run() override;
     }; //------
-    class TestKittiStereo : public Test
+    class TestStereo : public Test
     {
     public:
         virtual bool run() override;
+    protected:
+        bool testKittyGray()const;
+        bool test_sgbm()const;
     };
     //------
     class TestBlob : public Test

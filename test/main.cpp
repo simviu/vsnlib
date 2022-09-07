@@ -18,7 +18,7 @@ namespace{
     {
         {"marker"   , mkSp<TestMarker>()}, 
         {"feature"  , mkSp<TestFeature>()}, 
-        {"stereo"   , mkSp<TestKittiStereo>()}, 
+        {"stereo"   , mkSp<TestStereo>()}, 
         {"inst"     , mkSp<TestInst>()}, 
         {"points"   , mkSp<TestPoints>()}
     };
