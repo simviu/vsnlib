@@ -26,10 +26,11 @@ namespace vsn
         virtual bool val()const override
         { return (im_.rows>0) && (im_.cols>0);}
         virtual void show(CStr& sWind)const override;
-        virtual void set(const Px& px,
-                         const Color& c) override;
-        virtual bool get(const Px& px,
-                         Color& c)const override;
+        //---
+        virtual void set(const Px& px, const Color& c) override;
+        virtual bool get(const Px& px, Color& c)const override;
+        virtual void set(const Px& px, const HSV& c) override;
+        virtual bool get(const Px& px, HSV& c)const override;
 
         virtual void draw(CStr& s, 
             const Px& px={30,30},
@@ -43,8 +44,8 @@ namespace vsn
 
         virtual void toGray()override;
         virtual void toHsv()override;
-        virtual void filter(const Color& c0,
-                            const Color& c1) override;
+        virtual void filter(const HSV& c0,
+                            const HSV& c1) override;
         //-----
         virtual void* data()override
         { return reinterpret_cast<void*>(&(im_)); }
@@ -61,7 +62,8 @@ namespace vsn
 
         virtual void undistort(const CamCfg& cc)override;
         cv::Mat im_;
-
+        cv::Mat raw(){ return im_; }
+        cv::Mat raw()const{ return im_; }
     protected:
     };
     //---- cast utils

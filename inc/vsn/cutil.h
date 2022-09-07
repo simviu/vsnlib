@@ -171,6 +171,8 @@ namespace ut
     struct Sz{
         int w=0;
         int h=0;
+        bool isIn(const Px& px)
+        { return px.x>=0 && px.y>=0 && px.x<w && px.y<h; }
     };
     
     struct Rect{

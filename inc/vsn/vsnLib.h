@@ -18,6 +18,28 @@ namespace vsn{
     using namespace std;
     using namespace ut;
     using namespace egn;
+    //--------
+    // types
+    //--------
+    //---- BGR can be used to access image BGR
+    // elements directly.
+    struct BGR {
+        uint8_t b=0;
+        uint8_t g=0;
+        uint8_t r=0;  
+        BGR(){}
+        BGR(const Color& c):b(c.b), g(c.g), r(c.r){}
+        Color toUt()const{ return {r,g,b,255}; }
+    }; 
+
+    struct HSV {
+        HSV(){}
+        HSV(uint8_t h, uint8_t s, uint8_t v):
+            h(h), s(s), v(v){}
+        uint8_t h=0;
+        uint8_t s=0;
+        uint8_t v=0;  
+    };
 
     //------------
     // primitive
@@ -32,23 +54,7 @@ namespace vsn{
          vec3 p1; vec3 p2; 
          string str()const ;
     };
-    //---- BGR can be used to access image BGR
-    // elements directly.
-    struct BGR {
-        uint8_t b=0;
-        uint8_t g=0;
-        uint8_t r=0;  
-        BGR(){}
-        BGR(const Color& c):b(c.b), g(c.g), r(c.r){}
-        Color toUt()const{ return {r,g,b,255}; }
-    }; 
-    struct HSV {
-        uint8_t h=0;
-        uint8_t s=0;
-        uint8_t v=0;  
-        HSV(){}
-    };
-
+    
     //-----
     struct Pose{ 
         quat q; 
@@ -140,11 +146,11 @@ namespace vsn{
         operator bool(){ return val(); }
 
         virtual void show(CStr& sWind)const=0;
-        //----
-        virtual void set(const Px& px,
-                         const Color& c)=0;
-        virtual bool get(const Px& px,
-                         Color& c)const=0;
+        //---- TODO: template
+        virtual void set(const Px& px, const Color& c)=0;
+        virtual bool get(const Px& px, Color& c)const=0;
+        virtual void set(const Px& px, const HSV& c)=0;
+        virtual bool get(const Px& px, HSV& c)const=0;
             // note: return false if out of img dimention
         //---- draw functions, 
         //   TODO: replace with draw()
@@ -163,8 +169,8 @@ namespace vsn{
         //----
         virtual void toGray()=0;
         virtual void toHsv()=0;
-        virtual void filter(const Color& c0,
-                            const Color& c1)=0;
+        virtual void filter(const HSV& c0,
+                            const HSV& c1)=0;
         //----
         static Sp<Img> create();
         //---- internal storage data (Mat)
@@ -208,7 +214,7 @@ namespace vsn{
     public:
         struct Cfg{
             struct Filter{
-                Color c0,c1;
+                HSV c0,c1;
             }; Filter filter;
             float blurSz = 3;
             float areaTH = 20*10;

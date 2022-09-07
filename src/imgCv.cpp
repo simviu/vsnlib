@@ -16,7 +16,6 @@ using namespace vsn;
 namespace{
             
 
-
 }
 //---------
 void ImgCv::rot(double dgr)
@@ -90,27 +89,28 @@ void ImgCv::line(const Line2d& l, const Color& c, double w)
 //----- set/get
 void ImgCv::set(const Px& px, const Color& c) 
 {
-    Sz sz = size();
-    int x = px.x; int y = px.y;
-    if(x<0 || y<0 || x>=sz.w || y>=sz.h)
-        return;
-
-    im_.ptr<BGR>(x)[y] = BGR(c);
+    if(!size().isIn(px)) return;
+    im_.ptr<BGR>(px.x)[px.y] = BGR(c);
 }
 bool ImgCv::get(const Px& px, Color& c)const
 {
-    int x = px.x; int y = px.y;
-    Sz sz = size();
-    if(x<0 || y<0 || x>=sz.w || y>=sz.h)
-    {
-        c = {0,0,0,};
-        return false;
-    }
-    auto& bgr = im_.ptr<const BGR>(x)[y];
+    if(!size().isIn(px)) return false;
+    auto& bgr = im_.ptr<const BGR>(px.x)[px.y];
     c = bgr.toUt();
     return true;
 }
-
+//---- TODO: template
+void ImgCv::set(const Px& px, const HSV& c) 
+{
+    if(!size().isIn(px)) return;
+    im_.ptr<HSV>(px.x)[px.y] = HSV(c);
+}
+bool ImgCv::get(const Px& px, HSV& c)const
+{
+    if(!size().isIn(px)) return false;
+    c = im_.ptr<const HSV>(px.x)[px.y];
+    return true;
+}
 
 //-----
 void ImgCv::draw(const CamCfg& cc, const Axis& a)
@@ -153,8 +153,8 @@ void ImgCv::toHsv()
     cv::cvtColor(im_, im_,cv::COLOR_BGR2HSV);
 }
 //--------
-void ImgCv::filter(const Color& c0,
-                   const Color& c1)
+void ImgCv::filter(const HSV& c0,
+                   const HSV& c1)
 {
     cv::inRange(im_, toCv(c0), toCv(c1), im_);
 }

@@ -48,6 +48,10 @@ namespace ocv{
     //---------
     inline Scalar toCv(const Color& c)
     { return Scalar(c.b, c.g, c.r); }
+    inline Scalar toCv(const BGR& c)
+    { return Scalar(c.b, c.g, c.r); }
+    inline Scalar toCv(const HSV& c)
+    { return Scalar(c.h, c.s, c.v); }
     inline Point2d toCv(const vec2& v)
     { return Point2d(v.x(), v.y()); }
     inline vec2 toVec(const Point2d& c)

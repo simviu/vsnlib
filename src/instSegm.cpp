@@ -24,19 +24,15 @@ namespace{
 bool InstSegm::onImg(const Img& im)
 {
     using namespace cv;
-    auto p_im1 = im.copy();
-    auto p_im2 = im.copy();
-    ImgCv imi1(*p_im2); Mat im1 = imi1.im_;
-    ImgCv imi2(*p_im2); Mat im2 = imi2.im_;
-
+    
     auto& fc = cfg_.filter;
-    imi2.filter(fc.c0, fc.c1);
+    auto p_imc = im.copy();
+    p_imc->toHsv();
+    p_imc->filter(fc.c0, fc.c1);
+    cv::Mat imf = ImgCv(*p_imc).raw();    
 
-    Mat imf = imi2.im_;
-    Mat imh, imb, imt;
-
-	cv::cvtColor(im1, imh, cv::COLOR_BGR2HSV);
     // pre-process
+    cv::Mat imb, imt;
     float bsz = cfg_.blurSz;
     blur(imf, imb, Size(bsz, bsz)); // apply blur to grayscaled image
     threshold(imb, imt, 50, 255, THRESH_BINARY); // apply binary thresholding
@@ -68,10 +64,10 @@ bool InstSegm::onImg(const Img& im)
 
     // show process image
     im.show("input");
-    imi1.show("filter");
+    imshow("filter", imf);
     imshow("blur", imb);
     imshow("threshold", imt);
-    imshow("hsv", imh);
+    //imshow("hsv", imh);
 
     // result
     // create a blank image (black image)
