@@ -18,6 +18,7 @@ void VsnTool::initCmd(CStrs& args)
 {
     //----
     cmd_.add("marker",  mkSp<CmdMarker>());
+    cmd_.add("image",   mkSp<CmdImg>());
     cmd_.add("video",   mkSp<CmdVideo>());
 }
 

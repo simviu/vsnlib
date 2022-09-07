@@ -17,6 +17,20 @@ namespace app
     //-----------
 
     //-----------
+    // CmdImg
+    //-----------
+    class CmdImg:public Cmd{
+    public:
+        using Cmd::Cmd;
+        CmdImg();
+        bool run_picker(CStrs& args);
+    protected:
+        struct Data{
+            int frm_idx=0;
+        }; Data data_;
+
+    };
+    //-----------
     // CmdVideo
     //-----------
     class CmdVideo:public Cmd{
