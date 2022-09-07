@@ -32,10 +32,12 @@ bool InstSegm::onImg(const Img& im)
     cv::Mat imf = ImgCv(*p_imc).raw();    
 
     // pre-process
-    cv::Mat imb, imt;
+    cv::Mat imb = imf;
     float bsz = cfg_.blurSz;
-    blur(imf, imb, Size(bsz, bsz)); // apply blur to grayscaled image
-    threshold(imb, imt, 50, 255, THRESH_BINARY); // apply binary thresholding
+    if(bsz>0)
+        blur(imf, imb, Size(bsz, bsz)); // apply blur to grayscaled image
+    cv::Mat imt;
+    threshold(imb, imt, 150, 255, THRESH_BINARY); // apply binary thresholding
 
     // find contours
     vector< vector<Point> > contrs; // list of contour points
@@ -58,16 +60,18 @@ bool InstSegm::onImg(const Img& im)
         data_.ins.push_back(in);
     }
 
+    // show process image
+    if(cfg_.enShow)
+    {
+        im.show("input");
+        imshow("filter", imf);
+        imshow("blur", imb);
+        imshow("threshold", imt);
+    }
+
     //---- show result
     if(!cfg_.en_imo)
         return true;
-
-    // show process image
-    im.show("input");
-    imshow("filter", imf);
-    imshow("blur", imb);
-    imshow("threshold", imt);
-    //imshow("hsv", imh);
 
     // result
     // create a blank image (black image)
@@ -104,7 +108,9 @@ bool InstSegm::onImg(const Img& im)
     //imshow("result", imo);
     //---- hold 
     //while(!vsn::cv_waitESC(10));
-    
+    if(cfg_.enShow)
+        cv::imshow("InstSegm result", imo);
+
     return true;
 }
 

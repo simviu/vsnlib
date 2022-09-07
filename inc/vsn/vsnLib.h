@@ -225,6 +225,7 @@ namespace vsn{
             float blurSz = 3;
             float areaTH = 20*10;
             bool en_imo = false;
+            bool enShow = false;
         }; Cfg cfg_;
         //----
         struct Inst{
