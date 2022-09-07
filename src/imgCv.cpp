@@ -90,12 +90,12 @@ void ImgCv::line(const Line2d& l, const Color& c, double w)
 void ImgCv::set(const Px& px, const Color& c) 
 {
     if(!size().isIn(px)) return;
-    im_.ptr<BGR>(px.x)[px.y] = BGR(c);
+    im_.ptr<BGR>(px.y)[px.x] = BGR(c);
 }
 bool ImgCv::get(const Px& px, Color& c)const
 {
     if(!size().isIn(px)) return false;
-    auto& bgr = im_.ptr<const BGR>(px.x)[px.y];
+    auto& bgr = im_.ptr<const BGR>(px.y)[px.x];
     c = bgr.toUt();
     return true;
 }
@@ -103,12 +103,12 @@ bool ImgCv::get(const Px& px, Color& c)const
 void ImgCv::set(const Px& px, const HSV& c) 
 {
     if(!size().isIn(px)) return;
-    im_.ptr<HSV>(px.x)[px.y] = HSV(c);
+    im_.ptr<HSV>(px.y)[px.x] = HSV(c);
 }
 bool ImgCv::get(const Px& px, HSV& c)const
 {
     if(!size().isIn(px)) return false;
-    c = im_.ptr<const HSV>(px.x)[px.y];
+    c = im_.ptr<const HSV>(px.y)[px.x];
     return true;
 }
 

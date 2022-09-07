@@ -19,7 +19,7 @@ namespace vsn
         }
 
         virtual Sz size()const override
-        {  return {im_.rows, im_.cols}; }
+        {  return {im_.cols,im_.rows}; }
 
         virtual bool load(ut::CStr& s, int cvFlag) override;
         virtual bool save(ut::CStr& s)const override;

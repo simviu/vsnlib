@@ -36,17 +36,20 @@ namespace{
             auto& imo = *p_imo;
 
             Px px(x,y);
+            Color co{0,0,255,255};
             if (event == EVENT_MOUSEMOVE)
             {
                 //cout << "Current mouse position:(" << x << "," << y << ")" << endl;
                 Color c; imo.get(px, c);
                 HSV h;  imh.get(px, h);
-                stringstream s; 
-                s << "[" << x << "," << y << "] ";
-                s << "rgb(" << c.str() << ") ";
-                s << "hsv(" << h.str() << ")";
+                stringstream s1,s2,s3; 
+                s1 << "[" << x << "," << y << "]";
+                s2 << "rgb(" << c.str() << ")";
+                s3 << "hsv(" << h.str() << ")";
 
-                imo.draw(s.str(), px);
+                imo.draw(s1.str(), px, co);
+                imo.draw(s2.str(), px +Px(0,40), co);
+                imo.draw(s3.str(), px +Px(0,80), co);
             }
             imo.show(ud.sWin);
             //------- example
