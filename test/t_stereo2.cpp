@@ -32,8 +32,8 @@ namespace
 //----
 namespace{
     struct LCfg{
-        string sf_L = "testd/pair/800L.png";
-        string sf_R = "testd/pair/800R.png";
+        string sf_L = "testd/pair/1L.png";
+        string sf_R = "testd/pair/1R.png";
     }; LCfg lc_;
 }
 //----
@@ -108,6 +108,7 @@ bool TestStereo::test_sgbm()const
     cv::ximgproc::getDisparityVis(filtered_disp, filtered_disp_vis, VIS_MULT);
 
    // return filtered_disp_vis;
+    imshow("confmap", conf_map);
     imshow("left", left);
     imshow("right", right);
     imshow("raw disparity vis", raw_disp_vis);
