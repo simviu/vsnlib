@@ -511,6 +511,7 @@ namespace vsn{
         auto& getData()const{ return data_; }
         void onFinish(){ data_.close(); }
         void setFrmIdx(int i){ data_.frmIdx=i; }
+        void showLoop();
     protected:
 
         Data data_;

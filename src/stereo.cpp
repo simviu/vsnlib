@@ -183,3 +183,14 @@ bool StereoVO::Data::wrData()
     return true;
 }
 
+//------------
+void StereoVO::showLoop()
+{
+    while(!cv_waitESC(10))
+    {
+        //---- dense point
+        auto p_vd = data_.pntVis.p_vis_dense;
+        if(p_vd!=nullptr)
+            p_vd->spin();
+    }
+}

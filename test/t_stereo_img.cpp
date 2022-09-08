@@ -33,11 +33,38 @@ namespace
 //----
 namespace{
     struct LCfg{
-        string sf_L = "testd/pair/1L.png";
-        string sf_R = "testd/pair/1R.png";
+        string sf_L = "pair/1L.png";
+        string sf_R = "pair/1R.png";
+        string sf_camc    = "cfg/cam.yml";
+        string sf_stereoc = "cfg/stereo.json";
     }; LCfg lc_;
+
 }
 
+//----------
+// ref:
+//   https://answers.opencv.org/question/223280/calculating-depth-with-ptrstereosgbm-black-bar-on-image/
+bool test_LR(const Img& imL, const Img& imR)
+{
+    auto p_vo = StereoVO::create();
+    auto& vo = *p_vo;
+    if (!vo.cfg_.load(lc_.sf_stereoc))
+        return false;
+    CamCfg camc;
+    if (!camc.load(lc_.sf_camc))
+        return false;
+    vo.cfg_.camc = camc;
+
+    //-------
+    // run
+    //-------
+    vo.onImg(imL, imR);
+
+    //----
+    vo.showLoop();    
+
+    return true;
+};
 //----------
 // ref:
 //   https://answers.opencv.org/question/223280/calculating-depth-with-ptrstereosgbm-black-bar-on-image/
@@ -132,7 +159,8 @@ bool TestStereo::test_imgLR()const
     if(pL==nullptr || pR==nullptr)
         return false;
 
-    return test_LR_ref(*pL, *pR);
+ // return test_LR_ref(*pL, *pR);
+    return test_LR(*pL, *pR);
 
     return true;
 }

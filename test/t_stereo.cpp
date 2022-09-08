@@ -23,9 +23,7 @@ namespace
         string sf_stereoc = "cfg/stereo.json";
         string sf_seqL    = "seq/image_0";
         string sf_seqR    = "seq/image_1";
-    //    string sf_Tw      = "Tw.txt";
-    //    string sf_pnts    = "points.xyz";
-        double baseline = 0.255;
+
     } lcfg_;
     //--------------
     //-------- get index from Kitti img filename
