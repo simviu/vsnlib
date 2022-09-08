@@ -482,7 +482,8 @@ bool StereoVOcv::run_sgbm(const Img& im1,
     sgbm.compute(imL, imR, im_sgbm);
 //    left_matcher->compute(left_for_matcher, right_for_matcher, left_disp);
     p_matcherR->compute(imR, imL, im_dispR);
-    im_sgbm.convertTo(im_disp, CV_32F, 1.0 / 16.0f);
+    float scl = 1.0; //1.0/16.0;
+    im_sgbm.convertTo(im_disp, CV_32F, scl);
 
     //--- filter
     cv::Mat imdf;
@@ -540,6 +541,7 @@ bool StereoVOcv::genDense(const Img& imL)
             vec3 P; P << x,y,z;
             Color c;
             imL.get(Px(x,y), c);
+            c = {255,255,255,255}; // debug
             p_dense->add({P,c});
         }
     
