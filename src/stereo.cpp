@@ -56,6 +56,8 @@ namespace{
         auto& wls = c.wls_filter;
         wls.lambda = jw["lambda"].asFloat();
         wls.sigma  = jw["sigma"].asFloat();
+        //----
+        c.vis_mul = j["vis_mul"].asFloat();
 
         return ok;
     } 
