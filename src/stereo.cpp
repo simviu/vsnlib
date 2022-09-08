@@ -6,7 +6,7 @@ using namespace vsn;
 //----
 namespace{
     const struct{
-        string sf_xyz = "points.xyz";
+        string sf_pnts_spar = "pnts_sparse.xyz";
         string sf_Tw = "Tw.txt";
     }lcfg_;
     //---- utils
@@ -42,6 +42,15 @@ namespace{
         c.uniquenessRatio = j["uniquenessRatio"].asInt();
         c.speckleWindowSize = j["speckleWindowSize"].asInt();
         c.speckleRange = j["speckleRange"].asInt();
+
+        //---- filter
+        //----
+        auto& jw = j["wls_filter"];
+        auto& wls = c.wls_filter;
+        wls.en = jw["en"].asBool();
+        wls.lambda = jw["lambda"].asFloat();
+        wls.sigma  = jw["sigma"].asFloat();
+
         return true;
     
     }
@@ -51,11 +60,7 @@ namespace{
     {
         bool ok = true;
         ok &= decode(j["sgbm"], c.sgbm);
-        //----
-        auto& jw = j["wls_filter"];
-        auto& wls = c.wls_filter;
-        wls.lambda = jw["lambda"].asFloat();
-        wls.sigma  = jw["sigma"].asFloat();
+        
         //----
         c.vis_mul = j["vis_mul"].asFloat();
 
@@ -101,10 +106,20 @@ bool StereoVO::Cfg::load(const string& sf)
         feature.Nf = jf["Nf"].asInt();
         //--- disparity cfg
         decode(js["disparity"], dispar);
+        //---- point cloud
+        {
+            auto& jpc = js["point_cloud"];
+            auto& pc = pntCloud;
+            pc.z_TH = jpc["z_TH"].asDouble();
+            auto& jfc = js["filter"];
+            auto& fc = pc.filter;
+            fc.en = jfc["en"].asBool();
+            fc.meanK = jfc["meanK"].asFloat();
+            fc.devTh = jfc["devTh"].asFloat();
+            fc.voxel_res = jfc["voxel_res"].asFloat();
+        }
 
-        auto& jpc = js["point_cloud"];
-        pntCloud.z_TH = jpc["z_TH"].asDouble();
-
+        //---- run
         auto& jr = js["run"];
         run.bShow   = jr["show"].asBool();
         run.enDense = jr["enDense"].asBool();
@@ -125,10 +140,10 @@ bool StereoVO::Cfg::load(const string& sf)
 //-----
 bool StereoVO::Data::Wr::open()
 {
-    ofs_xyz.open(lcfg_.sf_xyz);
-    bool ok1 = ofs_xyz.is_open();
+    ofs_pnts_spar.open(lcfg_.sf_pnts_spar);
+    bool ok1 = ofs_pnts_spar.is_open();
     if(!ok1)
-        log_ef(lcfg_.sf_xyz);
+        log_ef(lcfg_.sf_pnts_spar);
     //----
     ofs_Tw.open(lcfg_.sf_Tw);
     bool ok2 = ofs_Tw.is_open();
@@ -140,7 +155,7 @@ bool StereoVO::Data::Wr::open()
 //----
 void StereoVO::Data::Wr::close()
 { 
-    ofs_xyz.close(); 
+    ofs_pnts_spar.close(); 
     ofs_Tw.close(); 
 }
 
@@ -160,7 +175,7 @@ bool StereoVO::Data::wrData()
     //--- write points
     if(p_frm!=nullptr)
     {
-        auto& f = wr.ofs_xyz;
+        auto& f = wr.ofs_pnts_spar;
         if(f.is_open())
             for(auto& P : p_frm->Pws)
                 f << P.x() << " " << P.y() << " " << P.z() << endl;

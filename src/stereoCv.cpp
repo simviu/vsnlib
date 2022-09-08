@@ -484,7 +484,7 @@ bool StereoVOcv::run_sgbm(const Img& im1,
 
     //--- filter
     cv::Mat imdf;
-    auto& wlsc = dispc.wls_filter;
+    auto& wlsc = cs.wls_filter;
 
 //    wls_filter = ximgproc::createDisparityWLSFilter(left_matcher);
     auto p_fltr = cv::ximgproc::createDisparityWLSFilter(p_sgbm);
@@ -541,7 +541,11 @@ bool StereoVOcv::genDense(const Img& imL)
             p_dense->add({P,c});
         }
     
-    
+    //---- filter
+    auto& fc = cfg_.pntCloud.filter;
+    if(fc.en)
+        p_dense->filter_stats(fc.meanK, fc.devTh);
+
     return true;
 }
 

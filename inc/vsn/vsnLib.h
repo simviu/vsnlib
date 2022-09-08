@@ -397,12 +397,13 @@ namespace vsn{
                 int  	uniquenessRatio = 0;
                 int  	speckleWindowSize = 0;
                 int  	speckleRange = 0;
+                //--- disparity WSL filter
+                struct WLSFilter{
+                    bool en=true;
+                    float lambda=8000;
+                    float sigma=1;
+                }; WLSFilter wls_filter;
             }; SGBM sgbm;
-            //--- disparity WSL filter
-            struct WLSFilter{
-                float lambda=8000;
-                float sigma=1;
-            }; WLSFilter wls_filter;
             float vis_mul = 8.0;
         };
         //----
@@ -431,6 +432,12 @@ namespace vsn{
 
             struct PointCloud{
                 double z_TH = 40;
+                struct Filter{
+                    bool en = true;
+                    float meanK = 50;
+                    float devTh = 1.0;
+                    float voxel_res = 0.03; 
+                }; Filter filter;
             }; PointCloud pntCloud;
 
             //----
@@ -462,7 +469,8 @@ namespace vsn{
             int frmIdx = 0;
             //----
             struct Wr{
-                ofstream ofs_xyz;
+                ofstream ofs_pnts_spar;
+                ofstream ofs_pnts_dense;
                 ofstream ofs_Tw;
                 bool open();
                 void close();
