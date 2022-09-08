@@ -30,7 +30,7 @@ namespace{
     }
     //---- load SGBM json cfg
     bool decode(const Json::Value& j,
-                StereoVO::SGBM_cfg& c)
+                StereoVO::DisparityCfg::SGBM& c)
     {
         c.minDisparity = j["minDisparity"].asInt();
         c.numDisparities = j["numDisparities"].asInt();
@@ -45,6 +45,21 @@ namespace{
         return true;
     
     }
+    //----
+    bool decode(const Json::Value& j, 
+                StereoVO::DisparityCfg& c)
+    {
+        bool ok = true;
+        ok &= decode(j["sgbm"], c.sgbm);
+        //----
+        auto& jw = j["wls_filter"];
+        auto& wls = c.wls_filter;
+        wls.lambda = jw["lambda"].asFloat();
+        wls.sigma  = jw["sigma"].asFloat();
+
+        return ok;
+    } 
+    
 }
 
 //-----------
@@ -82,8 +97,8 @@ bool StereoVO::Cfg::load(const string& sf)
 
         auto& jf = js["feature"];
         feature.Nf = jf["Nf"].asInt();
-        //--- sgbm
-        decode(js["sgbm"], sgbm);
+        //--- disparity cfg
+        decode(js["disparity"], dispar);
 
         auto& jpc = js["point_cloud"];
         pntCloud.z_TH = jpc["z_TH"].asDouble();

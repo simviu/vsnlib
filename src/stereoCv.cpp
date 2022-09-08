@@ -3,6 +3,7 @@
 #include <opencv2/calib3d/calib3d.hpp>
 
 #include <opencv2/stereo/quasi_dense_stereo.hpp>
+#include <opencv2/ximgproc/disparity_filter.hpp>
 
 
 using namespace vsn;
@@ -454,27 +455,46 @@ bool StereoVOcv::run_sgbm(const Img& im1,
     
     //auto p_sgbm =  cv::StereoSGBM::create(
     //    0, 96, 9, 8 * 9 * 9, 32 * 9 * 9, 1, 63, 10, 100, 32); // tested parameters
-    
-    auto& c = cfg_.sgbm;
+    auto& dispc = cfg_.dispar;
+    auto& cs = dispc.sgbm;
     auto p_sgbm =  cv::StereoSGBM::create(
-              	c.minDisparity ,
-              	c.numDisparities ,
-              	c.blockSize ,
-              	c.P1 ,
-              	c.P2 ,
-              	c.disp12MaxDiff ,
-              	c.preFilterCap ,
-              	c.uniquenessRatio ,
-              	c.speckleWindowSize ,
-              	c.speckleRange );
+              	cs.minDisparity ,
+              	cs.numDisparities ,
+              	cs.blockSize ,
+              	cs.P1 ,
+              	cs.P2 ,
+              	cs.disp12MaxDiff ,
+              	cs.preFilterCap ,
+              	cs.uniquenessRatio ,
+              	cs.speckleWindowSize ,
+              	cs.speckleRange );
 
     auto& sgbm = *p_sgbm;
-
+    sgbm.setMode(cv::StereoSGBM::MODE_SGBM_3WAY);
+    auto p_matcherR = cv::ximgproc::createRightMatcher(p_sgbm);
+    
     //---------------
-    cv::Mat im_sgbm, im_disp;
-    sgbm.compute(imc1.im_, imc2.im_, im_sgbm);
+    cv::Mat imL = imc1.im_;
+    cv::Mat imR = imc2.im_;
+    cv::Mat im_sgbm, im_disp, im_dispR;
+    sgbm.compute(imL, imR, im_sgbm);
+//    left_matcher->compute(left_for_matcher, right_for_matcher, left_disp);
+    p_matcherR->compute(imR, imL, im_dispR);
     im_sgbm.convertTo(im_disp, CV_32F, 1.0 / 16.0f);
-    depth.p_imd_ = mkSp<ocv::ImgCv>(im_disp);
+
+    //--- filter
+    cv::Mat imdf;
+    auto& wlsc = dispc.wls_filter;
+
+//    wls_filter = ximgproc::createDisparityWLSFilter(left_matcher);
+    auto p_fltr = cv::ximgproc::createDisparityWLSFilter(p_sgbm);
+    p_fltr->setLambda(wlsc.lambda);
+    p_fltr->setSigmaColor(wlsc.sigma);
+// ref    wls_filter->filter(left_disp, left, filtered_disp, right_disp);
+    p_fltr->filter(im_disp, imL, imdf, im_dispR);
+
+    cv::Mat im_conf = p_fltr->getConfidenceMap();    
+    depth.p_imd_ = mkSp<ocv::ImgCv>(imdf);
     return true;
 }
 //------
@@ -539,13 +559,11 @@ void StereoVOcv::show()
     auto p_imd = frmo.depth.p_imd_;
     if(p_imd != nullptr)
     {
-        auto& sgc = cfg_.sgbm;
-        ImgCv imd(*p_imd); 
-        cv::Mat imd2;
-        //cv::normalize(imd, imd2, 0, 255, cv::NORM_MINMAX, CV_8U);
-        imd2 = imd.im_ / sgc.numDisparities;
-        p_imd->show("Disparity");
-        cv::imshow("Disparity2", imd2);
+        auto& dc = cfg_.dispar;
+        cv::Mat imd = ImgCv(*p_imd).raw(); 
+        cv::Mat imdv;
+        cv::ximgproc::getDisparityVis(imd, imdv, dc.vis_mul);
+        imshow("Disparity", imdv);
     }
 
     //---- show points dense
@@ -562,6 +580,5 @@ void StereoVOcv::show()
     }
     //---- show depth of point cloud
     
-
 
 }

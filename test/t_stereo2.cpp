@@ -22,11 +22,12 @@ namespace
 //   https://answers.opencv.org/question/223280/calculating-depth-with-ptrstereosgbm-black-bar-on-image/
 #define VIS_MULT 8
 #define DOWNSCALE 1
-#define LAMBDA 8000
 #define MAX_DISPARITY 128
 #define WIN_SIZE_SGBM 10
 #define SMOOTHING_FACTOR 1
 #define MAX_X_GRAD 63
+
+#define LAMBDA 8000
 #define SIGMA 2
 
 //----

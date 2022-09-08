@@ -383,18 +383,27 @@ namespace vsn{
     public:
 
         static Sp<StereoVO> create();
-        //---- SGBM cfg
-        struct SGBM_cfg{
-            int  	minDisparity = 0;
-            int  	numDisparities = 16;
-            int  	blockSize = 3;
-            int  	P1 = 0;
-            int  	P2 = 0;
-            int  	disp12MaxDiff = 0;
-            int  	preFilterCap = 0;
-            int  	uniquenessRatio = 0;
-            int  	speckleWindowSize = 0;
-            int  	speckleRange = 0;
+        //---- disparity cfg
+        struct DisparityCfg{
+            //---- SGBM cfg
+            struct SGBM{
+                int  	minDisparity = 0;
+                int  	numDisparities = 16;
+                int  	blockSize = 3;
+                int  	P1 = 0;
+                int  	P2 = 0;
+                int  	disp12MaxDiff = 0;
+                int  	preFilterCap = 0;
+                int  	uniquenessRatio = 0;
+                int  	speckleWindowSize = 0;
+                int  	speckleRange = 0;
+            }; SGBM sgbm;
+            //--- disparity WSL filter
+            struct WLSFilter{
+                float lambda=8000;
+                float sigma=1;
+            }; WLSFilter wls_filter;
+            float vis_mul = 8.0;
         };
         //----
         struct Cfg{
@@ -410,14 +419,16 @@ namespace vsn{
             struct Feature{
                 int Nf = 100;
             }; Feature feature;
+
+            DisparityCfg dispar;
+
             struct Run{
                 bool bShow=false;
                 bool enDense = false;
                 bool enDepth = false;
                 bool enWr = false;
             }; Run run;
-            // stereo mathing cfg
-            SGBM_cfg sgbm;
+
             struct PointCloud{
                 double z_TH = 40;
             }; PointCloud pntCloud;
