@@ -460,17 +460,19 @@ bool StereoVOcv::run_sgbm(const Img& im1,
     auto p_sgbm =  cv::StereoSGBM::create(
               	cs.minDisparity ,
               	cs.numDisparities ,
-              	cs.blockSize ,
-              	cs.P1 ,
-              	cs.P2 ,
-              	cs.disp12MaxDiff ,
-              	cs.preFilterCap ,
-              	cs.uniquenessRatio ,
-              	cs.speckleWindowSize ,
-              	cs.speckleRange );
+              	cs.blockSize);
 
     auto& sgbm = *p_sgbm;
+    sgbm.setP1(cs.P1);
+    sgbm.setP2(cs.P2);
+    sgbm.setDisp12MaxDiff(cs.disp12MaxDiff);
+    sgbm.setPreFilterCap(cs.preFilterCap);
+    sgbm.setUniquenessRatio(cs.uniquenessRatio);
+    sgbm.setSpeckleWindowSize(cs.speckleWindowSize);
+    sgbm.setSpeckleRange(cs.speckleRange);
+
     sgbm.setMode(cv::StereoSGBM::MODE_SGBM_3WAY);
+
     auto p_matcherR = cv::ximgproc::createRightMatcher(p_sgbm);
     
     //---------------
