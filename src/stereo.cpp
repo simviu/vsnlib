@@ -111,7 +111,7 @@ bool StereoVO::Cfg::load(const string& sf)
             auto& jpc = js["point_cloud"];
             auto& pc = pntCloud;
             pc.z_TH = jpc["z_TH"].asDouble();
-            auto& jfc = js["filter"];
+            auto& jfc = jpc["filter"];
             auto& fc = pc.filter;
             fc.en = jfc["en"].asBool();
             fc.meanK = jfc["meanK"].asFloat();
