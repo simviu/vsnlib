@@ -125,6 +125,6 @@ bool TestStereo::testKittyGray()const
 bool TestStereo::run()
 {
   //  return testKittyGray();    
-    return test_sgbm();    
+    return test_imgLR();    
 }
 

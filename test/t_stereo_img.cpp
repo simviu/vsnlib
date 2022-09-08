@@ -8,6 +8,8 @@
 
 #include "vsn/vsnTest.h"
 #include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
+
 #include <filesystem>
 #include <opencv2/ximgproc/disparity_filter.hpp>
 using namespace vsn;
@@ -18,8 +20,6 @@ using namespace cv;
 namespace
 {
 }
-// ref:
-//   https://answers.opencv.org/question/223280/calculating-depth-with-ptrstereosgbm-black-bar-on-image/
 #define VIS_MULT 8
 #define DOWNSCALE 1
 #define MAX_DISPARITY 128
@@ -37,13 +37,17 @@ namespace{
         string sf_R = "testd/pair/1R.png";
     }; LCfg lc_;
 }
-//----
-bool TestStereo::test_sgbm()const
+
+//----------
+// ref:
+//   https://answers.opencv.org/question/223280/calculating-depth-with-ptrstereosgbm-black-bar-on-image/
+bool test_LR_ref(const Img& imL, const Img& imR)
 {
+
     // input
     cv::Mat left, right;
-    left  = imread(lc_.sf_L);
-    right = imread(lc_.sf_R);
+    left  = ImgCv(imL).raw();
+    right = ImgCv(imR).raw();
 
     bool no_downscale = true;
     int max_disp = MAX_DISPARITY;
@@ -118,3 +122,17 @@ bool TestStereo::test_sgbm()const
     return true;
 }
 
+//------------------
+// test_imgLR()
+//------------------
+bool TestStereo::test_imgLR()const
+{
+    auto pL = Img::loadFile(lc_.sf_L);
+    auto pR = Img::loadFile(lc_.sf_R);
+    if(pL==nullptr || pR==nullptr)
+        return false;
+
+    return test_LR_ref(*pL, *pR);
+
+    return true;
+}

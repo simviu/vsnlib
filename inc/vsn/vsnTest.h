@@ -36,7 +36,8 @@ namespace test{
         virtual bool run() override;
     protected:
         bool testKittyGray()const;
-        bool test_sgbm()const;
+        bool test_imgLR()const;
+
     };
     //------
     class TestBlob : public Test
