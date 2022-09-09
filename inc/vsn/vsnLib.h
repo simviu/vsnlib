@@ -172,7 +172,8 @@ namespace vsn{
         virtual void draw(const CamCfg& cc, const Axis& a)=0;
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)=0;
-        //----
+        virtual void draw(const Px& v, const Color& c, 
+                          float w=1.0)=0;  
         virtual void toGray()=0;
         virtual void toHsv()=0;
         virtual void filter(const HSV& c0,

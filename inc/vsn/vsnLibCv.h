@@ -32,6 +32,8 @@ namespace vsn
         virtual void set(const Px& px, const HSV& c) override;
         virtual bool get(const Px& px, HSV& c)const override;
 
+        virtual void draw(const Px& px, const Color& c, 
+                          float w)override;  
         virtual void draw(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})override;

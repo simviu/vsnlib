@@ -176,6 +176,8 @@ namespace ut
     };
     
     struct Rect{
+        Rect(){}
+        Rect(const Px& c, const Sz& sz):cntr(c), sz(sz){}
         Px cntr;
         Sz sz;
         Px p0()const { return Px(cntr.x - sz.w*0.5, cntr.y - sz.h*0.5); }

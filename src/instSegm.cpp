@@ -88,7 +88,7 @@ bool InstSegm::onImg(const Img& im)
     Scalar cc = Scalar(0, 255, 0); // green - contours
     Scalar ch = Scalar(255, 0, 0); // blue - convex hull
     Scalar ci = Scalar(0,255,0); // instance
-
+    Color cp{255,0,0}; // Convex points
     //--- draw origin contours
     for(int i = 0; i < N; i++) {
         // draw ith contour
@@ -106,6 +106,9 @@ bool InstSegm::onImg(const Img& im)
         drawContours(imo, hs, -1, ci, 4, 8, vector<Vec4i>(), 0, Point());
         auto b = ocv::toCv(in.box);
         cv::rectangle(imo, b, ci, 2);
+        //--- convex pnts
+        for(auto& v : in.hull)
+            p_imo->draw(toPx(v), cp, 10);
     }
     //----
     //imshow("result", imo);

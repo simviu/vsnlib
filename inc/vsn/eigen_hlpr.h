@@ -28,6 +28,7 @@ namespace egn{
     using quat = Eigen::Quaterniond;
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
+    inline vec2 px2v(const Px& p){ vec2 v; v << p.x, p.y; return v; };
     inline bool normalize(const vec4& i, vec3& o)
     { 
       if(i(3)==0) return false;

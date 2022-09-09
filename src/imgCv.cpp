@@ -128,6 +128,12 @@ void ImgCv::draw(const CamCfg& cc, const Axis& a)
         line(ll, rgb[i], w);
     }
 }
+//------
+void ImgCv::draw(const Px& px, const Color& c, float w)
+{
+    // note: line width about 1/3 of rectangle size
+    draw(ut::Rect(px, {w,w}), c, w*0.3);
+}
 
 //--------
 void ImgCv::draw(const ut::Rect& r, 
