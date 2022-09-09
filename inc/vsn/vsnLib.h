@@ -51,6 +51,7 @@ namespace vsn{
     // primitive
     //------------
     struct Line2d{
+         Line2d(const vec2& p1, const vec2& p2):p1(p1), p2(p2){}
          Line2d(){ p1.Zero(); p2.Zero(); }
          vec2 p1; vec2 p2; 
          string str()const ;
@@ -164,7 +165,7 @@ namespace vsn{
             const Px& px={30,30},
             const Color& c={255,255,255})=0;
         
-        virtual void line(const Line2d& l,
+        virtual void draw(const Line2d& l,
                           const Color& c={255,255,255}, 
                           double w=1.0)=0;
         //---- draw axis
@@ -197,9 +198,11 @@ namespace vsn{
             double  	theta = M_PI/180.0;
             int  	    TH = 150;
             double  	minLnLen = 100;
-            double  	maxLnGap = 10;             
+            double  	maxLnGap = 10;  
+            //--- extra
+            bool doCanny = true;           
         };
-        vector<Line2d> det(const HoughLnCfg& c)const;
+        virtual vector<Line2d> det(const HoughLnCfg& c)const=0;
     protected:
     };
     //-------------
@@ -247,6 +250,8 @@ namespace vsn{
         struct Data{
             vector<Inst> ins;
             Sp<Img> p_imo = nullptr;
+             // contour img grayscale
+            Sp<Img> p_imc = nullptr;
         }; Data data_;
         bool onImg(const Img& im);
 

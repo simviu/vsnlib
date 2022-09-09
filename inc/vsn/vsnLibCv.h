@@ -37,7 +37,7 @@ namespace vsn
         virtual void draw(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})override;
-        virtual void line(const Line2d& l,
+        virtual void draw(const Line2d& l,
                           const Color& c, 
                           double w=1.0)override;
         virtual void draw(const CamCfg& cc, const Axis& a)override;
@@ -66,7 +66,7 @@ namespace vsn
         cv::Mat im_;
         cv::Mat raw(){ return im_; }
         cv::Mat raw()const{ return im_; }
-        vector<Line2d> det(const HoughLnCfg& c)const;
+        virtual vector<Line2d> det(const HoughLnCfg& c)const override;
 
     protected:
     };

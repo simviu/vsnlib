@@ -169,6 +169,8 @@ namespace ut
           return s.str(); } 
     };
     struct Sz{
+        Sz(){}
+        Sz(int w, int h):w(w), h(h){}
         int w=0;
         int h=0;
         bool isIn(const Px& px)

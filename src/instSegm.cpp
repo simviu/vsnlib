@@ -24,6 +24,7 @@ namespace{
 bool InstSegm::onImg(const Img& im)
 {
     using namespace cv;
+    Sz sz = im.size();
     
     auto& fc = cfg_.filter;
     auto p_imc = im.copy();
@@ -98,25 +99,33 @@ bool InstSegm::onImg(const Img& im)
         // Bounding box
         //rectangle(imo,  bbox[i], cb, 2);
     }
+    
     //---- draw instance
+    cv::Mat im_cntr(sz.h, sz.w, CV_8UC1, {0,0,0});
     for(auto& in : data_.ins)
     {
-        vector<Point> h; conv_pnts(in.hull, h);
+        vector<Point> h; 
+        conv_pnts(in.hull, h);
         vector<vector<Point>> hs{h};
-        drawContours(imo, hs, -1, ci, 4, 8, vector<Vec4i>(), 0, Point());
+        drawContours(imo, hs, -1, ci,  4, 8, vector<Vec4i>(), 0, Point());
+        drawContours(im_cntr, hs, -1, {255,255,255}, 2, 8, vector<Vec4i>(), 0, Point());
         auto b = ocv::toCv(in.box);
         cv::rectangle(imo, b, ci, 2);
         //--- convex pnts
         for(auto& v : in.hull)
             p_imo->draw(toPx(v), cp, 10);
     }
+    data_.p_imc = mkSp<ImgCv>(im_cntr);
+
     //----
     //imshow("result", imo);
     //---- hold 
     //while(!vsn::cv_waitESC(10));
     if(cfg_.enShow)
+    {
         cv::imshow("InstSegm result", imo);
-
+        cv::imshow("Inst Contours", im_cntr);
+    }
     return true;
 }
 

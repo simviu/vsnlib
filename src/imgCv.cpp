@@ -80,7 +80,7 @@ void ImgCv::draw(CStr& s,
         1 ,c1, 2, false);
 }
 //----
-void ImgCv::line(const Line2d& l, const Color& c, double w)
+void ImgCv::draw(const Line2d& l, const Color& c, double w)
 {
     Point p1(l.p1.x(), l.p1.y());
     Point p2(l.p2.x(), l.p2.y());
@@ -125,14 +125,14 @@ void ImgCv::draw(const CamCfg& cc, const Axis& a)
     for(int i=0;i<3;i++)
     {
         Line2d ll = cc.proj(ls[i]);
-        line(ll, rgb[i], w);
+        draw(ll, rgb[i], w);
     }
 }
 //------
 void ImgCv::draw(const Px& px, const Color& c, float w)
 {
     // note: line width about 1/3 of rectangle size
-    draw(ut::Rect(px, {w,w}), c, w*0.3);
+    draw(ut::Rect(px, Sz(w,w)), c, w*0.3);
 }
 
 //--------
@@ -167,8 +167,23 @@ void ImgCv::filter(const HSV& c0,
 vector<Line2d> ImgCv::det(const HoughLnCfg& c)const
 {
     // TODO: detect already gray scale
-    cv::Mat im;
-    cv::cvtColor(im_, im,cv::COLOR_BGR2GRAY);
-    cv::Canny(im, im, 50, 200, 3); // TODO: cfg
-    
+    cv::Mat im = im_;
+    if(im.channels()==3)
+        cv::cvtColor(im_, im,cv::COLOR_BGR2GRAY);
+    if(c.doCanny)
+        cv::Canny(im, im, 50, 200, 3); // TODO: cfg
+    vector<Vec4i> lines;
+    cv::HoughLinesP( im, lines, c.rho, c.theta, c.TH, 
+                        c.minLnLen, c.maxLnGap );
+    vector<Line2d> lns;
+    for(auto& v : lines)
+    {
+        vec2 p0,p1;
+        p0 << v[0], v[1];
+        p1 << v[2], v[3];
+        Line2d l(p0, p1);
+        lns.push_back(l);
+    }
+    return lns;
+
 }

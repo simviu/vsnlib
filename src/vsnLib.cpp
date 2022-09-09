@@ -25,7 +25,8 @@ string Pose::str()const{
 string Line2d::str()const 
 { 
     stringstream ss; 
-    ss << p1 <<", " << p2; 
+    ss << "("<< egn::str(p1) <<")->(" 
+        << egn::str(p2) << ")"; 
     return ss.str(); 
 }
 //----
