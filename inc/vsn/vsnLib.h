@@ -55,6 +55,18 @@ namespace vsn{
          Line2d(){ p1.Zero(); p2.Zero(); }
          vec2 p1; vec2 p2; 
          string str()const ;
+         vec2 dv()const{ return p2-p1;}
+         vec2 nv()const{ return dv().normalized(); }
+         double len()const{ return dv().norm(); }
+         double ang()const
+         { vec2 v = dv();return atan2(v.y(), v.x()); }
+         double dist(const vec2& v)const
+         {  
+            vec2 n = this->nv(); 
+            double t = v.dot(n);
+            vec2 vp = p1 + t*n;
+            return (v - vp).norm();
+         }
     };
     struct Line{
          Line(){ p1.Zero(); p2.Zero(); }
