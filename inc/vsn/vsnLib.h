@@ -63,7 +63,8 @@ namespace vsn{
          double dist(const vec2& v)const
          {  
             vec2 n = this->nv(); 
-            double t = v.dot(n);
+            vec2 vi = v - p1;
+            double t = n.dot(vi);
             vec2 vp = p1 + t*n;
             return (v - vp).norm();
          }
