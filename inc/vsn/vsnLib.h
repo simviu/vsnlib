@@ -190,6 +190,16 @@ namespace vsn{
         virtual void rot(double dgr)=0;
         //---- 
         static Sp<Img> loadFile(const string& sf, int cvFlags=1);
+
+        //---- Hough line detection
+        struct HoughLnCfg{
+            double  	rho = 1; // pixel
+            double  	theta = M_PI/180.0;
+            int  	    TH = 150;
+            double  	minLnLen = 100;
+            double  	maxLnGap = 10;             
+        };
+        vector<Line2d> det(const HoughLnCfg& c)const;
     protected:
     };
     //-------------

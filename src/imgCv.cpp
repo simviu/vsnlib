@@ -164,3 +164,11 @@ void ImgCv::filter(const HSV& c0,
 {
     cv::inRange(im_, toCv(c0), toCv(c1), im_);
 }
+vector<Line2d> ImgCv::det(const HoughLnCfg& c)const
+{
+    // TODO: detect already gray scale
+    cv::Mat im;
+    cv::cvtColor(im_, im,cv::COLOR_BGR2GRAY);
+    cv::Canny(im, im, 50, 200, 3); // TODO: cfg
+    
+}

@@ -66,6 +66,8 @@ namespace vsn
         cv::Mat im_;
         cv::Mat raw(){ return im_; }
         cv::Mat raw()const{ return im_; }
+        vector<Line2d> det(const HoughLnCfg& c)const;
+
     protected:
     };
     //---- cast utils
