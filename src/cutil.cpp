@@ -94,7 +94,7 @@ namespace utlog
     extern void dbg(CStr& s)
     { logs("[dbg]:"+s); }
     extern void inf(CStr& s)
-    { logs("[inf]:"+s); }
+    { logs("[info]:"+s); }
     extern void err(CStr& s)
     { logs("[err]:"+s, true); }
     extern void errf(CStr& s)
