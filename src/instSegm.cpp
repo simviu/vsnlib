@@ -76,9 +76,12 @@ bool InstSegm::onImg(const Img& im)
     // result
     // create a blank image (black image)
     //Mat imo = Mat::zeros(imt.size(), CV_8UC3); 
-    auto p_imo = im.copy();
-    data_.p_imo = p_imo;
-
+    auto p_imo = data_.p_imo;
+    if(p_imo==nullptr)
+    {
+        p_imo = im.copy();
+        data_.p_imo = p_imo;
+    }
     ImgCv imoc(*p_imo);
     cv::Mat imo = imoc.im_;// bbox
 
