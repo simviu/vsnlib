@@ -80,14 +80,21 @@ namespace{
         virtual void init(int dict_id)override
         {
                 //---- create board
-            vector<vector<cv::Point3f>> allPnts;
+            vector<vector<Point3f>> allPnts;
             vector<int> ids;
             for(auto& m : marks)
             {
-                vector<Point3f> pnts;
-
+                double d = m.w*0.5;
+                vec3 c = m.pos;
+                //--- 4 corner points start from
+                // lef/top, clock wise, on x,y plane.
+                vec3 vs[4]; 
+                vs[0] << -d,  d, 0; vs[1] <<  d,  d, 0;
+                vs[3] << -d, -d, 0; vs[2] <<  d, -d, 0;
+                vector<Point3f> ps;
+                for(auto& v : vs) ps.push_back(toCv(v));
                 ids.push_back(m.id);
-                allPnts.push_back(pnts);
+                allPnts.push_back(ps);
             }
             auto pDict = dictTbl_.findCreate(dict_id);
             pBrd = aruco::Board::create(allPnts, pDict, ids);
@@ -99,7 +106,7 @@ namespace{
             assert(pBrd!=nullptr);
             cv::Mat r,t;
             cv::Mat K,D ;
-            cv::eigen2cv(camc.K, D);
+            cv::eigen2cv(camc.K, K);
             cv::eigen2cv(camc.D.V(), D);
             int valid = cv::aruco::estimatePoseBoard(detd.corners, detd.ids, pBrd, K, D, r, t);
             if(valid==0) return false;
@@ -198,6 +205,7 @@ string Marker::PoseEstimator::MCfg::str()const
 //---------------
 bool Marker::PoseEstimator::MCfg::load(CStr& sf)
 {
+    log_i("Loading marker cfg:'"+sf+"'");
     bool ok = true;
     ifstream ifs(sf);
     if(!ifs)
@@ -247,7 +255,7 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
                 ok &= s2v(jm["pos"].asString(), m.pos);
                 bc.marks.push_back(m);
             }
-            bc.init(dict_id_);
+            pBc->init(dict_id_);
             boards_.push_back(pBc);
         }
 

@@ -54,6 +54,8 @@ namespace ocv{
     { return Scalar(c.h, c.s, c.v); }
     inline Point2d toCv(const vec2& v)
     { return Point2d(v.x(), v.y()); }
+    inline Point3d toCv(const vec3& v)
+    { return Point3d(v.x(), v.y(), v.z()); }
     inline vec2 toVec(const Point2d& c)
     { vec2 v; v<<c.x, c.y; return v;}
     inline vec2 toVec(const Point2f& c)
