@@ -66,7 +66,7 @@ string Marker::PoseEstimator::MCfg::str()const
 //---------------
 bool Marker::PoseEstimator::MCfg::load(CStr& sf)
 {
-
+    bool ok = true;
     ifstream ifs(sf);
     if(!ifs)
     {
@@ -99,6 +99,22 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
             //----
             grps_.push_back(g);
         } 
+        //---- load boards
+        auto& jbrds = jm["boards"];
+        for(auto& jbrd : jbrds)
+        {
+            Board brd;
+            brd.sName = jbrd["name"].asString();
+            auto& jms = jbrd["markers"];
+            for(auto& jm : jms)
+            {
+                Board::Mark m;
+                m.id = jm["id"].asInt();
+                m.w = jm["w"].asDouble();
+                ok &= s2v(jm["pos"].asString(), m.pos);
+            }
+        }
+
         //
         //cout << " name " << obj["name"].asString() << endl;
     }

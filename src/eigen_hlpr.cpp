@@ -48,4 +48,33 @@ namespace egn
     { return jstr_vs(vs); }
     extern string jstr(const vec3s& vs)
     { return jstr_vs(vs); }
+    
+    extern bool s2v(const string& s, vec2& v)
+    {
+        string s1 = s;
+        std::replace(s1.begin(), s1.end(), ',', ' ');
+        stringstream ss(s1);
+        double x=0,y=0;
+        ss >> x;
+        ss >> y;
+        v << x, y;
+        return !(ss.fail());
+    }
+    extern bool s2v(const string& s, vec3& v)
+    {
+        
+        string s1 = s;
+        std::replace(s1.begin(), s1.end(), ',', ' ');
+        stringstream ss(s1);
+        double x=0,y=0,z=0;
+        ss >> x;
+        ss >> y;
+        ss >> z;
+        v << x, y, z;
+        return !(ss.fail());
+        
+
+    }
+    
+
 }

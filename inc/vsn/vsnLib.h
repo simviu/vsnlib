@@ -296,6 +296,17 @@ namespace vsn{
                     double w=1;
                 };
                 vector<Grp> grps_;
+                //--- boards
+                struct Board{
+                    string sName;
+                    struct Mark{
+                        int id=-1;
+                        double w=1.0;
+                        vec3 pos;
+                    };
+                    vector<Mark> marks;
+                };
+                vector<Board> boards_;
                 //--- load json def file
                 bool load(CStr& sf);
                 string str()const;

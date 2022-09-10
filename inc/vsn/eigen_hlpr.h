@@ -35,8 +35,9 @@ namespace egn{
       o << i(0)/i(3), i(1)/i(3), i(2)/i(3);
       return true;
     }
-    //--- to strin
+    //--- to/from string
     extern string str(const vec2& v, int deci=2);
     extern string str(const vec3& v, int deci=2);
-        
+    extern bool s2v(const string& s, vec2& v);
+    extern bool s2v(const string& s, vec3& v);
 }
