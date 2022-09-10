@@ -41,7 +41,6 @@ namespace{
     bool cv_det(const Img& im, int dict_id, CvDetd& detd)
     {
         auto pDict = dictTbl_.findCreate(dict_id);
-
         cv::Mat imc = ImgCv(im).raw();
         cv::aruco::detectMarkers(imc, pDict, detd.corners, detd.ids);
         detd.dict_id = dict_id;
@@ -62,7 +61,6 @@ namespace{
                 cv::Point2f c = detd.corners[i][j];
                 vec2 p;p<<c.x, c.y;
                 m.ps[j] = p;
-    
             }
             
             
@@ -71,8 +69,59 @@ namespace{
             i++;
         }
     }
+    //---------
+    // board
+    //---------
+    using BoardCfg = Marker::PoseEstimator::Board::Cfg;
+    struct BrdCfgImp : public BoardCfg
+    {
+        Ptr<aruco::Board> pBrd = nullptr;
+        //----
+        virtual void init(int dict_id)override
+        {
+                //---- create board
+            vector<vector<cv::Point3f>> allPnts;
+            vector<int> ids;
+            for(auto& m : marks)
+            {
+                vector<Point3f> pnts;
+
+                ids.push_back(m.id);
+                allPnts.push_back(pnts);
+            }
+            auto pDict = dictTbl_.findCreate(dict_id);
+            pBrd = aruco::Board::create(allPnts, pDict, ids);
+        }
+        //------
+        bool det(const CvDetd& detd, const CamCfg& camc,
+                Pose& pose)
+        {
+            assert(pBrd!=nullptr);
+            cv::Mat r,t;
+            cv::Mat K,D ;
+            cv::eigen2cv(camc.K, D);
+            cv::eigen2cv(camc.D.V(), D);
+            int valid = cv::aruco::estimatePoseBoard(detd.corners, detd.ids, pBrd, K, D, r, t);
+            if(valid==0) return false;
+            cv::Mat R; Rodrigues(r, R);
+            mat3 Re; cv::cv2eigen(R, Re);
+            pose.q = quat(Re);
+            cv::cv2eigen(t, pose.t);
+
+            //Mat Ri;transpose(R, Ri);
+            //Mat ti = - Ri * t;
+            //----- Unkown hack:
+            //Point3d tip(ti);
+            return true;
+        }
+    };
+
+    
 }
-   
+// factory
+Sp<BoardCfg> BoardCfg::create()
+{ return mkSp<BrdCfgImp>();}
+
 //---------------
 string Marker::str()const
 {
@@ -115,10 +164,11 @@ string Marker::PoseEstimator::MCfg::str()const
     */
     //---- boards
     Json::Value jbrds;
-    for(auto& brd : boards_) 
+    for(auto p : boards_) 
     {
         //----
         Json::Value jms;
+        auto& brd = *p;
         for(auto& m :brd.marks)
         {
             Json::Value jm;
@@ -185,7 +235,8 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
         auto& jbrds = jm["boards"];
         for(auto& jbrd : jbrds)
         {
-            Board::Cfg bc;
+            auto pBc = Board::Cfg::create();
+            auto& bc = *pBc;
             bc.sName = jbrd["name"].asString();
             auto& jms = jbrd["markers"];
             for(auto& jm : jms)
@@ -196,7 +247,8 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
                 ok &= s2v(jm["pos"].asString(), m.pos);
                 bc.marks.push_back(m);
             }
-            boards_.push_back(bc);
+            bc.init(dict_id_);
+            boards_.push_back(pBc);
         }
 
         //
@@ -228,12 +280,6 @@ bool Marker::detect(const Img& im,
     return true;
 }
 //-----------
-/*
-bool Marker::detect(const Img& im, 
-                    const Cfg& cfg,
-                    const CamCfg& camc,
-                    vector<Marker>& ms)
-                    */
 bool Marker::PoseEstimator::onImg(const Img& im)
 {
     auto& ms = result_.ms;
@@ -241,14 +287,18 @@ bool Marker::PoseEstimator::onImg(const Img& im)
     
     bool ok = true;
     auto& mc = cfg_.mcfg;
+    auto& camc = cfg_.camc;
     int dict_id = mc.dict_id_;
+    
+    //---- detect markers
+    CvDetd detd;
+    cv_det(im, dict_id, detd);
+    vector<Marker> gms;
+    fill(detd, gms);
+
+    //---- TODO: group search table
     for(auto& g : mc.grps_)
     {
-        vector<Marker> gms;
-        //detect(im, gms, dict_id);
-        CvDetd detd;
-        cv_det(im, dict_id, detd);
-        fill(detd, gms);
         //---- pose estimate
         for(auto& m : gms)
         {
@@ -259,6 +309,17 @@ bool Marker::PoseEstimator::onImg(const Img& im)
             ok &= m.pose_est(cfg_.camc, g.w);
             ms.push_back(m);
         }
+        
+    }
+    //--- detect boards
+    for(auto p : cfg_.mcfg.boards_)
+    {
+        auto& bc = reinterpret_cast<BrdCfgImp&>(*p);
+        Board brd;
+        if(!bc.det(detd, camc, brd.pose))
+            continue;
+        brd.p_cfg = p;
+        result_.boards.push_back(brd);
     }
     //----- show
     if(mc.en_imo)
@@ -267,37 +328,7 @@ bool Marker::PoseEstimator::onImg(const Img& im)
    
     return true;
 }
-//-----------
-void Marker::PoseEstimator::det(const Img& im, 
-                                const Board::Cfg& c)
-{
-    int dict_id = cfg_.mcfg.dict_id_;
-    auto pDict = dictTbl_.findCreate(dict_id);
-    assert(pDict!=nullptr);
-    vector<int> ids;
 
-    //---- create board
-    vector<vector<cv::Point3f>> allPnts;
-    for(auto& m : c.marks)
-    {
-        vector<Point3f> pnts;
-
-        ids.push_back(m.id);
-        allPnts.push_back(pnts);
-    }
-            
-    //auto pBrd = cv::aruco::Board::create(allPnts, pDict, ids);
-
-   // int valid = cv::aruco::estimatePoseBoard(corners, ids, pBrd, camc.K, camc.D, r, t);
-   // if(valid==0);
-    /*
-    Mat R; Rodrigues(r, R);
-    Mat Ri;transpose(R, Ri);
-    Mat ti = - Ri * t;
-    //----- Unkown hack:
-    Point3d tip(ti);
-    */
-}
 
 //-----------
 Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const

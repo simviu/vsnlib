@@ -296,11 +296,13 @@ namespace vsn{
                         vec3 pos;
                     };
                     vector<Mark> marks;
+                    static Sp<Cfg> create();
+                    virtual void init(int dict_id)=0;
+
                 };
                 //---- result
                 Pose pose;
-                // index to cfg
-                int cfgi=-1; 
+                Sp<Cfg> p_cfg = nullptr;
             };
             //---- Marker cfg
             struct MCfg{
@@ -312,7 +314,7 @@ namespace vsn{
                     double w=1;
                 };
                 vector<Grp> grps_;
-                vector<Board::Cfg> boards_;
+                vector<Sp<Board::Cfg>> boards_;
                 //--- load json def file
                 bool load(CStr& sf);
                 string str()const;
@@ -331,13 +333,13 @@ namespace vsn{
                 //--- result img with 
                 // detect result draw.
                 Sp<Img> p_imo = nullptr;
+                //---- boards
+                vector<Board> boards;
             }result_;
             //---- detect
             bool onImg(const Img& im);
         protected:
             Sp<Img> gen_imo(const Img& im)const;
-            void det(const Img& im, 
-                     const Board::Cfg& c);
         };
         // (TODO:deprecated) Call back function that retrieve
         // marker width for pose estimation.
