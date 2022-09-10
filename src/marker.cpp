@@ -92,7 +92,11 @@ namespace{
                 vs[0] << -d,  d, 0; vs[1] <<  d,  d, 0;
                 vs[3] << -d, -d, 0; vs[2] <<  d, -d, 0;
                 vector<Point3f> ps;
-                for(auto& v : vs) ps.push_back(toCv(v));
+                for(auto v : vs) 
+                {
+                    vec3 v1 = v + c;
+                    ps.push_back(ocv::toCv(v1));
+                }
                 ids.push_back(m.id);
                 allPnts.push_back(ps);
             }
@@ -367,6 +371,15 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
             imo.draw(s, px0 + Px(dw,dh), ct);
         }
 
+    }
+    //--- draw boards
+    for(auto& b : result_.boards)
+    {
+        auto pc = b.p_cfg;
+        assert(pc!=nullptr);
+        vec2 vc = camc.proj(b.pose.t);
+        imo.draw(pc->sName, toPx(vc), ct);
+        imo.draw(camc, {b.pose, 0.5, 4});
     }
 
     return p_imo;
