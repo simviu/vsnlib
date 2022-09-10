@@ -15,6 +15,65 @@ using namespace cv;
 using namespace ocv;
 
 //---------------
+namespace{
+    using DictPtr = cv::Ptr<cv::aruco::Dictionary>;
+    struct DictionTbl{
+        DictPtr findCreate(int id)
+        {
+           if(tbl.find(id)!=tbl.end())
+              return tbl[id];
+           auto p = cv::aruco::getPredefinedDictionary(id);
+           tbl[id] = p;
+           return p;
+        }
+    protected:
+        map<int, DictPtr> tbl;
+    };
+    DictionTbl dictTbl_;
+
+    //-----
+    struct CvDetd{
+        int dict_id = -1;
+        vector<int> ids;
+        vector<std::vector<cv::Point2f>> corners;
+    };
+    //----
+    bool cv_det(const Img& im, int dict_id, CvDetd& detd)
+    {
+        auto pDict = dictTbl_.findCreate(dict_id);
+
+        cv::Mat imc = ImgCv(im).raw();
+        cv::aruco::detectMarkers(imc, pDict, detd.corners, detd.ids);
+        detd.dict_id = dict_id;
+        return true;
+    }
+    //--- fill result of marker det
+    void fill(const CvDetd& detd, vector<Marker>& ms)
+    {
+
+        int i=0;
+        for(auto& id : detd.ids)
+        {
+            Marker m;
+            m.id = id;
+            m.dict_id = detd.dict_id;
+            for(int j=0;j<4;j++)
+            {
+                cv::Point2f c = detd.corners[i][j];
+                vec2 p;p<<c.x, c.y;
+                m.ps[j] = p;
+    
+            }
+            
+            
+            //----
+            ms.push_back(m);
+            i++;
+        }
+    }
+}
+   
+//---------------
 string Marker::str()const
 {
     // in json stream 
@@ -126,18 +185,18 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
         auto& jbrds = jm["boards"];
         for(auto& jbrd : jbrds)
         {
-            Board brd;
-            brd.sName = jbrd["name"].asString();
+            Board::Cfg bc;
+            bc.sName = jbrd["name"].asString();
             auto& jms = jbrd["markers"];
             for(auto& jm : jms)
             {
-                Board::Mark m;
+                Board::Cfg::Mark m;
                 m.id = jm["id"].asInt();
                 m.w = jm["w"].asDouble();
                 ok &= s2v(jm["pos"].asString(), m.pos);
-                brd.marks.push_back(m);
+                bc.marks.push_back(m);
             }
-            boards_.push_back(brd);
+            boards_.push_back(bc);
         }
 
         //
@@ -162,29 +221,10 @@ bool Marker::detect(const Img& im,
     ocv::ImgCv imc(im);
     //default: 0,  cv::aruco::DICT_5X5_250    
     //---- local static data
-    cv::Ptr<cv::aruco::Dictionary> dict = cv::aruco::getPredefinedDictionary(dict_id);
-    vector<int> ids;
-    vector<std::vector<cv::Point2f>> corners;
-    cv::aruco::detectMarkers(imc.im_, dict, corners, ids);
-    int i=0;
-    for(auto& id : ids)
-    {
-        Marker m;
-        m.id = id;
-        m.dict_id = dict_id;
-        for(int j=0;j<4;j++)
-        {
-            cv::Point2f c = corners[i][j];
-            vec2 p;p<<c.x, c.y;
-            m.ps[j] = p;
-  
-        }
-        
-        
-        //----
-        ms.push_back(m);
-        i++;
-    }
+    
+    CvDetd detd;
+    cv_det(im, dict_id, detd);
+    fill(detd, ms);
     return true;
 }
 //-----------
@@ -205,7 +245,10 @@ bool Marker::PoseEstimator::onImg(const Img& im)
     for(auto& g : mc.grps_)
     {
         vector<Marker> gms;
-        detect(im, gms, dict_id);
+        //detect(im, gms, dict_id);
+        CvDetd detd;
+        cv_det(im, dict_id, detd);
+        fill(detd, gms);
         //---- pose estimate
         for(auto& m : gms)
         {
@@ -223,6 +266,37 @@ bool Marker::PoseEstimator::onImg(const Img& im)
     
    
     return true;
+}
+//-----------
+void Marker::PoseEstimator::det(const Img& im, 
+                                const Board::Cfg& c)
+{
+    int dict_id = cfg_.mcfg.dict_id_;
+    auto pDict = dictTbl_.findCreate(dict_id);
+    assert(pDict!=nullptr);
+    vector<int> ids;
+
+    //---- create board
+    vector<vector<cv::Point3f>> allPnts;
+    for(auto& m : c.marks)
+    {
+        vector<Point3f> pnts;
+
+        ids.push_back(m.id);
+        allPnts.push_back(pnts);
+    }
+            
+    //auto pBrd = cv::aruco::Board::create(allPnts, pDict, ids);
+
+   // int valid = cv::aruco::estimatePoseBoard(corners, ids, pBrd, camc.K, camc.D, r, t);
+   // if(valid==0);
+    /*
+    Mat R; Rodrigues(r, R);
+    Mat Ri;transpose(R, Ri);
+    Mat ti = - Ri * t;
+    //----- Unkown hack:
+    Point3d tip(ti);
+    */
 }
 
 //-----------
