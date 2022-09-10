@@ -38,7 +38,8 @@ string Marker::str()const
 //-----
 string Marker::PoseEstimator::MCfg::str()const
 { 
-
+    // groups
+    /*
     Json::Value jgs;
     for(auto& g : grps_) 
     {
@@ -52,9 +53,31 @@ string Marker::PoseEstimator::MCfg::str()const
         jg["w"] = g.w; 
         jgs.append(jg);
     }
+    */
+    //---- boards
+    Json::Value jbrds;
+    for(auto& brd : boards_) 
+    {
+        //----
+        Json::Value jms;
+        for(auto& m :brd.marks)
+        {
+            Json::Value jm;
+            jm["id"] = m.id;
+            jm["w"] = m.w;
+            jm["pos"] = egn::str(m.pos);
+            jms.append(jm);
+        }        
+        //--- 
+        Json::Value j;
+        j["name"] = brd.sName;  
+        j["markers"] = jms;
+        jbrds.append(j);
+    }
     //----
     Json::Value jd;
-    jd["groups"] = jgs;
+//    jd["groups"] = jgs;
+    jd["boards"] = jbrds;
     jd["aruco_dict"] = sDict_;
     jd["aruco_dict_id"] = dict_id_;
     //----
@@ -112,7 +135,9 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
                 m.id = jm["id"].asInt();
                 m.w = jm["w"].asDouble();
                 ok &= s2v(jm["pos"].asString(), m.pos);
+                brd.marks.push_back(m);
             }
+            boards_.push_back(brd);
         }
 
         //
