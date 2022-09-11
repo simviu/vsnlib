@@ -358,6 +358,7 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
     // Note: axis length half of marker width
     Color ct{0,200,255};
     Color cp{255,0,0};
+    Color cb{255,0,0};
     for(auto& m : ms)
     {
         imo.draw(camc, {m.pose, m.w*0.5, 2});
@@ -371,6 +372,7 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
             imo.draw(s.str(), px0, ct);
         }
         // t
+        if(0)
         {
             string s = "t="+ egn::str(m.pose.t, 2);
             imo.draw(s, px0 + Px(dw,dh), ct);
@@ -384,7 +386,11 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         assert(pc!=nullptr);
         vec2 vc = camc.proj(b.pose.t);
         imo.draw(camc, {b.pose, 0.3, 10});
-        imo.draw(pc->sName, toPx(vc), ct);
+        
+        imo.draw(pc->sName, toPx(vc), cb);
+        string s = "t="+ egn::str(b.pose.t, 2);
+        imo.draw(s, toPx(vc)+Px(dw,dh), cb);
+
     }
 
     return p_imo;
