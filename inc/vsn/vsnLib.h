@@ -50,6 +50,7 @@ namespace vsn{
     //------------
     // primitive
     //------------
+    // TODO: template for Line 3d
     struct Line2d{
          Line2d(const vec2& p1, const vec2& p2):p1(p1), p2(p2){}
          Line2d(){ p1.Zero(); p2.Zero(); }
@@ -68,13 +69,21 @@ namespace vsn{
             vec2 vp = p1 + t*n;
             return (v - vp).norm();
          }
+         vec2 cntr()const{ return (p1+p2)*0.5; }
     };
+    template<typename T>
+        Line2d operator *(const T& m, const Line2d& l)
+        { return Line2d(m*l.p1, m*l.p2); }
+    inline Line2d operator + (const Line2d& l, const vec2& v)
+    { return Line2d(l.p1 + v, l.p2 + v); }
+    inline Line2d operator - (const Line2d& l, const vec2& v)
+    { return Line2d(l.p1 - v, l.p2 - v); }
+    //----
     struct Line{
          Line(){ p1.Zero(); p2.Zero(); }
          vec3 p1; vec3 p2; 
          string str()const ;
     };
-    
     //-----
     struct Pose{ 
         quat q; 

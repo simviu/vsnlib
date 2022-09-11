@@ -21,6 +21,7 @@ namespace egn{
     using vec2s = vector<vec2>;
     extern string jstr(const vec2s& vs);
 
+    using mat2 = Eigen::Matrix2d;
     using mat3 = Eigen::Matrix3d;
     using mat4 = Eigen::Matrix4d;
     using mat3x4 = Eigen::Matrix < double , 3 , 4 >;
