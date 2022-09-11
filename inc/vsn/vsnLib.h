@@ -101,7 +101,7 @@ namespace vsn{
     extern int cv_waitkey(int MS);
     extern bool cv_waitESC(int MS);
     extern void show_loop();
-
+    //----
     //---------
     // cam
     //---------

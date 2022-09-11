@@ -41,4 +41,8 @@ namespace egn{
     extern string str(const vec3& v, int deci=2);
     extern bool s2v(const string& s, vec2& v);
     extern bool s2v(const string& s, vec3& v);
+
+    //--- utils
+    extern vec2 avg(const vec2s& vs);
+    extern vec3 avg(const vec3s& vs);
 }

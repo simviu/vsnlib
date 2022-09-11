@@ -76,5 +76,25 @@ namespace egn
 
     }
     
+    extern vec2 avg(const vec2s& vs)
+    {
+        vec2 v; v << 0,0;
+        int N = vs.size();
+        if(N==0) return v;
+        for(auto& vi : vs)
+            v += vi;
+        v *= 1.0/N;
+        return v;
+    }
+    extern vec3 avg(const vec3s& vs)
+    {
+        vec3 v; v << 0,0,0;
+        int N = vs.size();
+        if(N==0) return v;
+        for(auto& vi : vs)
+            v += vi;
+        v *= 1.0/N;
+        return v;  
+    }
 
 }

@@ -196,6 +196,11 @@ namespace ut
         T d1=1.0; 
         bool isIn(const T& d)const
         { return (d>=d0)&&(d<=d1); }
+        void upd(const T& d)
+        { if(d>d1)d1=d; if(d<d0)d0=d; }
+        T len()const{ return fabs(d1-d0); }
+        string str()const
+        { stringstream s; s << d0 <<"," << d1; return s.str(); }
     };
     //-------------
     // file utils
