@@ -88,6 +88,7 @@ namespace{
                 vec3 c = m.pos;
                 //--- 4 corner points start from
                 // lef/top, clock wise, on x,y plane.
+                // ( x righy, y up)
                 vec3 vs[4]; 
                 vs[0] << -d,  d, 0; vs[1] <<  d,  d, 0;
                 vs[3] << -d, -d, 0; vs[2] <<  d, -d, 0;
@@ -117,12 +118,12 @@ namespace{
             cv::Mat R; Rodrigues(r, R);
             mat3 Re; cv::cv2eigen(R, Re);
             pose.q = quat(Re);
-            cv::cv2eigen(t, pose.t);
 
             //Mat Ri;transpose(R, Ri);
             //Mat ti = - Ri * t;
             //----- Unkown hack:
-            //Point3d tip(ti);
+            Point3f v(t);
+            pose.t << v.x, v.y, v.z; 
             return true;
         }
     };
@@ -356,10 +357,14 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
     float dh = sz.h *0.05;
     // Note: axis length half of marker width
     Color ct{0,200,255};
+    Color cp{255,0,0};
     for(auto& m : ms)
     {
         imo.draw(camc, {m.pose, m.w*0.5, 2});
+        //--- left/top corner (px0)
         Px px0 = toPx(m.ps[0]);
+        imo.draw(px0, cp, 10);
+        
         // id
         {
             stringstream s; s << "id=" << m.id;
@@ -378,8 +383,8 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         auto pc = b.p_cfg;
         assert(pc!=nullptr);
         vec2 vc = camc.proj(b.pose.t);
+        imo.draw(camc, {b.pose, 0.3, 10});
         imo.draw(pc->sName, toPx(vc), ct);
-        imo.draw(camc, {b.pose, 0.5, 4});
     }
 
     return p_imo;
