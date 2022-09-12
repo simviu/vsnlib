@@ -87,6 +87,7 @@ vec3 Pose::operator *(const vec3& v)const
     vec3 vr;
     mat3 R(q);
     vr = R*v + t;
+    return vr;
 }
 
 //----- utils
