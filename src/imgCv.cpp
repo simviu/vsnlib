@@ -112,22 +112,6 @@ bool ImgCv::get(const Px& px, HSV& c)const
     return true;
 }
 
-//-----
-void ImgCv::draw(const CamCfg& cc, const Axis& a)
-{
-    auto& p = a.pose;
-    auto& l = a.l;
-    auto& w = a.w;
-    
-    auto ls = p.axis(l);
-    Color rgb[3]{{255,0,0}, {0,255,0}, {0,0,255}};
-    int i=0;
-    for(int i=0;i<3;i++)
-    {
-        Line2d ll = cc.proj(ls[i]);
-        draw(ll, rgb[i], w);
-    }
-}
 //------
 void ImgCv::draw(const Px& px, const Color& c, float w)
 {

@@ -81,6 +81,13 @@ Pose Pose::operator *(const Pose& p)const
     T.t = R1*p.t + t;
     return T;
 }
+//----
+vec3 Pose::operator *(const vec3& v)const
+{
+    vec3 vr;
+    mat3 R(q);
+    vr = R*v + t;
+}
 
 //----- utils
 extern int vsn::cv_waitkey(int MS)

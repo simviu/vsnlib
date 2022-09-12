@@ -35,12 +35,11 @@ namespace vsn
         virtual void draw(const Px& px, const Color& c, 
                           float w)override;  
         virtual void draw(CStr& s, 
-            const Px& px={30,30},
-            const Color& c={255,255,255})override;
+                          const Px& px={30,30},
+                          const Color& c={255,255,255})override;
         virtual void draw(const Line2d& l,
                           const Color& c, 
                           double w=1.0)override;
-        virtual void draw(const CamCfg& cc, const Axis& a)override;
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)override;
 

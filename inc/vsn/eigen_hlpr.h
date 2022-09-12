@@ -27,6 +27,13 @@ namespace egn{
     using mat3x4 = Eigen::Matrix < double , 3 , 4 >;
 
     using quat = Eigen::Quaterniond;
+    //--- vec initial
+    inline vec2 zerov2(){ vec2 v; v << 0,0;   return v;}
+    inline vec3 zerov3(){ vec3 v; v << 0,0,0; return v;}
+    inline void init(vec2& v){ v << 0,0; }
+    inline void init(vec3& v){ v << 0,0,0; }
+    inline void init(quat& q){ q = quat(1,0,0,0); }
+
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
     inline vec2 px2v(const Px& p){ vec2 v; v << p.x, p.y; return v; };
@@ -41,7 +48,7 @@ namespace egn{
     extern string str(const vec3& v, int deci=2);
     extern bool s2v(const string& s, vec2& v);
     extern bool s2v(const string& s, vec3& v);
-
+    
     //--- utils
     extern vec2 avg(const vec2s& vs);
     extern vec3 avg(const vec3s& vs);

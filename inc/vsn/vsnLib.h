@@ -86,14 +86,23 @@ namespace vsn{
     };
     //-----
     struct Pose{ 
-        quat q; 
-        vec3 t; 
+        quat q{1,0,0,0}; 
+        vec3 t = zerov3(); 
         string str()const;
         Pose inv()const;
         vector<Line> axis(double l=1.0)const;
         Pose operator *(const Pose& p)const;
+        vec3 operator *(const vec3& v)const;
     };
-
+    //---- 3d shape
+    struct Cylinder{
+        Pose pose;
+        double r=1;
+        double l=1;
+        //--- vis
+        int N_fan = 16;
+        void gen(vec3s& vs0, vec3s& vs1)const;
+    };
     //---------
     // utils
     //---------
@@ -167,6 +176,7 @@ namespace vsn{
 
         typedef shared_ptr<Img> Ptr;
         typedef shared_ptr<const Img> CPtr;
+        static Sp<Img> create(); // factory
 
         virtual Sz size()const=0;
         virtual bool load(CStr& s, int cvFlag=1)=0;
@@ -180,7 +190,7 @@ namespace vsn{
         virtual bool get(const Px& px, Color& c)const=0;
         virtual void set(const Px& px, const HSV& c)=0;
         virtual bool get(const Px& px, HSV& c)const=0;
-            // note: return false if out of img dimention
+        // note: return false if out of img dimention
         //---- draw functions, 
         //   TODO: replace with draw()
         virtual void draw(CStr& s, 
@@ -190,19 +200,22 @@ namespace vsn{
         virtual void draw(const Line2d& l,
                           const Color& c={255,255,255}, 
                           double w=1.0)=0;
-        //---- draw axis
-        struct Axis{ Pose pose; double l=1; double w=1;};
-        virtual void draw(const CamCfg& cc, const Axis& a)=0;
+        //---- 2d draw functions
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)=0;
         virtual void draw(const Px& v, const Color& c, 
                           float w=1.0)=0;  
-        virtual void toGray()=0;
-        virtual void toHsv()=0;
+        //--- 3d draw functions
+        struct Axis{ Pose pose; double l=1; double w=1;};
+        void draw(const CamCfg& cc, const Axis& a);
+        void draw(const CamCfg& cc, const Cylinder& cl, const Color& c, float w=2);
+         
+        //---- processing
         virtual void filter(const HSV& c0,
                             const HSV& c1)=0;
+        virtual void toGray()=0;
+        virtual void toHsv()=0;
         //----
-        static Sp<Img> create();
         //---- internal storage data (Mat)
         virtual void* data()=0;
         virtual const void* data()const=0;
