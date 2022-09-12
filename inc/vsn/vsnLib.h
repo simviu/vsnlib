@@ -80,6 +80,8 @@ namespace vsn{
     { return Line2d(l.p1 - v, l.p2 - v); }
     //----
     struct Line{
+         Line(const vec3& p1,
+              const vec3& p2):p1(p1), p2(p2){}
          Line(){ p1.Zero(); p2.Zero(); }
          vec3 p1; vec3 p2; 
          string str()const ;

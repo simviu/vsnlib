@@ -19,7 +19,7 @@ void Cylinder::gen(vec3s& vs0, vec3s& vs1)const
     if(N_fan==0)return;
     for(int i=0;i<N_fan;i++)
     {
-        float a = M_PI*2/N_fan;
+        float a = M_PI*2*i/N_fan;
         vec2 pr; pr << cos(a),sin(a);
         pr *= r;
         vec3 p0; p0 << pr, l;

@@ -49,7 +49,18 @@ void Img::draw(const CamCfg& cc, const Axis& a)
 //-----
 void Img::draw(const CamCfg& cc, const Cylinder& cl, const Color& c, float w)
 {
-    vec3s vs0,vs1;
-    cl.gen(vs0, vs1);
-    
+    vec3s vs[2];
+    cl.gen(vs[0], vs[1]);
+    int N = vs[0].size();
+    assert(N==vs[1].size());
+    for(int i=0;i<N;i++)
+    {
+        vec3 p0 = vs[0][i];
+        vec3 p1 = vs[1][i];
+        
+        Line ln(p0, p1);
+        Line2d lni = cc.proj(ln);
+        float l = lni.len();
+        draw(lni, c, w);
+    }
 }
