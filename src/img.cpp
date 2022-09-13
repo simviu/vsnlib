@@ -49,8 +49,7 @@ void Img::draw(const CamCfg& cc, const Axis& a)
 //-----
 void Img::draw(const CamCfg& cc, const Cylinder& cl, const Color& c, float w)
 {
-   
     auto lns = cl.edges();
-
-   
+    for(auto& l : lns)
+        draw({cc.proj(l)}, c, w);
 }
