@@ -79,44 +79,24 @@ void ImgCv::draw(CStr& s,
     cv::putText(im_,s,{px.x,px.y},cv::FONT_HERSHEY_DUPLEX,
         1 ,c1, 2, false);
 }
-//----
-void ImgCv::draw(const Line2d& l, const Color& c, double w)
-{
-    Point p1(l.p1.x(), l.p1.y());
-    Point p2(l.p2.x(), l.p2.y());
-    cv::line(im_, p1, p2, toCv(c), w);
-}
-//----- set/get
-void ImgCv::set(const Px& px, const Color& c) 
-{
-    if(!size().isIn(px)) return;
-    im_.ptr<BGR>(px.y)[px.x] = BGR(c);
-}
-bool ImgCv::get(const Px& px, Color& c)const
-{
-    if(!size().isIn(px)) return false;
-    auto& bgr = im_.ptr<const BGR>(px.y)[px.x];
-    c = bgr.toUt();
-    return true;
-}
-//---- TODO: template
-void ImgCv::set(const Px& px, const HSV& c) 
-{
-    if(!size().isIn(px)) return;
-    im_.ptr<HSV>(px.y)[px.x] = HSV(c);
-}
-bool ImgCv::get(const Px& px, HSV& c)const
-{
-    if(!size().isIn(px)) return false;
-    c = im_.ptr<const HSV>(px.y)[px.x];
-    return true;
-}
 
 //------
-void ImgCv::draw(const Px& px, const Color& c, float w)
+void ImgCv::draw(const vec2s& vs, const Color& c, float w)
 {
     // note: line width about 1/3 of rectangle size
-    draw(ut::Rect(px, Sz(w,w)), c, w*0.3);
+    for(auto& v : vs)
+        draw(ut::Rect(toPx(v), Sz(w,w)), c, w*0.3);
+}
+
+//----
+void ImgCv::draw(const vector<Line2d>& lns, const Color& c, double w)
+{
+    for(auto& l : lns)
+    {
+        Point p1(l.p1.x(), l.p1.y());
+        Point p2(l.p2.x(), l.p2.y());
+        cv::line(im_, p1, p2, toCv(c), w);
+    }
 }
 
 //--------
@@ -170,4 +150,29 @@ vector<Line2d> ImgCv::det(const HoughLnCfg& c)const
     }
     return lns;
 
+}
+//----- set/get
+void ImgCv::set(const Px& px, const Color& c) 
+{
+    if(!size().isIn(px)) return;
+    im_.ptr<BGR>(px.y)[px.x] = BGR(c);
+}
+bool ImgCv::get(const Px& px, Color& c)const
+{
+    if(!size().isIn(px)) return false;
+    auto& bgr = im_.ptr<const BGR>(px.y)[px.x];
+    c = bgr.toUt();
+    return true;
+}
+//---- TODO: template
+void ImgCv::set(const Px& px, const HSV& c) 
+{
+    if(!size().isIn(px)) return;
+    im_.ptr<HSV>(px.y)[px.x] = HSV(c);
+}
+bool ImgCv::get(const Px& px, HSV& c)const
+{
+    if(!size().isIn(px)) return false;
+    c = im_.ptr<const HSV>(px.y)[px.x];
+    return true;
 }

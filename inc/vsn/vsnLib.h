@@ -111,7 +111,7 @@ namespace vsn{
         double l=1;
         //--- vis
         int N_fan = 16;
-        void gen(vec3s& vs0, vec3s& vs1)const;
+        vec3s points()const;
         vector<Line> edges()const;
     };
     //---- Box3d
@@ -211,19 +211,18 @@ namespace vsn{
         virtual bool get(const Px& px, HSV& c)const=0;
         // note: return false if out of img dimention
         //---- draw functions, 
-        //   TODO: replace with draw()
         virtual void draw(CStr& s, 
             const Px& px={30,30},
             const Color& c={255,255,255})=0;
         
-        virtual void draw(const Line2d& l,
+        virtual void draw(const vec2s& vs, const Color& c, 
+                          float w=1.0)=0;  
+        virtual void draw(const vector<Line2d>& lns,
                           const Color& c={255,255,255}, 
                           double w=1.0)=0;
         //---- 2d draw functions
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)=0;
-        virtual void draw(const Px& v, const Color& c, 
-                          float w=1.0)=0;  
         //--- 3d draw functions
         struct Axis{ Pose pose; double l=1; double w=1;};
         void draw(const CamCfg& cc, const Axis& a);

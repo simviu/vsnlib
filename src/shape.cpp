@@ -54,19 +54,38 @@ vector<Line> Cube::edges()const
 }
 
 //-------
-void Cylinder::gen(vec3s& vs0, vec3s& vs1)const
+vec3s Cylinder::points()const
 {
-    if(N_fan==0)return;
+    vec3s vs;
+    if(N_fan==0)return vs;
     for(int i=0;i<N_fan;i++)
     {
         float a = M_PI*2*i/N_fan;
         vec2 pr; pr << cos(a),sin(a);
         pr *= r;
-        vec3 p0; p0 << pr, l;
-        vec3 p1; p1 << pr, -l;
+        vec3 p0; p0 << pr, l/2;
+        vec3 p1; p1 << pr, -l/2;
         vec3 p0w = pose * p0;
         vec3 p1w = pose * p1;
-        vs0.push_back(p0w);
-        vs1.push_back(p1w);
+        vs.push_back(p0w);
+        vs.push_back(p1w);
     }
+    return vs;
+}
+//-------
+vector<Line> Cylinder::edges()const
+{
+    auto vs = points();
+    assert(vs.size()==N_fan*2);    
+    vector<Line> lns;
+    for(int i=0;i<N_fan;i++)
+    {
+        int in = i+1;
+        if(in==N_fan) in = 0;
+        lns.push_back(Line(vs[2*i], vs[2*in])); // top 
+        lns.push_back(Line(vs[2*i], vs[2*i+1])); // vertical
+        lns.push_back(Line(vs[2*i+1], vs[2*in+1])); // bottom
+
+    }
+    return lns;
 }

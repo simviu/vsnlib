@@ -112,8 +112,7 @@ bool InstSegm::onImg(const Img& im)
         auto b = ocv::toCv(in.box);
         cv::rectangle(imo, b, ci, 2);
         //--- convex pnts
-        for(auto& v : in.hull)
-            p_imo->draw(toPx(v), cp, 10);
+        p_imo->draw(in.hull, cp, 10);
     }
     data_.p_imc = mkSp<ImgCv>(im_cntr);
 

@@ -32,13 +32,13 @@ namespace vsn
         virtual void set(const Px& px, const HSV& c) override;
         virtual bool get(const Px& px, HSV& c)const override;
 
-        virtual void draw(const Px& px, const Color& c, 
-                          float w)override;  
         virtual void draw(CStr& s, 
                           const Px& px={30,30},
                           const Color& c={255,255,255})override;
-        virtual void draw(const Line2d& l,
-                          const Color& c, 
+        virtual void draw(const vec2s& vs, const Color& c, 
+                          float w=1.0)override;  
+        virtual void draw(const vector<Line2d>& lns,
+                          const Color& c={255,255,255}, 
                           double w=1.0)override;
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)override;

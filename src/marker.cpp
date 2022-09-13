@@ -364,19 +364,19 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
     {
         imo.draw(camc, {m.pose, m.w*0.5, 2});
         //--- left/top corner (px0)
-        Px px0 = toPx(m.ps[0]);
-        imo.draw(px0, cp, 10);
+        vec2 v0 = m.ps[0];
+        imo.draw({v0}, cp, 10);
         
         // id
         {
             stringstream s; s << "id=" << m.id;
-            imo.draw(s.str(), px0, ct);
+            imo.draw(s.str(), toPx(v0), ct);
         }
         // t
         if(0)
         {
             string s = "t="+ egn::str(m.pose.t, 2);
-            imo.draw(s, px0 + Px(dw,dh), ct);
+            imo.draw(s, toPx(v0) + Px(dw,dh), ct);
         }
 
     }
