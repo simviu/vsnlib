@@ -11,6 +11,31 @@
 using namespace vsn;
 using namespace ut;
 
+namespace{
+    //-----
+    vector<Line> pose2axis(const Pose& p, double l)
+    {
+        vector<Line> ls;
+
+        vec3 o = p.t; 
+        vec3 v[3]; 
+        v[0] << l,0,0;
+        v[1] << 0,l,0;
+        v[2] << 0,0,l;
+        //---- transform with pose
+        mat3 R = mat3(p.q);
+        
+        for(int i=0;i<3;i++)
+        {
+            vec3 vd = R*v[i] + p.t;
+            Line l;
+            l.p1 = o;  l.p2 = vd;
+            ls.push_back(l);
+        }
+        return ls;
+    }
+
+}
 
 //----factory implementation use ImgCv;
 Sp<Img> Img::create()
@@ -36,7 +61,7 @@ void Img::draw(const CamCfg& cc, const Axis& a)
     auto& l = a.l;
     auto& w = a.w;
     
-    auto ls = p.axis(l);
+    auto ls = pose2axis(p, l);
     Color rgb[3]{{255,0,0}, {0,255,0}, {0,0,255}};
     int i=0;
     for(int i=0;i<3;i++)

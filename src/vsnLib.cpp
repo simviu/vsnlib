@@ -36,28 +36,12 @@ string Line::str()const
     ss << p1 <<", " << p2; 
     return ss.str(); 
 }
-
-vector<Line> Pose::axis(double l)const
+void Line::operator *= (const Pose& P)
 {
-    vector<Line> ls;
-
-    vec3 o = t; 
-    vec3 v[3]; 
-    v[0] << l,0,0;
-    v[1] << 0,l,0;
-    v[2] << 0,0,l;
-    //---- transform with pose
-    mat3 R = mat3(q);
-    
-    for(int i=0;i<3;i++)
-    {
-        vec3 vd = R*v[i] + t;
-        Line l;
-        l.p1 = o;  l.p2 = vd;
-        ls.push_back(l);
-    }
-    return ls;
+    p1 = P.q*p1 + P.t;
+    p2 = P.q*p2 + P.t;
 }
+
 //----
 Pose Pose::inv()const
 {

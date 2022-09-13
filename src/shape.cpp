@@ -30,7 +30,9 @@ vec3s Cube::points()const
     for(auto& ds : dss)
     {
         vec3 v; v << 
-            ds[0]*sz.x(), ds[1]*sz.y(), ds[2]*sz.z();
+            ds[0]*sz.x()*0.5, 
+            ds[1]*sz.y()*0.5, 
+            ds[2]*sz.z()*0.5;
         v += c;   
         vs.push_back(v);
     }

@@ -192,16 +192,19 @@ namespace ut
     struct Rng{
         Rng(){};
         Rng(const T& d0, const T& d1):d0(d0),d1(d1){}
-        T d0=0.0; 
-        T d1=1.0; 
+
         bool isIn(const T& d)const
         { return (d>=d0)&&(d<=d1); }
         void upd(const T& d)
-        { if(d>d1)d1=d; if(d<d0)d0=d; }
+        {   if(!val()) d0=d1=d; 
+            else if(d>d1)d1=d; else if(d<d0)d0=d; }
         T len()const{ return fabs(d1-d0); }
         T mid()const{ return (d0+d1)*0.5; }
+        bool val()const{ return d1>=d0; }
         string str()const
         { stringstream s; s << d0 <<"," << d1; return s.str(); }
+        T d0=1.0; 
+        T d1=0; 
     };
     //-------------
     // file utils

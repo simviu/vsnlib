@@ -46,10 +46,20 @@ namespace vsn{
         { stringstream ss; ss << (int)h << "," << (int)s << "," << (int)v; 
           return ss.str(); }
     };
+    //----- Pose
+    struct Pose{ 
+        quat q{1,0,0,0}; 
+        vec3 t = zerov3(); 
+        string str()const;
+        Pose inv()const;
+        Pose operator *(const Pose& p)const;
+        vec3 operator *(const vec3& v)const;
+    };
 
     //------------
     // primitive
     //------------
+    //---- Line2D
     // TODO: template for Line 3d
     struct Line2d{
          Line2d(const vec2& p1, const vec2& p2):p1(p1), p2(p2){}
@@ -78,24 +88,23 @@ namespace vsn{
     { return Line2d(l.p1 + v, l.p2 + v); }
     inline Line2d operator - (const Line2d& l, const vec2& v)
     { return Line2d(l.p1 - v, l.p2 - v); }
-    //----
+    //---- Line
     struct Line{
          Line(const vec3& p1,
               const vec3& p2):p1(p1), p2(p2){}
          Line(){ p1.Zero(); p2.Zero(); }
          vec3 p1; vec3 p2; 
          string str()const ;
+         void operator *= (const Pose& P);
     };
-    //-----
-    struct Pose{ 
-        quat q{1,0,0,0}; 
-        vec3 t = zerov3(); 
-        string str()const;
-        Pose inv()const;
-        vector<Line> axis(double l=1.0)const;
-        Pose operator *(const Pose& p)const;
-        vec3 operator *(const vec3& v)const;
-    };
+    //----
+    template<typename T>
+        Line operator *(const T& m, const Line& l)
+        { return Line(m*l.p1, m*l.p2); }
+    inline Line operator + (const Line& l, const vec3& v)
+    { return Line(l.p1 + v, l.p2 + v); }
+    inline Line operator - (const Line& l, const vec3& v)
+    { return Line(l.p1 - v, l.p2 - v); }
     //---- Cube
     struct Cube{
         Cube(const vec3& c, const vec3& sz):c(c), sz(sz){}

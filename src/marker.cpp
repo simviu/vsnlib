@@ -392,7 +392,11 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         imo.draw(pc->sName, toPx(vc), cb);
         string s = "t="+ egn::str(b.pose.t, 2);
         imo.draw(s, toPx(vc)+Px(dw,dh), cb);
-        imo.draw(camc, pc->box.cube().edges(), cb, 2);
+        //--- board box
+        auto lns = pc->box.cube().edges();
+        Pose Tcw = b.pose.inv();
+        for(auto& l : lns) l *= b.pose;
+        imo.draw(camc, lns, cb, 2);
     }
 
     return p_imo;
