@@ -93,10 +93,11 @@ namespace{
                 vs[0] << -d,  d, 0; vs[1] <<  d,  d, 0;
                 vs[3] << -d, -d, 0; vs[2] <<  d, -d, 0;
                 vector<Point3f> ps;
-                for(auto v : vs) 
+                for(auto vi : vs) 
                 {
-                    vec3 v1 = v + c;
-                    ps.push_back(ocv::toCv(v1));
+                    vec3 v = vi + c;
+                    ps.push_back(ocv::toCv(v));
+                    box.upd(v);
                 }
                 ids.push_back(m.id);
                 allPnts.push_back(ps);

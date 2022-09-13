@@ -96,6 +96,14 @@ namespace vsn{
         Pose operator *(const Pose& p)const;
         vec3 operator *(const vec3& v)const;
     };
+    //---- Cube
+    struct Cube{
+        Cube(){ c << 0,0,0; sz << 1,1,1; }
+        vec3 c;
+        vec3 sz;
+        vec3s points()const;
+        vector<Line> edges()const;
+    };
     //---- 3d shape
     struct Cylinder{
         Pose pose;
@@ -104,6 +112,15 @@ namespace vsn{
         //--- vis
         int N_fan = 16;
         void gen(vec3s& vs0, vec3s& vs1)const;
+        vector<Line> edges()const;
+    };
+    //---- Box3d
+    struct Box3d{
+        Rng<double> x,y,z;
+        void upd(const vec3& v)
+        { x.upd(v.x()); y.upd(v.y()); z.upd(v.z()); }
+        vec3 min()const{ vec3 v; v << x.d0, y.d0, z.d0; return v; }
+        vec3 max()const{ vec3 v; v << x.d1, y.d1, z.d1; return v; }
     };
     //---------
     // utils
@@ -319,6 +336,7 @@ namespace vsn{
                         double w=1.0;
                         vec2 xy;
                     };
+                    Box3d box;
                     vector<Mark> marks;
                     static Sp<Cfg> create();
                     virtual void init(int dict_id)=0;
