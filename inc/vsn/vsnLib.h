@@ -317,7 +317,7 @@ namespace vsn{
                     struct Mark{
                         int id=-1;
                         double w=1.0;
-                        vec3 pos;
+                        vec2 xy;
                     };
                     vector<Mark> marks;
                     static Sp<Cfg> create();

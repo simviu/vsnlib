@@ -85,7 +85,7 @@ namespace{
             for(auto& m : marks)
             {
                 double d = m.w*0.5;
-                vec3 c = m.pos;
+                vec3 c; c << m.xy, 0;
                 //--- 4 corner points start from
                 // lef/top, clock wise, on x,y plane.
                 // ( x righy, y up)
@@ -186,7 +186,7 @@ string Marker::PoseEstimator::MCfg::str()const
             Json::Value jm;
             jm["id"] = m.id;
             jm["w"] = m.w;
-            jm["pos"] = egn::str(m.pos);
+            jm["xy"] = egn::str(m.xy);
             jms.append(jm);
         }        
         //--- 
@@ -257,7 +257,7 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
                 Board::Cfg::Mark m;
                 m.id = jm["id"].asInt();
                 m.w = jm["w"].asDouble();
-                ok &= s2v(jm["pos"].asString(), m.pos);
+                ok &= s2v(jm["xy"].asString(), m.xy);
                 bc.marks.push_back(m);
             }
             pBc->init(dict_id_);
