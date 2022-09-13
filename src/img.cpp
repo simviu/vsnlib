@@ -45,11 +45,27 @@ void Img::draw(const CamCfg& cc, const Axis& a)
         draw({l}, rgb[i], w);
     }
 }
+//----
+void Img::draw(const CamCfg& cc, const vector<Line>& lns, const Color& c, float w)
+{
+    for(auto& l : lns)
+        draw({cc.proj(l)}, c, w);
+}
 
 //-----
+/* TODO: replaced by draw lines
 void Img::draw(const CamCfg& cc, const Cylinder& cl, const Color& c, float w)
 {
     auto lns = cl.edges();
     for(auto& l : lns)
         draw({cc.proj(l)}, c, w);
 }
+//----
+void Img::draw(const CamCfg& cc, const Cube& cb, const Color& c, float w=2)
+{
+    auto lns = cb.edges();
+    for(auto& l : lns)
+        draw({cc.proj(l)}, c, w);
+
+}
+*/

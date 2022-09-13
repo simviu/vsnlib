@@ -102,6 +102,7 @@ namespace{
                 ids.push_back(m.id);
                 allPnts.push_back(ps);
             }
+            box.upd(zerov3());// original always included
             auto pDict = dictTbl_.findCreate(dict_id);
             pBrd = aruco::Board::create(allPnts, pDict, ids);
         }
@@ -359,7 +360,7 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
     // Note: axis length half of marker width
     Color ct{0,200,255};
     Color cp{255,0,0};
-    Color cb{255,0,0};
+    Color cb{100,200,255};
     for(auto& m : ms)
     {
         imo.draw(camc, {m.pose, m.w*0.5, 2});
@@ -391,7 +392,7 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         imo.draw(pc->sName, toPx(vc), cb);
         string s = "t="+ egn::str(b.pose.t, 2);
         imo.draw(s, toPx(vc)+Px(dw,dh), cb);
-
+        imo.draw(camc, pc->box.cube().edges(), cb, 2);
     }
 
     return p_imo;

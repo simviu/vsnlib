@@ -98,6 +98,7 @@ namespace vsn{
     };
     //---- Cube
     struct Cube{
+        Cube(const vec3& c, const vec3& sz):c(c), sz(sz){}
         Cube(){ c << 0,0,0; sz << 1,1,1; }
         vec3 c;
         vec3 sz;
@@ -121,6 +122,10 @@ namespace vsn{
         { x.upd(v.x()); y.upd(v.y()); z.upd(v.z()); }
         vec3 min()const{ vec3 v; v << x.d0, y.d0, z.d0; return v; }
         vec3 max()const{ vec3 v; v << x.d1, y.d1, z.d1; return v; }
+        Cube cube()const
+        { vec3 c; c << x.mid(),y.mid(),z.mid(); 
+          vec3 sz; sz << x.len(), y.len(), z.len();
+          return {c,sz};  }
     };
     //---------
     // utils
@@ -226,7 +231,9 @@ namespace vsn{
         //--- 3d draw functions
         struct Axis{ Pose pose; double l=1; double w=1;};
         void draw(const CamCfg& cc, const Axis& a);
-        void draw(const CamCfg& cc, const Cylinder& cl, const Color& c, float w=2);
+        void draw(const CamCfg& cc, const vector<Line>& lns, const Color& c, float w=2);
+//        void draw(const CamCfg& cc, const Cylinder& cl, const Color& c, float w=2);
+//        void draw(const CamCfg& cc, const Cube& cb, const Color& c, float w=2);
          
         //---- processing
         virtual void filter(const HSV& c0,

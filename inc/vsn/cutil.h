@@ -199,6 +199,7 @@ namespace ut
         void upd(const T& d)
         { if(d>d1)d1=d; if(d<d0)d0=d; }
         T len()const{ return fabs(d1-d0); }
+        T mid()const{ return (d0+d1)*0.5; }
         string str()const
         { stringstream s; s << d0 <<"," << d1; return s.str(); }
     };
