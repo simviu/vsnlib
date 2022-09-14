@@ -175,8 +175,12 @@ namespace ut
         int h=0;
         bool isIn(const Px& px)
         { return (px.x>=0) && (px.y>=0) && (px.x<w) && (px.y<h); }
+        string str()const
+        {  stringstream s; s << w << "," << h << endl; return s.str(); }
     };
-    
+    inline ostream& operator << (ostream& s, const Sz& sz)
+    {  s << sz.w << ", " << sz.h << endl; return s; }
+    //-----    
     struct Rect{
         Rect(){}
         Rect(const Px& c, const Sz& sz):cntr(c), sz(sz){}
