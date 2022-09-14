@@ -179,7 +179,7 @@ namespace ut
         {  stringstream s; s << w << "," << h << endl; return s.str(); }
     };
     inline ostream& operator << (ostream& s, const Sz& sz)
-    {  s << sz.w << ", " << sz.h << endl; return s; }
+    {  s << sz.w << ", " << sz.h; return s; }
     //-----    
     struct Rect{
         Rect(){}

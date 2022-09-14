@@ -40,19 +40,12 @@ namespace{
     //----
     bool cv_det(const Img& im, int dict_id, CvDetd& detd)
     {
-        log_d(" cv_det() 1");
-
         auto pDict = dictTbl_.findCreate(dict_id);
         assert(pDict!=nullptr);
-        log_d(" cv_det() 2");
         cv::Mat imc = ImgCv(im).raw();
         stringstream s; 
-        s << "     imc size:" << imc.size() << endl;
-        log_d(s.str());
         cv::aruco::detectMarkers(imc, pDict, detd.corners, detd.ids);
-        log_d(" cv_det() 3");
         detd.dict_id = dict_id;
-        log_d(" VrpMng mpe.onImg() here...");
         return true;
     }
     //--- fill result of marker det
@@ -306,7 +299,7 @@ bool Marker::detect(const Img& im,
 //-----------
 bool Marker::PoseEstimator::onImg(const Img& im)
 {
-    log_d(" PoseEstimator::onImg()...");
+ //   log_d(" PoseEstimator::onImg()...");
 
     auto& ms = result_.ms;
     ms.clear();
