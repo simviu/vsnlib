@@ -300,7 +300,7 @@ bool Marker::detect(const Img& im,
 bool Marker::PoseEstimator::onImg(const Img& im)
 {
  //   log_d(" PoseEstimator::onImg()...");
-
+    result_ = Result();
     auto& ms = result_.ms;
     ms.clear();
     

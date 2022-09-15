@@ -385,14 +385,14 @@ namespace vsn{
             };
             Cfg cfg_;
             //---- result
-            struct{ 
+            struct Result{ 
                 vector<Marker> ms; 
                 //--- result img with 
                 // detect result draw.
                 Sp<Img> p_imo = nullptr;
                 //---- boards
                 vector<Board> boards;
-            }result_;
+            }; Result result_;
             //---- detect
             bool onImg(const Img& im);
         protected:
