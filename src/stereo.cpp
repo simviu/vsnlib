@@ -184,6 +184,7 @@ bool StereoVO::Data::wrData()
 }
 
 //------------
+/*
 void StereoVO::showLoop()
 {
     while(!cv_waitESC(10))
@@ -194,3 +195,4 @@ void StereoVO::showLoop()
             p_vd->spin();
     }
 }
+*/

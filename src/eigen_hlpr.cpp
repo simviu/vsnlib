@@ -19,7 +19,13 @@ namespace egn
         }
     }
 
-    //--- to strin
+    //--- to str with deci
+    extern string str(double d, int deci)
+    {   
+        stringstream s; ss_deci(s, deci); 
+        s<< d; 
+        return s.str(); 
+    }
     extern string str(const vec2& v, int deci)
     {   
         stringstream s; ss_deci(s, deci); 

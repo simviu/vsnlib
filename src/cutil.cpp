@@ -112,6 +112,33 @@ namespace sys
         getcwd(s, sizeof(s));
         return string(s);
     }
+    //-----
+    void FPS::tick()
+    {
+        Time t = now();
+        double dt = elapse(t_, t);
+        t_ = t;
+        //--- wait for 2nd tick()
+        if(fps_<0) return;
+
+        //---- sliding window average
+        dts.push_back(dt);
+        int n = dts.size();
+        if(n > cfg_.N_avg)
+        {
+            dts.pop_front();
+            n--;
+        }
+
+        //---- update
+        double dt_sum = 0;
+        for(auto& dt : dts)
+            dt_sum += dt;
+
+        fps_ = dt_sum / n;
+
+    }
+
 }
 
 //--------------------

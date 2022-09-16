@@ -24,6 +24,7 @@
 #include <functional>
 #include <thread>
 #include <mutex>
+#include <chrono>
 #include <condition_variable>
 
 namespace ut
@@ -100,7 +101,25 @@ namespace ut
         inline void sleepMS(int ms){
             this_thread::sleep_for(chrono::milliseconds(ms) );
         }
-
+        //--- time functions
+        using Time = std::chrono::high_resolution_clock::time_point;
+        inline Time now()
+        { return std::chrono::high_resolution_clock::now(); }
+        inline double elapse(const Time t1, const Time t2)
+        { std::chrono::duration<double> e=t2-t1; return e.count(); }
+        //----
+        class FPS{
+        public:
+            struct Cfg{ int N_avg=10; };
+            Cfg cfg_;
+            // check positive as valid
+            void tick();
+            double fps()const{ return fps_; }
+        protected:
+            double fps_=-1;
+            Time t_ = now();
+            list<double> dts;
+        };
     }
     
     //----------------

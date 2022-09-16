@@ -44,6 +44,7 @@ namespace egn{
       return true;
     }
     //--- to/from string
+    extern string str(double d, int deci=2);
     extern string str(const vec2& v, int deci=2);
     extern string str(const vec3& v, int deci=2);
     extern bool s2v(const string& s, vec2& v);

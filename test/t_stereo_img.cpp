@@ -65,7 +65,7 @@ bool test_LR(const Img& imL, const Img& imR)
     vo.onImg(imL, imR);
 
     //----
-    vo.showLoop();    
+    vsn::show_loop();    
 
     return true;
 };
