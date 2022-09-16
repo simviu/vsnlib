@@ -94,17 +94,21 @@ namespace vsn{
               const vec3& p2):p1(p1), p2(p2){}
          Line(){ p1.Zero(); p2.Zero(); }
          vec3 p1; vec3 p2; 
+         vec3 nv()const
+         { return (p2-p1).normalized(); }
          string str()const ;
          void operator *= (const Pose& P);
     };
     //---- 
     struct Plane{
         Plane(){ n<<0,0,1; }
+    //    Plane(const Pose& p)
+      //  {  c = p.t; n =  }
         vec3 n;
         vec3 c = zerov3();
         //---- Projection
         vec3 proj(const vec3& p);
-        bool proj(const Line2d& l, vec3& p);
+        bool proj(const Line& l, vec3& p);
     };
     //----
     template<typename T>

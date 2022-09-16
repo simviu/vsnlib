@@ -19,7 +19,7 @@ vec3 Plane::proj(const vec3& p)
 {
     return p - (p-c).dot(n)*n;
 }
-bool Plane::proj(const Line2d& l, vec3& p)
+bool Plane::proj(const Line& l, vec3& p)
 {
     vec3 nl = l.nv();
     if(nl == n) return false; // parellel
