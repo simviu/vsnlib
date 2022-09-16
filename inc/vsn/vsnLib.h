@@ -57,7 +57,7 @@ namespace vsn{
     };
 
     //------------
-    // primitive
+    // Geometry
     //------------
     //---- Line2D
     // TODO: template for Line 3d
@@ -97,6 +97,15 @@ namespace vsn{
          string str()const ;
          void operator *= (const Pose& P);
     };
+    //---- 
+    struct Plane{
+        Plane(){ n<<0,0,1; }
+        vec3 n;
+        vec3 c = zerov3();
+        //---- Projection
+        vec3 proj(const vec3& p);
+        bool proj(const Line2d& l, vec3& p);
+    };
     //----
     template<typename T>
         Line operator *(const T& m, const Line& l)
@@ -105,6 +114,7 @@ namespace vsn{
     { return Line(l.p1 + v, l.p2 + v); }
     inline Line operator - (const Line& l, const vec3& v)
     { return Line(l.p1 - v, l.p2 - v); }
+    
     //---- Cube
     struct Cube{
         Cube(const vec3& c, const vec3& sz):c(c), sz(sz){}
@@ -136,6 +146,7 @@ namespace vsn{
           vec3 sz; sz << x.len(), y.len(), z.len();
           return {c,sz};  }
     };
+
     //---------
     // utils
     //---------
