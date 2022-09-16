@@ -98,14 +98,14 @@ namespace vsn{
          { return (p2-p1).normalized(); }
          string str()const ;
          void operator *= (const Pose& P);
+         double len()const{ return (p2-p1).norm(); }
     };
     //---- 
     struct Plane{
+        Plane(const vec3& c, const vec3& n):c(c), n(n){}
         Plane(){ n<<0,0,1; }
-    //    Plane(const Pose& p)
-      //  {  c = p.t; n =  }
-        vec3 n;
         vec3 c = zerov3();
+        vec3 n;
         //---- Projection
         vec3 proj(const vec3& p);
         bool proj(const Line& l, vec3& p);

@@ -33,7 +33,8 @@ string Line2d::str()const
 string Line::str()const 
 { 
     stringstream ss; 
-    ss << p1 <<", " << p2; 
+    ss << "(" << egn::str(p1) 
+        <<")->(" << egn::str(p2) << ")"; 
     return ss.str(); 
 }
 void Line::operator *= (const Pose& P)
