@@ -119,7 +119,8 @@ namespace sys
         double dt = elapse(t_, t);
         t_ = t;
         //--- wait for 2nd tick()
-        if(fps_<0) return;
+        if(fps_<0) 
+        { fps_ =0; return; }
 
         //---- sliding window average
         dts.push_back(dt);
