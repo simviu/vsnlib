@@ -163,7 +163,8 @@ namespace vsn{
         bool load(CStr& sf);
         vec2 proj(const vec3& p)const;
         Line2d proj(const Line& l)const;
-        
+        //--- on unit focal plane
+        vec3 proj(const vec2& p)const;
         //---- camera distortion para
         struct Dist{
             Dist(){}

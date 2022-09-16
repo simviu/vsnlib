@@ -69,7 +69,8 @@ bool CamCfg::load(CStr& sf)
 
 
 
-//----------- Note: assume undistorted img
+//--- Note: assume undistorted img
+// TODO: Handle cfg
 vec2 CamCfg::proj(const vec3& p)const
 {
     vec2 px; px << 0,0;
@@ -92,6 +93,20 @@ Line2d CamCfg::proj(const Line& l)const
     ll.p2 = proj(l.p2);
     return ll;
 }
+//----
+vec3 CamCfg::proj(const vec2& p)const
+{
+    
+    double fx = K(0,0);
+    double fy = K(1,1);
+    double cx = K(0,2);
+    double cy = K(1,2);
+    double x = (p.x() - cx)/fx;
+    double y = (p.y() - cx)/fy;
+    vec3 v; v << x, y, 1.0;
+    return v;
+}
+
 //-----
 // ref : https://blog.csdn.net/jonathanzh/article/details/104418758
 void CamCfg::undis(const vec2s& vds, vec2s& vs)const
