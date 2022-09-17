@@ -18,6 +18,7 @@ using namespace vsn;
 vec3 Plane::proj(const vec3& p)
 {
     vec3 pc = p-c;
+    float l = n.norm(); // dbg
     double d = pc.dot(n);
     vec3 dv = d*n;
     vec3 pp = p - dv;
@@ -27,12 +28,12 @@ bool Plane::cross(const Line& l, vec3& p)
 {
     vec3 nl = l.nv();
     if(nl == n) return false; // parellel
-    vec3 pl = l.p1;
-    vec3 pp = proj(pl);
-    double d = (pp - pl).norm();
+    vec3 p1 = l.p1;
+    vec3 pp = proj(p1);
+    double d = (pp - p1).norm();
     // nl proj on vertial n, causing scale.
-    double s = 1.0/nl.dot(n); 
-    p = pl + nl*(d*s);
+    double s = 1.0/nl.dot(-n); 
+    p = p1 + nl*(d*s);
     return true;
 }
 
