@@ -17,7 +17,11 @@ using namespace vsn;
 //----- projection fucntions
 vec3 Plane::proj(const vec3& p)
 {
-    return p - (p-c).dot(n)*n;
+    vec3 pc = p-c;
+    double d = pc.dot(n);
+    vec3 dv = d*n;
+    vec3 pp = p - dv;
+    return pp;
 }
 bool Plane::cross(const Line& l, vec3& p)
 {

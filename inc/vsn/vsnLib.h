@@ -109,6 +109,8 @@ namespace vsn{
         //---- Projection
         vec3 proj(const vec3& p);
         bool cross(const Line& l, vec3& p);
+        string str()const
+        { return string("{ c:{") + vsn::str(c) + "}, n:{" + vsn::str(n)+"} }"; }
     };
     //----
     template<typename T>
