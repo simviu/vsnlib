@@ -102,7 +102,7 @@ vec3 CamCfg::proj(const vec2& p)const
     double cx = K(0,2);
     double cy = K(1,2);
     double x = (p.x() - cx)/fx;
-    double y = (p.y() - cx)/fy;
+    double y = (p.y() - cy)/fy;
     vec3 v; v << x, y, 1.0;
     return v;
 }

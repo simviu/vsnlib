@@ -108,7 +108,7 @@ namespace vsn{
         vec3 n;
         //---- Projection
         vec3 proj(const vec3& p);
-        bool proj(const Line& l, vec3& p);
+        bool cross(const Line& l, vec3& p);
     };
     //----
     template<typename T>
