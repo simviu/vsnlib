@@ -37,7 +37,8 @@ string Line::str()const
         <<")->(" << egn::str(p2) << ")"; 
     return ss.str(); 
 }
-void Line::operator *= (const Pose& P)
+
+void Line::trans(const Pose& P)
 {
     p1 = P.q*p1 + P.t;
     p2 = P.q*p2 + P.t;

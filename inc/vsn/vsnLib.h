@@ -97,7 +97,7 @@ namespace vsn{
          vec3 nv()const
          { return (p2-p1).normalized(); }
          string str()const ;
-         void operator *= (const Pose& P);
+         void trans(const Pose& P);
          double len()const{ return (p2-p1).norm(); }
     };
     //---- 
@@ -121,24 +121,42 @@ namespace vsn{
     inline Line operator - (const Line& l, const vec3& v)
     { return Line(l.p1 - v, l.p2 - v); }
     
+    //-----------
+    // shape
+    //-----------
+    //---- Shape 
+    struct Shape{
+        Shape(){ sz_ << 1,1,1; }
+        Shape(const Pose& p): pose(p){}
+        Shape(const Pose& p, const vec3& sz):
+            pose(p), sz_(sz){}
+        Pose pose;
+        virtual vec3s points()const =0;
+        virtual vector<Line> edges()const=0;
+        vec3 sz()const{ return sz_; }
+    protected:
+        vec3 sz_;
+    };
     //---- Cube
-    struct Cube{
-        Cube(const vec3& c, const vec3& sz):c(c), sz(sz){}
-        Cube(){ c << 0,0,0; sz << 1,1,1; }
-        vec3 c;
-        vec3 sz;
-        vec3s points()const;
-        vector<Line> edges()const;
+    struct Cube : public Shape{
+        using Shape::Shape;
+        Cube(){ sz_ << 1,1,1; }
+        virtual vec3s points()const override;
+        virtual vector<Line> edges()const override;
     };
     //---- 3d shape
-    struct Cylinder{
-        Pose pose;
-        double r=1;
-        double l=1;
+    struct Cylinder : public Shape{
+        using Shape::Shape;
+        Cylinder(){};
+        Cylinder(const Pose& p, 
+                 double r, double l):Shape(p)
+        { sz_ << r*2,r*2,l; }
+        double r()const{ return sz_.x()/2; }
+        double l()const{ return sz_.z()/2; }
         //--- vis
         int N_fan = 16;
-        vec3s points()const;
-        vector<Line> edges()const;
+        virtual vec3s points()const override;
+        virtual vector<Line> edges()const override;
     };
     //---- Box3d
     struct Box3d{
@@ -148,9 +166,9 @@ namespace vsn{
         vec3 min()const{ vec3 v; v << x.d0, y.d0, z.d0; return v; }
         vec3 max()const{ vec3 v; v << x.d1, y.d1, z.d1; return v; }
         Cube cube()const
-        { vec3 c; c << x.mid(),y.mid(),z.mid(); 
+        { Pose p; p.t << x.mid(),y.mid(),z.mid(); 
           vec3 sz; sz << x.len(), y.len(), z.len();
-          return {c,sz};  }
+          return {p, sz};  }
     };
 
     //---------

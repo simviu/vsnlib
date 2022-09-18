@@ -52,11 +52,10 @@ vec3s Cube::points()const
     for(auto& ds : dss)
     {
         vec3 v; v << 
-            ds[0]*sz.x()*0.5, 
-            ds[1]*sz.y()*0.5, 
-            ds[2]*sz.z()*0.5;
-        v += c;   
-        vs.push_back(v);
+            ds[0]*sz_.x()*0.5, 
+            ds[1]*sz_.y()*0.5, 
+            ds[2]*sz_.z()*0.5;
+        vs.push_back(pose * v);
     }
     return vs;
 }
@@ -82,17 +81,14 @@ vec3s Cylinder::points()const
 {
     vec3s vs;
     if(N_fan==0)return vs;
+    double L = l();
     for(int i=0;i<N_fan;i++)
     {
         float a = M_PI*2*i/N_fan;
-        vec2 pr; pr << cos(a),sin(a);
-        pr *= r;
-        vec3 p0; p0 << pr, l/2;
-        vec3 p1; p1 << pr, -l/2;
-        vec3 p0w = pose * p0;
-        vec3 p1w = pose * p1;
-        vs.push_back(p0w);
-        vs.push_back(p1w);
+        vec3 p0; p0 << cos(a),sin(a), L/2;
+        vec3 p1=p0; p1.z() = -L/2;
+        vs.push_back(pose * p0);
+        vs.push_back(pose * p1);
     }
     return vs;
 }

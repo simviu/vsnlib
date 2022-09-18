@@ -400,7 +400,8 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         //--- board box
         auto lns = pc->box.cube().edges();
         Pose Tcw = b.pose.inv();
-        for(auto& l : lns) l *= b.pose;
+        //for(auto& l : lns) 
+        //    l.trans(b.pose);
         imo.draw(camc, lns, cb, 2);
     }
 
