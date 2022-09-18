@@ -9,6 +9,7 @@
 #include "vsn/cutil.h"
 #include <Eigen/Core>
 #include <Eigen/Dense>
+#include <Eigen/Geometry> 
 
 namespace egn{
     using namespace ut;
@@ -33,7 +34,9 @@ namespace egn{
     inline void init(vec2& v){ v << 0,0; }
     inline void init(vec3& v){ v << 0,0,0; }
     inline void init(quat& q){ q = quat(1,0,0,0); }
-
+    //-- rotation
+    inline mat3 mat3rot(const vec3& v, double rad)
+    {  return Eigen::AngleAxisd(rad, v).matrix(); }
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
     inline vec2 px2v(const Px& p){ vec2 v; v << p.x, p.y; return v; };
