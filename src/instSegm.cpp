@@ -12,6 +12,11 @@ using namespace vsn;
 using namespace ut;
 
 namespace{
+    struct LCfg{
+        // very small specle filter
+        float box_area_TH = 30*30;
+    }; LCfg lc_;
+    //----
     void conv_pnts(const vector<cv::Point>& ps, vec2s& vs)
     { for(auto& p : ps)vs.push_back({p.x, p.y}); }
     void conv_pnts(const vec2s& vs, vector<cv::Point>& ps)
@@ -47,27 +52,30 @@ bool InstSegm::onImg(const Img& im)
     // create hull array for convex hull points
     int N = contrs.size();
     vector< vector<Point> > hull(N);
+    vector<double> areas;
     //vector<cv::Rect> bboxes;
     
-    for(int i = 0; i < contrs.size(); i++)
+    for(int i = 0; i < N; i++)
     {
         convexHull(Mat(contrs[i]), hull[i], false);
         cv::Rect b = boundingRect(hull[i]);  
-        if(b.area() < cfg_.areaTH)continue;
-        // filter result
+        //--- min speckle filter
+        double ab = b.width*b.height;
+        if(ab < lc_.box_area_TH)
+            ab = -1;
+        //---- filter contour ara
+        double a=-1;
+        if(ab > 0)
+            a = contourArea(hull[i]);
+        areas.push_back(a);
+        if(a < cfg_.areaTH)
+            continue;
+
+        //---- filter result
         Inst in;
         in.box = ocv::toUt(b);  
         conv_pnts(hull[i], in.hull);
         data_.ins.push_back(in);
-    }
-
-    // show process image
-    if(cfg_.enShow)
-    {
-        im.show("input");
-        imshow("filter", imf);
-        imshow("blur", imb);
-        imshow("threshold", imt);
     }
 
     //---- show result
@@ -92,12 +100,22 @@ bool InstSegm::onImg(const Img& im)
     Color cp{255,0,0}; // Convex points
     //--- draw origin contours
     for(int i = 0; i < N; i++) {
+        double a = areas[i];
+        if(a<0) continue;
+
         // draw ith contour
         drawContours(imo, contrs, i, cc, 1, 8, vector<Vec4i>(), 0, Point());
         // draw ith convex hull
         drawContours(imo, hull, i, ch, 2, 8, vector<Vec4i>(), 0, Point());
+        drawContours(imo, hull, i, ch, 2, 8, vector<Vec4i>(), 0, Point());
         // Bounding box
         //rectangle(imo,  bbox[i], cb, 2);
+        //--- info of contour
+        stringstream s;
+        s << "a=" << a;
+        Px px = ocv::toPx(hull[i][0])+Px(0, -10);
+        p_imo->draw(s.str(), px, cp);
+
     }
     
     //---- draw instance
@@ -117,11 +135,16 @@ bool InstSegm::onImg(const Img& im)
     data_.p_imc = mkSp<ImgCv>(im_cntr);
 
     //----
-    //imshow("result", imo);
-    //---- hold 
-    //while(!vsn::cv_waitESC(10));
+ 
+
+    // show process image
     if(cfg_.enShow)
     {
+        im.show("input");
+        imshow("filter", imf);
+        imshow("blur", imb);
+        imshow("threshold", imt);
+
         cv::imshow("InstSegm result", imo);
         cv::imshow("Inst Contours", im_cntr);
     }

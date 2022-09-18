@@ -77,6 +77,7 @@ namespace ocv{
     { return {{(int)(r.x + r.width *0.5), 
                (int)(r.y + r.height*0.5)},
                {r.width, r.height}}; }
-
+    inline ut::Px toPx(const cv::Point2d& p)
+    { return Px(p.x, p.y); }
 
 }
