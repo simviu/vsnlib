@@ -82,13 +82,18 @@ vec3s Cylinder::points()const
     vec3s vs;
     if(N_fan==0)return vs;
     double L = l();
+    double R = r();
     for(int i=0;i<N_fan;i++)
     {
         float a = M_PI*2*i/N_fan;
-        vec3 p0; p0 << cos(a),sin(a), L/2;
-        vec3 p1=p0; p1.z() = -L/2;
-        vs.push_back(pose * p0);
-        vs.push_back(pose * p1);
+        vec2 pr; pr << cos(a),sin(a);
+        pr *= R;
+        vec3 p0; p0 << pr, L/2;
+        vec3 p1; p1 << pr, -L/2;
+        vec3 p0w = pose * p0;
+        vec3 p1w = pose * p1;
+        vs.push_back(p0w);
+        vs.push_back(p1w);
     }
     return vs;
 }

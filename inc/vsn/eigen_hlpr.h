@@ -38,7 +38,7 @@ namespace egn{
     inline vec3 ny3(){ vec3 v; v << 0,1,0; return v; }
     inline vec3 nz3(){ vec3 v; v << 0,0,1; return v; }
     //-- rotation
-    inline mat3 mat3rot(const vec3& v, double rad)
+    inline mat3 rotmat(const vec3& v, double rad)
     {  return Eigen::AngleAxisd(rad, v).matrix(); }
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
