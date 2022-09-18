@@ -66,6 +66,7 @@ namespace{
 //-----------------
 bool InstSegm::onImg(const Img& im)
 {
+    data_ = Data(); // clear data
     using namespace cv;
     Sz sz = im.size();
     
