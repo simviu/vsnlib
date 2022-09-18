@@ -172,7 +172,7 @@ bool InstSegm::onImg(const Img& im)
         auto b = ocv::toCv(in.box);
         cv::rectangle(imo, b, ci, 2);
         //--- convex pnts
-        p_imo->draw(in.hull, cp, 10);
+        p_imo->draw(in.hull, cp, 4);
     }
     data_.p_imc = mkSp<ImgCv>(im_cntr);
 
@@ -182,10 +182,10 @@ bool InstSegm::onImg(const Img& im)
     // show process image
     if(cfg_.enShow)
     {
-        im.show("input");
+    //    im.show("input");
         //p_imc_shft->show("HSV shift 90");
-        imshow("filter", imf);
-        imshow("blur", imb);
+    //    imshow("filter", imf);
+    //    imshow("blur", imb);
         imshow("threshold", imt);
 
         cv::imshow("InstSegm result", imo);

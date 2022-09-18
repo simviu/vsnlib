@@ -263,7 +263,8 @@ namespace vsn{
         //---- draw functions, 
         virtual void draw(CStr& s, 
             const Px& px={30,30},
-            const Color& c={255,255,255})=0;
+            const Color& c={255,255,255},
+            float font_scl=1.0)=0;
         
         virtual void draw(const vec2s& vs, const Color& c, 
                           float w=1.0)=0;  

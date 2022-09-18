@@ -73,11 +73,12 @@ void ImgCv::show(CStr& sWind)const
 //----
 void ImgCv::draw(CStr& s, 
     const Px& px,
-    const Color& c)
+    const Color& c,
+    float font_scl)
 {
     cv::Scalar c1 = toCv(c);
     cv::putText(im_,s,{px.x,px.y},cv::FONT_HERSHEY_DUPLEX,
-        1 ,c1, 2, false);
+        font_scl ,c1, 2, false);
 }
 
 //------

@@ -34,7 +34,8 @@ namespace vsn
 
         virtual void draw(CStr& s, 
                           const Px& px={30,30},
-                          const Color& c={255,255,255})override;
+                          const Color& c={255,255,255},
+                          float font_scl=1.0)override;
         virtual void draw(const vec2s& vs, const Color& c, 
                           float w=1.0)override;  
         virtual void draw(const vector<Line2d>& lns,
