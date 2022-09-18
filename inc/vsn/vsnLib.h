@@ -152,7 +152,7 @@ namespace vsn{
                  double r, double l):Shape(p)
         { sz_ << r*2,r*2,l; }
         double r()const{ return sz_.x()/2; }
-        double l()const{ return sz_.z()/2; }
+        double l()const{ return sz_.z(); }
         //--- vis
         int N_fan = 16;
         virtual vec3s points()const override;
