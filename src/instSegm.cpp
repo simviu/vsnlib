@@ -21,6 +21,44 @@ namespace{
     { for(auto& p : ps)vs.push_back({p.x, p.y}); }
     void conv_pnts(const vec2s& vs, vector<cv::Point>& ps)
     { for(auto& v : vs)ps.push_back(cv::Point(v.x(), v.y())); }
+    //------
+    //------------
+    // for red block test case
+    Sp<Img> hsv_hue_shift90(const Img& imi)
+    {
+        auto p = imi.copy();
+        auto& im = *p;
+        Sz sz = im.size();
+        for(int y=0;y<sz.h;y++)
+            for(int x=0;x<sz.w;x++)
+            {
+                Px px(x,y);
+                HSV d; im.get(px, d);
+                unsigned int h = d.h;
+                // dbg
+                if(h< 3 || h > 175)
+                { int k=0; }
+                //
+                h += 90;
+                if(h>180) h -= 180;
+               // h = 90; // dbg
+                d.h = h;
+                im.set(px, d);
+            }
+        //--- dbg
+        if(0)
+        {
+            cv::Mat imc = ImgCv(im).raw();
+            cv::Mat imd = imc;
+            cv::cvtColor(imc, imd,cv::COLOR_HSV2BGR);
+            imshow("Hue shift 90 RGB", imd);
+            imwrite("hue90.jpg", imd);
+        
+        }
+        return p;
+
+    }
+
 }
 
 //-----------------
@@ -32,8 +70,12 @@ bool InstSegm::onImg(const Img& im)
     Sz sz = im.size();
     
     auto& fc = cfg_.filter;
-    auto p_imc = im.copy();
-    p_imc->toHsv();
+    auto p_imi = im.copy();
+    p_imi->toHsv();
+    auto p_imc = p_imi;
+    if(cfg_.enHueShift90)
+        p_imc = hsv_hue_shift90(*p_imi);
+    
     p_imc->filter(fc.c0, fc.c1);
     cv::Mat imf = ImgCv(*p_imc).raw();    
 
@@ -141,6 +183,7 @@ bool InstSegm::onImg(const Img& im)
     if(cfg_.enShow)
     {
         im.show("input");
+        //p_imc_shft->show("HSV shift 90");
         imshow("filter", imf);
         imshow("blur", imb);
         imshow("threshold", imt);

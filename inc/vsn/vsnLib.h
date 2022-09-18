@@ -345,6 +345,9 @@ namespace vsn{
             float areaTH = 20*10;
             bool en_imo = false;
             bool enShow = false;
+            // in case color filter around red,
+            //   Hue shift 90 degree
+            bool enHueShift90 = false;
         }; Cfg cfg_;
         //----
         struct Inst{

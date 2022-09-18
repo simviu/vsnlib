@@ -45,6 +45,7 @@ namespace vsn
 
         virtual void toGray()override;
         virtual void toHsv()override;
+
         virtual void filter(const HSV& c0,
                             const HSV& c1) override;
         //-----
