@@ -34,6 +34,9 @@ namespace egn{
     inline void init(vec2& v){ v << 0,0; }
     inline void init(vec3& v){ v << 0,0,0; }
     inline void init(quat& q){ q = quat(1,0,0,0); }
+    inline vec3 nx3(){ vec3 v; v << 1,0,0; return v; }
+    inline vec3 ny3(){ vec3 v; v << 0,1,0; return v; }
+    inline vec3 nz3(){ vec3 v; v << 0,0,1; return v; }
     //-- rotation
     inline mat3 mat3rot(const vec3& v, double rad)
     {  return Eigen::AngleAxisd(rad, v).matrix(); }
