@@ -57,6 +57,8 @@ namespace vsn
         virtual Sp<Img> copy()const override
         {  auto p = mkSp<ImgCv>(); 
            im_.copyTo(p->im_); return p;  }
+        virtual Sp<Img> crop(const ut::Rect& r)const override;
+        
         virtual void rot(double dgr)override;
 
         //---- dict selection ref OpenCV ArUco.

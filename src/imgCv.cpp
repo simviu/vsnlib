@@ -129,6 +129,33 @@ void ImgCv::filter(const HSV& c0,
 {
     cv::inRange(im_, toCv(c0), toCv(c1), im_);
 }
+//-----
+Sp<Img> ImgCv::crop(const ut::Rect& r)const
+{
+    Px c = r.cntr;
+    int w = r.sz.w;
+    int h = r.sz.h;
+    Sz sz = size();
+    Rng rr(0, sz.h);
+    Rng rc(0, sz.w);
+    //
+    int r0 = c.y - h/2;
+    int r1 = c.y + h/2;
+    int c0 = c.x - w/2;
+    int c1 = c.x + w/2;
+    bool bVal =  rr.isIn(r0) && rr.isIn(r1) &&
+                 rc.isIn(c0) && rc.isIn(c1); 
+    if(!bVal)
+        return nullptr;
+    //----
+    Range rrow(r0, r1);
+    Range rcol(c0, c1);
+    Mat imc = im_(rrow, rcol);
+    return mkSp<ImgCv>(imc);
+}
+
+
+//-----
 vector<Line2d> ImgCv::det(const HoughLnCfg& c)const
 {
     // TODO: detect already gray scale

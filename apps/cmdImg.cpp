@@ -122,22 +122,55 @@ bool CmdImg::run_crop(CStrs& args)
     auto p_im = vsn::Img::loadFile(sf);
     if(!p_im->load(sf))
         return false;
-    bool ok = true;
-    // dbg
-    vector<double> ds; 
-    //ok &= s2data(" 1.0, 2.3 ", ds); // dbg
+    auto& im = *p_im;
+    auto p_imd = im.copy(); // dbg output
     //----
+    bool ok = true;
     Px px;  ok &= px.set(lookup(kv, "start"));
     Sz sz;  ok &= sz.set(lookup(kv, "sz")); 
-
+    Sz imsz = im.size();
     if(!ok)
     {
         log_e("  Parsing arg fail");
         return false;
     }
     bool b_stereo = has(kv, "-stereo");
-    //----
+    //---- command print
+    string s = "Crop img: imgSz=" + imsz.str();
+    s += ", start=" + px.str();
+    s += ", sz=" + sz.str();
+    if(b_stereo) s+= ", -stereo"; 
+    log_i(s);
     
+    //---- Left/Right img
+    Px rcs[]{{px.x +  sz.w   /2, px.y + sz.h/2},
+             {px.x + (sz.w*3)/2, px.y + sz.h/2}};
+    int N = b_stereo? 2:1;
+    Color cr[]{{255,0,0,255}, {0,255,0,255}};
+    FPath fp(sf);
 
+    // For stereo, crop 2 imgs, otherwise 1 img.    
+    for(int i=0;i<N;i++)
+    {
+        Rect r(rcs[i], sz);
+        auto p_imc = im.crop(r);
+        string sLR = (i==0)?"_cL":"_cR";
+        string sfcw = fp.base + sLR + fp.ext;
+        if(p_imc==nullptr)
+        {
+            string s = "  Rect out of range, ";
+            s += " Img sz:[" + imsz.str() + "], ";
+            s += "crop rect:[" + r.p0().str()+"->"+ 
+                r.p1().str() +"]\n";
+            log_e(s);
+            continue;
+        }
+        //---- save image
+        p_imc->save(sfcw);
+        p_imd->draw(r, cr[i]); // dbg display
+        
+    }
+    //---- save dbg img
+    p_imd->save(fp.base + "_dbg" + fp.ext);
     return true;
 }

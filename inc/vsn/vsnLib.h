@@ -293,6 +293,7 @@ namespace vsn{
         //--- Suggest undistortion at very beginning
         virtual void undistort(const CamCfg& cc)=0;
         virtual Sp<Img> copy()const =0;
+        virtual Sp<Img> crop(const ut::Rect& r)const=0;
         //---- img operations
         virtual void rot(double dgr)=0;
         //---- 

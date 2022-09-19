@@ -224,6 +224,9 @@ namespace ut
         Sz sz;
         Px p0()const { return Px(cntr.x - sz.w*0.5, cntr.y - sz.h*0.5); }
         Px p1()const { return Px(cntr.x + sz.w*0.5, cntr.y + sz.h*0.5); }
+        string str()const 
+        { return "{ c:\"" + cntr.str() + "\", sz:\""+ 
+                sz.str()+"\"}"; }
     };
     //-------------
     // util stuct
