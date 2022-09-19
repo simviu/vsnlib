@@ -587,6 +587,12 @@ namespace vsn{
                 }; Filter filter;
             }; PointCloud pntCloud;
 
+            //---- omnidirectional
+            struct Omni{
+                // factory
+                static Sp<Omni> load(const string& sf); 
+            }; Sp<Omni> p_omni = nullptr;
+
             //----
             bool load(const string& sf);
             string str()const;

@@ -17,6 +17,18 @@ namespace app
     //-----------
 
     //-----------
+    // CmdCalib
+    //-----------
+    class CmdCalib:public Cmd{
+    public:
+        using Cmd::Cmd;
+        CmdCalib();
+        bool run_omni_stereo(CStrs& args);
+    protected:
+        
+
+    };
+    //-----------
     // CmdImg
     //-----------
     class CmdImg:public Cmd{
