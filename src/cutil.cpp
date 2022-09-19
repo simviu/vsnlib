@@ -187,7 +187,7 @@ namespace sys
 //--------------------
 // Elements
 //--------------------
-bool Px::dec(const string& s, char c_deli)
+bool Px::set(const string& s, char c_deli)
 {   
     vector<double> ds;
     if( (!s2data(s, ds, c_deli)) ||
@@ -197,7 +197,7 @@ bool Px::dec(const string& s, char c_deli)
     return true; 
 }
 //-----
-bool Sz::dec(const string& s, char c_deli)
+bool Sz::set(const string& s, char c_deli)
 {
     vector<int> ds;
     if( (!s2data(s, ds, c_deli)) ||

@@ -177,7 +177,7 @@ namespace ut
         string str()const 
         { stringstream s; 
           s << x <<","<< y; return s.str(); } 
-        bool dec(const string& s, char c_deli=',');
+        bool set(const string& s, char c_deli=',');
     };
     //-----
     struct Color{
@@ -205,7 +205,7 @@ namespace ut
         { return (px.x>=0) && (px.y>=0) && (px.x<w) && (px.y<h); }
         string str()const
         {  stringstream s; s << w << "," << h << endl; return s.str(); }
-        bool dec(const string& s, char c_deli=',');
+        bool set(const string& s, char c_deli=',');
     };
     inline ostream& operator << (ostream& s, const Sz& sz)
     {  s << sz.w << ", " << sz.h; return s; }

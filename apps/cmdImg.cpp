@@ -127,8 +127,8 @@ bool CmdImg::run_crop(CStrs& args)
     vector<double> ds; 
     //ok &= s2data(" 1.0, 2.3 ", ds); // dbg
     //----
-    Px px;  ok &= px.dec(lookup(kv, "start"));
-    Sz sz;  ok &= sz.dec(lookup(kv, "sz")); 
+    Px px;  ok &= px.set(lookup(kv, "start"));
+    Sz sz;  ok &= sz.set(lookup(kv, "sz")); 
 
     if(!ok)
     {
@@ -136,6 +136,6 @@ bool CmdImg::run_crop(CStrs& args)
         return false;
     }
     bool b_stereo = has(kv, "-stereo");
-    
+
     return true;
 }
