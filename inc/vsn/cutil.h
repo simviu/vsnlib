@@ -64,10 +64,17 @@ namespace ut
     { return std::make_shared<T>(__args...); };
 
     //---- namespace fn
+    /*
     namespace fn
     {
         extern string nopath(const string& s);
     }
+    */
+   // file path decode
+    struct FPath{
+        FPath(const string& sf);
+        string path, base, ext;
+    };
     //-----------
     // container utils
     //-----------

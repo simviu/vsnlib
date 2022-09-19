@@ -136,6 +136,8 @@ bool CmdImg::run_crop(CStrs& args)
         return false;
     }
     bool b_stereo = has(kv, "-stereo");
+    //----
+    
 
     return true;
 }

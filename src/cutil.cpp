@@ -9,6 +9,7 @@
 #include "vsn/cutil.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <filesystem>
 
 #define PATH_BUF_LEN 1024
 
@@ -92,7 +93,14 @@ namespace ut{
         }
         return true;
     }
-
+//-----
+FPath::FPath(const string& sf)
+{
+    std::filesystem::path p(sf);
+    path = string(p.parent_path()) + "/";
+    base = p.stem();
+    ext = p.extension();
+}
 
 //-------------
 // logf
