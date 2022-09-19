@@ -50,6 +50,49 @@ namespace ut{
         }
         return true;
     }
+    //----
+    extern vector<string> tokens(
+        const string& s, char c_deli)
+    {
+        vector<string> ts;
+        stringstream ss(s);
+        string t;
+        while(getline(ss, t, c_deli))
+            ts.push_back(t);
+        
+        return ts;
+    }
+    //-----
+    extern bool s2data(const string& s, vector<double>& ds, char c_deli)
+    {
+        auto ts = tokens(s, c_deli);
+        try
+        {
+            for(auto& t : ts)
+                ds.push_back(stod(t));
+        }
+        catch(exception& e)
+        {  
+            return false; 
+        }
+        return true;
+    }
+    //-----
+    extern bool s2data(const string& s, vector<int>& ds, char c_deli)
+    {
+        auto ts = tokens(s, c_deli);
+        try
+        {
+            for(auto& t : ts)
+                ds.push_back(stoi(t));
+        }
+        catch(exception& e)
+        {  
+            return false; 
+        }
+        return true;
+    }
+
 
 //-------------
 // logf
@@ -141,7 +184,29 @@ namespace sys
     }
 
 }
+//--------------------
+// Elements
+//--------------------
+bool Px::dec(const string& s, char c_deli)
+{   
+    vector<double> ds;
+    if( (!s2data(s, ds, c_deli)) ||
+        ds.size()<2 )
+        return false;
+    x = ds[0]; y=ds[1]; 
+    return true; 
+}
+//-----
+bool Sz::dec(const string& s, char c_deli)
+{
+    vector<int> ds;
+    if( (!s2data(s, ds, c_deli)) ||
+        ds.size()<2 )
+        return false;
+    w = ds[0]; h=ds[1]; 
+    return true; 
 
+} 
 //--------------------
 // file utils
 //--------------------

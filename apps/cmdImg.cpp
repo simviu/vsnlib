@@ -80,8 +80,8 @@ CmdImg::CmdImg():
     }
     //---- 'crop'
     {
-        string sH = "crop image \n";
-        sH += "   Usage: crop file=<IMG> px0=x,y sz=w,h [-stereo]\n";
+        string sH = "Image cropping \n";
+        sH += "   Usage: crop file=<IMG> start=x,y sz=w,h [-stereo|...]\n";
         add("crop", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_crop(args); }));
     }
@@ -113,15 +113,29 @@ bool CmdImg::run_picker(CStrs& args)
     return true;
 }
 
-
-
 //------
 bool CmdImg::run_crop(CStrs& args)
 {
     StrTbl kv;   parseKV(args, kv);
     string sf = lookup(kv, string("file"));
+        
     auto p_im = vsn::Img::loadFile(sf);
     if(!p_im->load(sf))
         return false;
+    bool ok = true;
+    // dbg
+    vector<double> ds; 
+    //ok &= s2data(" 1.0, 2.3 ", ds); // dbg
+    //----
+    Px px;  ok &= px.dec(lookup(kv, "start"));
+    Sz sz;  ok &= sz.dec(lookup(kv, "sz")); 
+
+    if(!ok)
+    {
+        log_e("  Parsing arg fail");
+        return false;
+    }
+    bool b_stereo = has(kv, "-stereo");
+    
     return true;
 }

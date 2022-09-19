@@ -44,12 +44,14 @@ namespace ut
     inline string lookup(CStrTbl& m, CStr& sk)
     {  auto it=m.find(sk); 
         if(it==m.end()) return ""; return it->second; }
-
+    extern vector<string> tokens(const string& s, char c_deli=' ');
     //--- parse key/value table, e.g.: 
     // file=a.txt n=10 ...
     extern bool parseKV(CStrs& ss, StrTbl& kv);
     inline bool has(CStrTbl& m, CStr& sk)
     { auto it=m.find(sk); return it!=m.end(); }
+    extern bool s2data(const string& s, vector<double>& ds, char c_deli=',');
+    extern bool s2data(const string& s, vector<int>& ds,    char c_deli=',');
     //-----------------------------
     //	Aliase for std::shared_ptr
     //-----------------------------
@@ -158,7 +160,7 @@ namespace ut
         };   
     }
     //----------
-    // draw data
+    // Elements
     //----------
     struct Px{
         Px(){}
@@ -175,7 +177,9 @@ namespace ut
         string str()const 
         { stringstream s; 
           s << x <<","<< y; return s.str(); } 
+        bool dec(const string& s, char c_deli=',');
     };
+    //-----
     struct Color{
         uint8_t r=0;
         uint8_t g=0; 
@@ -187,6 +191,11 @@ namespace ut
              << (int)b << "," << (int)a; 
           return s.str(); } 
     };
+    inline ostream& operator << (ostream& s, const Px& px)
+    {  s << px.str(); return s; }
+    inline istream& operator >> (istream& s, Px& px)
+    {  s >> px.x; s >> px.y; return s; }
+    //----
     struct Sz{
         Sz(){}
         Sz(int w, int h):w(w), h(h){}
@@ -196,6 +205,7 @@ namespace ut
         { return (px.x>=0) && (px.y>=0) && (px.x<w) && (px.y<h); }
         string str()const
         {  stringstream s; s << w << "," << h << endl; return s.str(); }
+        bool dec(const string& s, char c_deli=',');
     };
     inline ostream& operator << (ostream& s, const Sz& sz)
     {  s << sz.w << ", " << sz.h; return s; }
