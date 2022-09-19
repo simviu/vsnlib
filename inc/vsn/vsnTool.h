@@ -35,8 +35,9 @@ namespace app
     public:
         using Cmd::Cmd;
         CmdImg();
-        bool run_picker(CStrs& args);
     protected:
+        bool run_picker(CStrs& args);
+        bool run_crop(CStrs& args);
         struct Data{
             int frm_idx=0;
         }; Data data_;

@@ -78,6 +78,13 @@ CmdImg::CmdImg():
         add("picker", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_picker(args); }));
     }
+    //---- 'crop'
+    {
+        string sH = "crop image \n";
+        sH += "   Usage: crop file=<IMG> px0=x,y sz=w,h [-stereo]\n";
+        add("crop", mkSp<Cmd>(sH,
+        [&](CStrs& args)->bool{ return run_crop(args); }));
+    }
 
 }
 
@@ -103,5 +110,18 @@ bool CmdImg::run_picker(CStrs& args)
     cv::setMouseCallback(sWin, picker::mouse_callbk, &ud);//Mouse callback function on define window//
     //cv::imshow(sf, im);//showing image on the window//
     cv::waitKey(0);//wait for keystroke//
+    return true;
+}
+
+
+
+//------
+bool CmdImg::run_crop(CStrs& args)
+{
+    StrTbl kv;   parseKV(args, kv);
+    string sf = lookup(kv, string("file"));
+    auto p_im = vsn::Img::loadFile(sf);
+    if(!p_im->load(sf))
+        return false;
     return true;
 }
