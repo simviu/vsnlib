@@ -14,7 +14,9 @@ using namespace app;
 
 //----
 namespace{
-
+    struct LCfg{
+        string sf_omni_st = "omni_stereocalib_data.xml";
+    }; LCfg lc_;
 }
 //----
 CmdCalib::CmdCalib():
@@ -33,5 +35,18 @@ CmdCalib::CmdCalib():
 //------
 bool CmdCalib::run_omni_stereo(CStrs& args)
 {
-    return true;
+    log_i("Calib omni stereo...");
+
+    string sfom = lc_.sf_omni_st;
+    log_i("Loading :"+ sfom + "...");
+    cv::FileStorage fs(sfom, cv::FileStorage::READ);
+
+    std::vector<cv::Mat> objectPoints, imagePoints;
+    cv::Size imgSize;
+    fs["objectPoints"] >> objectPoints;
+    fs["imagePoints"] >> imagePoints;
+    fs["imageSize"] >> imgSize;
+    //----
+    log_e("Under construction...");
+    return false;
 }
