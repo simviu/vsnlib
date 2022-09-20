@@ -3,8 +3,8 @@ import numpy as np
 import os
 from PIL import Image, ImageOps, ImageDraw
 
-K_pathw = "4x4_100/"
-K_pathwb = "4x4_100_b/"
+K_pathw =  "arucod/4x4_100/"
+K_pathwb = "arucod/4x4_100_b/"
 K_dict = cv.aruco.DICT_4X4_100
 WM = 240 # marker width
 BD = 40  # boader size
