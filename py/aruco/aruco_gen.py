@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import os
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageDraw
 
 K_pathw = "4x4_100/"
 K_pathwb = "4x4_100_b/"
@@ -31,6 +31,14 @@ def gen_marker(idx):
     #---- img add boarder
     imw = Image.open(sfw)
     bimg = ImageOps.expand(imw, border=BD, fill="white")
+    
+    #-- draw boarder
+    #shape = [(40, 40), (w - 10, h - 10)]
+    draw = ImageDraw.Draw(bimg)    
+    #draw.rectangle(((0, 0), (bimg.size[0], bimg.size[1])), fill=None)
+    wb,hb = bimg.size[0], bimg.size[1]
+    draw.rectangle( (0, 0, wb-1, hb-1), fill=None, outline=(0))
+
     sfwb = os.path.join(K_pathwb, str(idx)+".png")
     print("save:"+sfwb)
     bimg.save(sfwb)
