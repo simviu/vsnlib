@@ -23,8 +23,9 @@ namespace app
     public:
         using Cmd::Cmd;
         CmdCalib();
-        bool run_omni_stereo(CStrs& args);
     protected:
+        bool run_omni_stereo(CStrs& args);
+        bool run_stereo(CStrs& args);
         
 
     };
@@ -50,12 +51,13 @@ namespace app
     public:
         using Cmd::Cmd;
         CmdVideo();
-        bool run_frames(CStrs& args);
     protected:
         struct Data{
             int frm_idx=0;
         }; Data data_;
         bool video_frm_ui(const Img& im);
+        bool run_frames(CStrs& args);
+        bool run_crop(CStrs& args);
 
     };
     //-----------

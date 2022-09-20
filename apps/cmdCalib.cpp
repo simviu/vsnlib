@@ -18,7 +18,6 @@ using namespace app;
 //----
 namespace{
     struct LCfg{
-    //    string sf_omni_st = "omni_stereocalib_data.xml";
         string sf_imL = "L.jpg";
         string sf_imR = "R.jpg";
     }; LCfg lc_;
@@ -27,14 +26,20 @@ namespace{
 CmdCalib::CmdCalib():
     Cmd("Calib commands")
 {
-    //---- 'omni_st'
+    //---- 'omni_stereo'
     {
         string sH = "Omnidir Stereo Calibration \n";
-        sH += "   Usage: omni_st \n";
-        add("omni_st", mkSp<Cmd>(sH,
+        sH += "   Usage: omni_stereo \n";
+        add("omni_stereo", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_omni_stereo(args); }));
     }
-
+ //---- 'stereo'
+    {
+        string sH = "Omnidir Stereo Calibration \n";
+        sH += "   Usage: stereo \n";
+        add("stereo", mkSp<Cmd>(sH,
+        [&](CStrs& args)->bool{ return run_stereo(args); }));
+    }
 }
 
 //------
@@ -44,28 +49,10 @@ bool CmdCalib::run_omni_stereo(CStrs& args)
 
     std::vector<cv::Mat> objectPoints, imagePoints1, imagePoints2;
     cv::Size imgSize1, imgSize2;
-    /*
-    {
-        string sfom = lc_.sf_omni_st;
-        log_i("Loading :"+ sfom + "...");
-        cv::FileStorage fs(sfom, cv::FileStorage::READ);
-        if(!fs.isOpened())
-        {
-            log_ef(sfom);
-            return false;
-        }
-        //------
-        std::vector<cv::Mat> objectPoints, imagePoints1, imagePoints2;
-        cv::Size imgSize1, imgSize2;
-        fs["objectPoints"] >> objectPoints;
-        fs["imagePoints1"] >> imagePoints1;
-        fs["imagePoints2"] >> imagePoints2;
-        fs["imageSize1"] >> imgSize1;
-        fs["imageSize2"] >> imgSize2; 
-    }
-    */
+   
+   
     //---- find pattern
-
+    // TODO: find pattern and points
    //----
     cv::Mat K1, K2, xi1, xi2, D1, D2, idx;
     int flags = 0;
@@ -93,4 +80,12 @@ bool CmdCalib::run_omni_stereo(CStrs& args)
     log_i(s.str());
     log_e("Under construction...");
     return false;
+}
+
+
+//------
+bool CmdCalib::run_stereo(CStrs& args)
+{
+    log_i("Calib stereo...");
+    return true;
 }

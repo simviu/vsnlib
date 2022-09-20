@@ -1,8 +1,8 @@
 #include "vsn/vsnLib.h"
 
 
-using namespace vsn;
 
+using namespace vsn;
 //----
 namespace{
     using OmniCfg = StereoVO::Cfg::Omni;
@@ -25,3 +25,5 @@ Sp<OmniCfg> OmniCfg::load(const string& sf)
     if(p->loadFile(sf)) return p;
     return nullptr; 
 } 
+
+
