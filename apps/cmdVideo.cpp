@@ -128,7 +128,13 @@ bool CmdVideo::video_frm_ui(const Img& im)
 bool CmdVideo::run_crop(CStrs& args)
 {
     StrTbl kv;   parseKV(args, kv);
-    string sf = lookup(kv, string("file"));
+    string sf  = lookup(kv, string("file"));
+    string sfw = lookup(kv, string("filew"));
+    if(sf=="" || sfw=="")
+    {
+        log_e("  file or filew not provided");
+        return false;
+    }
         
     auto p_vd = vsn::Video::open(sf);
     if(p_vd==nullptr)
@@ -159,7 +165,7 @@ bool CmdVideo::run_crop(CStrs& args)
     
     //---- Open video to write
     FPath fp(sf);
-    string sfw = fp.base + "_crop" + fp.ext;
+
     auto wvc = vd.cfg_;
     wvc.sz = sz;
     auto p_vdw = Video::create(sfw, wvc);
