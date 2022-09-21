@@ -19,7 +19,9 @@ CmdVideo::CmdVideo():
     //---- 'frames'
     {
         string sH = "frame by frame examine and operations \n";
-        sH += "   Usage: frames file=<FILE> \n";
+        sH += "   Usage: frames file=<FILE> idx=<IDX> wdir=<WDIR> [-ui]\n";
+        sH += "       Notes - <IDX> can set 'all' \n";
+        sH += "             - in '-ui' mode, 's' key to save frm  \n";
         add("frames", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_frames(args); }));
     }
@@ -38,6 +40,26 @@ bool CmdVideo::run_frames(CStrs& args)
 {
     StrTbl kv;   parseKV(args, kv);
     string sf = lookup(kv, string("file"));
+    string s_idx = lookup(kv, string("idx"));
+    string s_wd  = lookup(kv, string("wdir"));
+    if(s_wd=="") s_wd = "./";
+    data_.s_wdir = s_wd;
+    bool b_ui = has(kv, "-ui");
+    //----
+    int idx = 0;
+    if(s_idx=="all") idx = -1;
+    else if(!s2d(s_idx, idx))
+    {
+        log_e("  Invalid index:"+s_idx);
+        return false;
+    }
+    //---
+    stringstream s;
+    s << "Extract video: '" << sf 
+        << "', idx" << s_idx 
+        << ", write to '" << s_wd <<"'..." << endl;
+
+    //----
     auto pv = vsn::Video::open(sf);
     if(pv==nullptr) return false;
     auto& vd = *pv;
@@ -48,27 +70,50 @@ bool CmdVideo::run_frames(CStrs& args)
         fi++;
         auto& im = *p;
         im.show(sf);
-        if(!video_frm_ui(im))
+
+        //---- save frm
+        if(idx==-1 || idx==fi)
+            if(!save_frm(im))
+                return false;
+
+        //--- interactive mode
+        if( b_ui &&(!video_frm_ui(im)) )
             break;
+        
     }
     return true;
 }
 //------
+bool CmdVideo::save_frm(const Img& im)
+{
+    auto& fi = data_.frm_idx;
+    string sf= data_.s_wdir +"/"+ 
+                std::to_string(fi)+".png";
+    if(!im.save(sf))
+    {
+        log_ef(sf);
+        return false;
+    }   
+    log_i("saved: "+sf); 
+    return true;
+}
+
+//------
 bool CmdVideo::video_frm_ui(const Img& im)
 {
     auto& fi = data_.frm_idx;
-    //---- keyboard handle
     while(1)
     {
+        //---- keyboard handle
         int k = vsn::cv_waitkey(10);
         switch(k)
         {
             case ' ':return true; // next frm
             //--- save
-            case 's' : {
-                string sf="frm"+std::to_string(fi)+".jpg";
-                im.save(sf);
-            }; break; 
+            case 's' : 
+                if(!save_frm(im))
+                    return false; 
+                break; 
 
             default: break;
         }

@@ -50,6 +50,11 @@ namespace ut
     extern bool parseKV(CStrs& ss, StrTbl& kv);
     inline bool has(CStrTbl& m, CStr& sk)
     { auto it=m.find(sk); return it!=m.end(); }
+    //----
+    template<typename T>
+        bool s2d(const string& s, T& d)
+        { stringstream t; t>>d; return !t.fail(); }
+    // TODO: template this by s2d()
     extern bool s2data(const string& s, vector<double>& ds, char c_deli=',');
     extern bool s2data(const string& s, vector<int>& ds,    char c_deli=',');
     //-----------------------------

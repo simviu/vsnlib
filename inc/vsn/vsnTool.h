@@ -54,10 +54,12 @@ namespace app
     protected:
         struct Data{
             int frm_idx=0;
+            string s_wdir="./";
         }; Data data_;
         bool video_frm_ui(const Img& im);
         bool run_frames(CStrs& args);
         bool run_crop(CStrs& args);
+        bool save_frm(const Img& im);
 
     };
     //-----------
