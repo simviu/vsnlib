@@ -70,6 +70,7 @@ namespace vsn
         cv::Mat raw(){ return im_; }
         cv::Mat raw()const{ return im_; }
         virtual vector<Line2d> det(const HoughLnCfg& c)const override;
+        virtual vector<Circle> det(const HoughCirCfg& c)const override;
 
     protected:
     };

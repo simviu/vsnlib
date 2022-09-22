@@ -59,6 +59,13 @@ namespace vsn{
     //------------
     // Geometry
     //------------
+
+    // Circle
+    struct Circle{
+        vec2 c;
+        double r;
+    };
+
     //---- Line2D
     // TODO: template for Line 3d
     struct Line2d{
@@ -301,15 +308,25 @@ namespace vsn{
 
         //---- Hough line detection
         struct HoughLnCfg{
-            double  	rho = 1; // pixel
-            double  	theta = M_PI/180.0;
-            int  	    TH = 150;
-            double  	minLnLen = 100;
-            double  	maxLnGap = 10;  
+            double  rho = 1; // pixel
+            double  theta = M_PI/180.0;
+            int  	TH = 150;
+            double  minLnLen = 100;
+            double  maxLnGap = 10;  
             //--- extra
             bool doCanny = true;           
         };
         virtual vector<Line2d> det(const HoughLnCfg& c)const=0;
+        //----
+        struct HoughCirCfg{
+            double  dp = 1;
+            double  minDist= 100;
+            double  param1 = 100;
+            double  param2 = 100;
+            int  	minRadius = 10;
+            int  	maxRadius = 500;
+            };
+        virtual vector<Circle> det(const HoughCirCfg& c)const=0;
     protected:
     };
     //-------------

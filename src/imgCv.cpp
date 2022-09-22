@@ -180,6 +180,26 @@ vector<Line2d> ImgCv::det(const HoughLnCfg& c)const
 
 }
 //----- set/get
+vector<Circle> ImgCv::det(const HoughCirCfg& c)const
+{
+    vector<Vec3f> cs;
+    HoughCircles(im_, cs, HOUGH_GRADIENT,
+                 c.dp, c.minDist, c.param1, c.param2,
+                 c.minRadius, c.maxRadius ); 
+    //----
+    vector<Circle> cirs;
+    for(auto& p : cs)
+    {
+        vec2 t; t << p[0], p[1]; 
+        double r = p[2];
+        Circle o{t, r};
+        cirs.push_back(o);
+    }
+    //---
+    return cirs;
+}
+
+//----- set/get
 void ImgCv::set(const Px& px, const Color& c) 
 {
     if(!size().isIn(px)) return;
