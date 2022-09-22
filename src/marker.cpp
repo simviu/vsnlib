@@ -16,6 +16,9 @@ using namespace ocv;
 
 //---------------
 namespace{
+    using MarkerPE=Marker::PoseEstimator;
+    using Board=MarkerPE::Board;
+    //----
     using DictPtr = cv::Ptr<cv::aruco::Dictionary>;
     struct DictionTbl{
         DictPtr findCreate(int id)
@@ -332,14 +335,15 @@ bool Marker::PoseEstimator::onImg(const Img& im)
         
     }
     //--- detect boards
-    for(auto p : cfg_.mcfg.boards_)
+    for(auto pc : cfg_.mcfg.boards_)
     {
-        auto& bc = reinterpret_cast<BrdCfgImp&>(*p);
-        Board brd;
+        auto& bc = reinterpret_cast<BrdCfgImp&>(*pc);
+        auto p = mkSp<Board>();
+        auto& brd = *p;
         if(!bc.det(detd, camc, brd.pose))
             continue;
-        brd.p_cfg = p;
-        result_.boards.push_back(brd);
+        brd.p_cfg = pc;
+        result_.boards.push_back(p);
     }
     //----- show
     if(mc.en_imo)
@@ -387,9 +391,10 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
 
     }
     //--- draw boards
-    for(auto& b : result_.boards)
+    for(auto& p : result_.boards)
     {
-        auto pc = b.p_cfg;
+        auto& b = *p;
+        auto pc = p->p_cfg;
         assert(pc!=nullptr);
         vec2 vc = camc.proj(b.pose.t);
         imo.draw(camc, {b.pose, 0.3, 10});
@@ -468,3 +473,24 @@ bool Marker::fit_plane(
     p.t = t*(1.0/N);
     return true;
 }
+
+//-------
+Sp<const Board> MarkerPE::Result::
+                nearstBoard(const string& s)const
+{
+    double dmin = -1;
+    Sp<const Board> pr = nullptr;
+    for(auto p: boards)
+    {
+        auto pc = p->p_cfg;
+        if(pc==nullptr || pc->sName!=s)
+            continue;
+        double d = p->pose.t.squaredNorm();
+        if(dmin >=0 && d > dmin)continue;
+        dmin = d;
+        pr = p;
+
+    }
+    return pr;
+}
+

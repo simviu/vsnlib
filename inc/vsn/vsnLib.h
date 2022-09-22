@@ -449,7 +449,8 @@ namespace vsn{
                 // detect result draw.
                 Sp<Img> p_imo = nullptr;
                 //---- boards
-                vector<Board> boards;
+                vector<Sp<Board>> boards;
+                Sp<const Board> nearstBoard(const string& s)const;
             }; Result result_;
             //---- detect
             bool onImg(const Img& im);
