@@ -26,9 +26,11 @@ namespace app
     protected:
         bool run_omni_stereo(CStrs& args);
         bool run_stereo(CStrs& args);
-        
+        bool run_cam_info(CStrs& args);
 
     };
+
+
     //-----------
     // CmdImg
     //-----------
@@ -59,6 +61,7 @@ namespace app
         bool video_frm_ui(const Img& im);
         bool run_frames(CStrs& args);
         bool run_crop(CStrs& args);
+        bool run_enc(CStrs& args);
         bool save_frm(const Img& im);
 
     };

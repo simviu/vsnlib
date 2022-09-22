@@ -9,6 +9,7 @@
 
 
 #include "vsn/vsnTool.h"
+#include <opencv2/ccalib/multicalib.hpp>
 
 using namespace app;
 
@@ -32,6 +33,13 @@ CmdVideo::CmdVideo():
         sH += "   Usage: crop file=<FILE> \n";
         add("crop", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_crop(args); }));
+    }
+    //---- 'encode'
+    {
+        string sH = "encode video from images\n";
+        sH += "   Usage: encode dir=<IMG_DIR> wfile=<VIDEO_FILE> \n";
+        add("enc", mkSp<Cmd>(sH,
+        [&](CStrs& args)->bool{ return run_enc(args); }));
     }
 }
 
@@ -198,3 +206,36 @@ bool CmdVideo::run_crop(CStrs& args)
     
     return true;
 }
+
+
+//------
+bool CmdVideo::run_enc(CStrs& args)
+{
+    StrTbl kv;   parseKV(args, kv);
+    string sdir = lookup(kv, string("dir"));
+    string sfw  = lookup(kv, string("filew"));
+    //--- all imgs
+    vector<string> sfs;
+    cv::glob(sdir, sfs);
+    //---- get first
+    if(sfs.size()==0)
+    { log_e("  No img found"); return false; }
+    auto p_im0 = Img::loadFile(sfs[0]);
+    assert(p_im0!=nullptr);
+    Sz sz = p_im0->size();
+        
+    //---- creat video
+    Video::Cfg vc{sz, 30};
+    auto p_vd = Video::create(sfw, vc);
+    if(p_vd==nullptr) 
+        return false;
+    for(auto& sf : sfs)
+    {
+        auto p = Img::loadFile(sf);
+        p_vd->write(*p);
+
+    }
+    p_vd->close();
+    return true;
+}
+

@@ -320,7 +320,7 @@ namespace vsn{
         Video(){}
         struct Cfg{
             Sz sz;
-            float fps=1;
+            float fps=30;
         };
 
         static Sp<Video> open(CStr& s);

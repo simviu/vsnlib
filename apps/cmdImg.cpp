@@ -116,7 +116,7 @@ bool CmdImg::run_picker(CStrs& args)
 //------
 bool CmdImg::run_crop(CStrs& args)
 {
-    StrTbl kv;   parseKV(args, kv);
+    StrTbl kv; parseKV(args, kv);
     string sf = lookup(kv, string("file"));
         
     auto p_im = vsn::Img::loadFile(sf);

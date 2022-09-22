@@ -14,9 +14,9 @@ include_directories(
     )
 
 #FILE(GLOB  SRC_ALL *.cpp)
-add_executable(calib 
+add_executable(charuco_calib 
     calibrate_camera_charuco.cpp)
-target_link_libraries(calib   
+target_link_libraries(charuco_calib   
     ${OpenCV_LIBRARIES}
     ${Eigen3_LIBRARY}    
     )

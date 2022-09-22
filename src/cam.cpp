@@ -179,12 +179,8 @@ bool CamCfg::toLense(Lense& l)const
         log_e("incorrect camCfg");
         return false;
     }
-    //--- undistor corner pnt
-    vec2 qd; qd << sz.w, sz.h;
-    vec2s qs;
-    undis({qd}, qs);
-    vec2 q = qs[0];
-    //q = qd; // debug
+
+    vec2 q; q << sz.w, sz.h;
     stringstream s;
     //--- proj corner point on
     //  unit focal length 1.0
@@ -192,9 +188,9 @@ bool CamCfg::toLense(Lense& l)const
     l.fovh = toDgr(2*atan(p.x()));
     l.fovv = toDgr(2*atan(p.y()));
     l.fov  = toDgr(2*atan(p.norm()));
-    s << "qd=" << qd << ", ";
     s << "q=" << q << ", ";
-    s << "p=" << p << ", ";
+    s << "p=" << p << endl;
+    s << "  (Note): only for none distort camCfg" << endl;
     log_d(s.str());
     return true;
 }
