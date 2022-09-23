@@ -395,6 +395,8 @@ namespace vsn{
             Sp<Img> p_imo = nullptr;
              // contour img grayscale
             Sp<Img> p_imc = nullptr;
+            // threshold result
+            Sp<Img> p_imt = nullptr;
         }; Data data_;
         bool onImg(const Img& im);
 

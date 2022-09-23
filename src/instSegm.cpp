@@ -176,7 +176,7 @@ bool InstSegm::onImg(const Img& im)
         p_imo->draw(in.hull, cp, 4);
     }
     data_.p_imc = mkSp<ImgCv>(im_cntr);
-
+    data_.p_imt = mkSp<ImgCv>(imt);
     //----
  
 
