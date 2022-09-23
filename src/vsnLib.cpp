@@ -44,6 +44,7 @@ bool Euler::parse(const string& s)
     y = ds[0];
     p = ds[1];
     r = ds[2];
+    return true;
 }
 
 //-----
