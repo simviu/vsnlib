@@ -112,6 +112,15 @@ void ImgCv::draw(const ut::Rect& r,
         Point(p1.x, p1.y), 
         toCv(c), w);
 }
+//--------
+void ImgCv::draw(const vector<Circle>& cs, const Color& c, float w)
+{
+    for(auto& o : cs)
+    {
+        Point2f cn(o.c.x(), o.c.y()) ;
+        cv::circle(im_, cn, o.r, toCv(c), w);
+    }
+}
 
 //--------
 void ImgCv::toGray()

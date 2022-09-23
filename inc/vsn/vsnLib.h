@@ -281,7 +281,7 @@ namespace vsn{
         //---- 2d draw functions
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)=0;
-        virtual void draw(const Circle& o, const Color& c, 
+        virtual void draw(const vector<Circle>& cs, const Color& c, 
                           float w=1.0)=0;
         //--- 3d draw functions
         struct Axis{ Pose pose; double l=1; double w=1;};

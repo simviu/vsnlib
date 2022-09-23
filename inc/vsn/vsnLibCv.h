@@ -43,7 +43,8 @@ namespace vsn
                           double w=1.0)override;
         virtual void draw(const ut::Rect& r, const Color& c, 
                           float w=1.0)override;
-
+        virtual void draw(const vector<Circle>& cs, const Color& c, 
+                          float w=1.0)override;
         virtual void toGray()override;
         virtual void toHsv()override;
 
