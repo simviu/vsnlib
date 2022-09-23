@@ -20,6 +20,8 @@ using namespace cv;
 //   z forward, y down, x right
 //   Order: (y):yaw, (x):pitch, (z):roll 
 //   Unit degree.
+// TODO: not yet
+/*
 Euler::Euler(const quat& q)
 {
     //---- based on Eigen doc,
@@ -27,10 +29,21 @@ Euler::Euler(const quat& q)
     // mat is angleAxis multiple of define order.
     // in our case ypr -> yxz -> 1,0,2
     auto e = q.matrix().eulerAngles(1,0,2);
-    // TODO: need verify
+    // TODO: Eigen eulerAngles got only Z-Y-Z
     y = toDgr(e.y());
     p = toDgr(e.x());
     r = toDgr(e.z());
+}
+*/
+//-----
+bool Euler::parse(const string& s)
+{
+    vector<double> ds;
+    if(!s2data(s, ds)) return false;
+    if(ds.size()<3) return false;
+    y = ds[0];
+    p = ds[1];
+    r = ds[2];
 }
 
 //-----

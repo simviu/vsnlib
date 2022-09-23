@@ -65,7 +65,7 @@ namespace vsn{
         double p = 0;
         double r = 0;
         Euler(){};
-        Euler(const quat& q);
+        bool parse(const string& s);
         quat q()const;
     };
 
