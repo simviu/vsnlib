@@ -55,6 +55,19 @@ namespace vsn{
         Pose operator *(const Pose& p)const;
         vec3 operator *(const vec3& v)const;
     };
+    //---- Euler
+    // Use opencv camera coordinate order:
+    //   z forward, y down, x right
+    //   Order: (y):yaw, (x):pitch, (z):roll 
+    //   Unit degree.
+    struct Euler{
+        double y = 0;
+        double p = 0;
+        double r = 0;
+        Euler(){};
+        Euler(const quat& q);
+        quat q()const;
+    };
 
     //------------
     // Geometry

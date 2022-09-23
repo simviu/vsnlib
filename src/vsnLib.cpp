@@ -13,6 +13,38 @@ using namespace vsn;
 using namespace ocv;
 using namespace cv;
 
+//-----------
+// Eulter
+//-----------
+// Use opencv camera coordinate order:
+//   z forward, y down, x right
+//   Order: (y):yaw, (x):pitch, (z):roll 
+//   Unit degree.
+Euler::Euler(const quat& q)
+{
+    //---- based on Eigen doc,
+    // 0,1,2 --> x, y, z
+    // mat is angleAxis multiple of define order.
+    // in our case ypr -> yxz -> 1,0,2
+    auto e = q.matrix().eulerAngles(1,0,2);
+    // TODO: need verify
+    y = toDgr(e.y());
+    p = toDgr(e.x());
+    r = toDgr(e.z());
+}
+
+//-----
+quat Euler::q()const
+{
+    vec3 nx,ny,nz;
+    nx << 1,0,0; ny << 0,1,0; nz << 0,0,1;
+    mat3 my = rotmat(ny, toRad(r));
+    mat3 mp = rotmat(nx, toRad(p));
+    mat3 mr = rotmat(nz, toRad(y));
+    quat q(my * mp * mr);
+    return q;
+}
+
 //---- Pose
 string Pose::str()const{
     stringstream ss;
