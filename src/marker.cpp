@@ -445,6 +445,7 @@ bool Marker::pose_est(const CamCfg& cc, double wid)
         
 
 //---------------
+// TODO: deprecated , replace by avg pose
 bool Marker::fit_plane(
     const vector<Marker>& ms, Pose& p)
 {

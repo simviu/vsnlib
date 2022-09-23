@@ -54,6 +54,7 @@ namespace vsn{
         Pose inv()const;
         Pose operator *(const Pose& p)const;
         vec3 operator *(const vec3& v)const;
+        static Pose avg(const vector<Pose>& ps);
     };
     //---- Euler
     // Use opencv camera coordinate order:

@@ -67,6 +67,35 @@ string Pose::str()const{
     ss << "t:'" << t <<"'";
     return ss.str();
 }
+//-----
+Pose Pose::avg(const vector<Pose>& ps)
+{
+    Pose a;
+    int i=0;
+    for(const auto& pi : ps)
+    {
+
+        if(i==0)
+        {
+            a.q = pi.q;
+            i++;
+            continue;
+        }
+        //---- average quat by slerp()
+        double t = 1.0/(i+1.0); 
+        a.q = a.q.slerp(t, pi.q);
+        i++;
+    }
+    //---- average t
+    int N = ps.size();
+    vec3 t; t << 0,0,0;
+    for(auto& pi : ps)
+        t += pi.t;
+    a.t = t*(1.0/N);
+    return a;
+}
+
+//-------
 //----
 string Line2d::str()const 
 { 
