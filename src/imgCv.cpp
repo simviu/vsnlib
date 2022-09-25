@@ -133,6 +133,12 @@ void ImgCv::toHsv()
     cv::cvtColor(im_, im_,cv::COLOR_BGR2HSV);
 }
 //--------
+void ImgCv::blur(int w)
+{
+    cv::blur(im_, im_, Size(w, w)); 
+    
+}
+//--------
 void ImgCv::filter(const HSV& c0,
                    const HSV& c1)
 {

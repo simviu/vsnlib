@@ -47,7 +47,7 @@ namespace vsn
                           float w=1.0)override;
         virtual void toGray()override;
         virtual void toHsv()override;
-
+        virtual void blur(int w)override;
         virtual void filter(const HSV& c0,
                             const HSV& c1) override;
         //-----

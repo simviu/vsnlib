@@ -84,7 +84,10 @@ bool InstSegm::onImg(const Img& im)
     cv::Mat imb = imf;
     float bsz = cfg_.blurSz;
     if(bsz>0)
+    {
         blur(imf, imb, Size(bsz, bsz)); // apply blur to grayscaled image
+        data_.p_imb = mkSp<ImgCv>(imb);
+    }
     cv::Mat imt;
     threshold(imb, imt, 150, 255, THRESH_BINARY); // apply binary thresholding
 

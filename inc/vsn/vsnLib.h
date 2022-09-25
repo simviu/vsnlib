@@ -309,6 +309,7 @@ namespace vsn{
                             const HSV& c1)=0;
         virtual void toGray()=0;
         virtual void toHsv()=0;
+        virtual void blur(int w)=0;
         //----
         //---- internal storage data (Mat)
         virtual void* data()=0;
@@ -393,6 +394,8 @@ namespace vsn{
         struct Data{
             vector<Inst> ins;
             Sp<Img> p_imo = nullptr;
+            // blured
+            Sp<Img> p_imb = nullptr;
              // contour img grayscale
             Sp<Img> p_imc = nullptr;
             // threshold result
