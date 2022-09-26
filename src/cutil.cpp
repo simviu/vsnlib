@@ -188,8 +188,8 @@ namespace sys
         double dt_sum = 0;
         for(auto& dt : dts)
             dt_sum += dt;
-
-        fps_ = dt_sum / n;
+        if(dt_sum==0) return;
+        fps_ = n / dt_sum ;
 
     }
 

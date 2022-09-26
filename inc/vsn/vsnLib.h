@@ -307,6 +307,10 @@ namespace vsn{
         //---- processing
         virtual void filter(const HSV& c0,
                             const HSV& c1)=0;
+        // resize method: 0:NrstNbr, 1:BiLnr, 2:BiCube
+        virtual void scale(const Sz& sz, int method=1)=0;
+        void scale(float s, int method=1)
+        { Sz sz=size(); scale(Sz(sz.w*s, sz.h*s), method); }
         virtual void toGray()=0;
         virtual void toHsv()=0;
         virtual void blur(int w)=0;

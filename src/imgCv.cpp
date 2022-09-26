@@ -144,6 +144,11 @@ void ImgCv::filter(const HSV& c0,
 {
     cv::inRange(im_, toCv(c0), toCv(c1), im_);
 }
+void ImgCv::scale(const Sz& sz, int method)
+{
+    cv::resize(im_, im_, cv::Size(sz.w, sz.h), method);
+}
+
 //-----
 Sp<Img> ImgCv::crop(const ut::Rect& r)const
 {

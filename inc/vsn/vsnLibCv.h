@@ -50,6 +50,7 @@ namespace vsn
         virtual void blur(int w)override;
         virtual void filter(const HSV& c0,
                             const HSV& c1) override;
+        virtual void scale(const Sz& sz, int method)override;
         //-----
         virtual void* data()override
         { return reinterpret_cast<void*>(&(im_)); }
