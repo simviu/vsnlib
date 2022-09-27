@@ -55,6 +55,10 @@ namespace vsn{
         Pose operator *(const Pose& p)const;
         vec3 operator *(const vec3& v)const;
         static Pose avg(const vector<Pose>& ps);
+        //--- rotate locally on it's own axis
+        void rotx(double d){ q = q * rotmat(nx3(), d); }
+        void roty(double d){ q = q * rotmat(ny3(), d); }
+        void rotz(double d){ q = q * rotmat(nz3(), d); }
     };
     //---- Euler
     // Use opencv camera coordinate order:

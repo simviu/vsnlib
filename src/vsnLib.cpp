@@ -95,6 +95,8 @@ Pose Pose::avg(const vector<Pose>& ps)
     return a;
 }
 
+
+
 //-------
 //----
 string Line2d::str()const 
