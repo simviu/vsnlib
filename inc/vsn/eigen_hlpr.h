@@ -53,6 +53,7 @@ namespace egn{
     extern string str(double d, int deci=2);
     extern string str(const vec2& v, int deci=2);
     extern string str(const vec3& v, int deci=2);
+    extern string str(const quat& q, int deci=3);
     extern bool s2v(const string& s, vec2& v);
     extern bool s2v(const string& s, vec3& v);
     

@@ -38,6 +38,15 @@ namespace egn
         s<< v.x() << ", " << v.y() << ", " << v.z(); 
         return s.str(); 
     }
+    extern string str(const quat& q, int deci)
+    {
+        stringstream s; ss_deci(s, deci); 
+        s << q.w() << "," << q.x() << ","
+            << q.y() << "," << q.z();
+        return s.str(); 
+
+    }
+
     //----
     template<class T>
     string jstr_vs(T vs)
