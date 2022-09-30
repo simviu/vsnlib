@@ -408,8 +408,12 @@ namespace vsn{
             Sp<Img> p_imc = nullptr;
             // threshold result
             Sp<Img> p_imt = nullptr;
-        }; Data data_;
+        };
+        //----
         bool onImg(const Img& im);
+        auto& data()const{ return data_; }
+    protected:
+        Data data_;
 
     };
 
