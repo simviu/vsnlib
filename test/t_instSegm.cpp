@@ -42,7 +42,7 @@ bool TestInst::run()
     //-------
     if(lc_.enShow)
     {
-        auto p_imo = inst.data_.p_imo;
+        auto p_imo = inst.data().p_imo;
         p_imo->show("InstSegm");
         vsn::show_loop();
     }
