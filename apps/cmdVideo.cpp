@@ -73,23 +73,34 @@ bool CmdVideo::run_frames(CStrs& args)
     auto& vd = *pv;
     Sp<Img> p = nullptr;
     auto& fi = data_.frm_idx;
+    bool ok = true;
     while((p=vd.read())!=nullptr)
     {
         fi++;
         auto& im = *p;
         im.show(sf);
 
-        //---- save frm
-        if(idx==-1 || idx==fi)
-            if(!save_frm(im))
-                return false;
+        //---- save all frm
+        if(idx==-1)
+        {
+            ok = save_frm(im);
+            if(!ok) return false;
+        }
+        // save one frm
+        else if(idx==fi)
+        {
+            ok = save_frm(im);
+            break;
+        }
+        else if(!b_ui)
+            continue;
 
         //--- interactive mode
-        if( b_ui &&(!video_frm_ui(im)) )
-            break;
+        ok = video_frm_ui(im);
+        if(!ok) break;
         
     }
-    return true;
+    return ok;
 }
 //------
 bool CmdVideo::save_frm(const Img& im)

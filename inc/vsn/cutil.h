@@ -53,7 +53,7 @@ namespace ut
     //----
     template<typename T>
         bool s2d(const string& s, T& d)
-        { stringstream t; t>>d; return !t.fail(); }
+        { stringstream t(s); t>>d; return !t.fail(); }
     // TODO: template this by s2d()
     extern bool s2data(const string& s, vector<double>& ds, char c_deli=',');
     extern bool s2data(const string& s, vector<int>& ds,    char c_deli=',');
