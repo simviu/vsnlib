@@ -85,6 +85,7 @@ bool CmdVideo::run_frames(CStrs& args)
         {
             ok = save_frm(im);
             if(!ok) return false;
+            continue;
         }
         // save one frm
         else if(idx==fi)
