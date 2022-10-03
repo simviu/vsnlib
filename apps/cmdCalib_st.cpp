@@ -19,6 +19,7 @@ using namespace app;
 namespace{
     struct LCfg{
         float contrast_scl = 1.0;
+        int N_cali_frms_max = 10;
     }; LCfg lc_;
 
     //---------------------
@@ -46,31 +47,36 @@ namespace{
         // Extracting path of individual image stored in a given directory
         std::vector<cv::String> imagesL, imagesR;
         // Path of the folder containing checkerboard images
-        std::string pathL = sDir + "/L/*.jpg";
-        std::string pathR = sDir + "/R/*.jpg";
+        std::string pathL = sDir + "/L/*.png";
+        std::string pathR = sDir + "/R/*.png";
 
         cv::glob(pathL, imagesL);
         cv::glob(pathR, imagesR);
 
-        cv::Mat frameL, frameR, grayL, grayR;
         // vector to store the pixel coordinates of detected checker board corners 
         std::vector<cv::Point2f> corner_ptsL, corner_ptsR;
         bool successL, successR;
         int N = imagesL.size();
+        log_i(to_string(N) + " images L/R pair found in:"+sDir);
+        if(N==0) return false;
+        
         assert(N<=imagesR.size());
-        log_e(to_string(N) + " images L/R pair found in:"+sDir);
+        cv::Mat frameL, frameR, grayL, grayR;
+        int Nc = 0;
         // Looping over all the images in the directory
         for(int i{0}; i<N; i++)
         {
+            cv::Mat grayL0, grayR0; // tmp hack
+
             frameL = cv::imread(imagesL[i]);
-            cv::cvtColor(frameL,grayL,cv::COLOR_BGR2GRAY);
+            cv::cvtColor(frameL,grayL0,cv::COLOR_BGR2GRAY);
 
             frameR = cv::imread(imagesR[i]);
-            cv::cvtColor(frameR,grayR,cv::COLOR_BGR2GRAY);
+            cv::cvtColor(frameR,grayR0,cv::COLOR_BGR2GRAY);
 
             //---- enhance
-            grayL = grayL * lc_.contrast_scl;
-            grayR = grayR * lc_.contrast_scl;
+            grayL = grayL0 * lc_.contrast_scl;
+            grayR = grayR0 * lc_.contrast_scl;
             // Finding checker board corners
             // If desired number of corners are found in the image then success = true  
             int flag =  cv::CALIB_CB_ADAPTIVE_THRESH + 
@@ -107,15 +113,26 @@ namespace{
                 objpoints.push_back(objp);
                 imgpointsL.push_back(corner_ptsL);
                 imgpointsR.push_back(corner_ptsR);
+                //----
+                log_i("    Good frm:"+to_string(i));
+                Nc++;
             }
-
+            /*
             cv::imshow("ImageL",frameL);
             cv::imshow("ImageR",frameR);
             cv::imshow("GrayL",grayL);
             cv::imshow("GrayR",grayR);
             cv::waitKey(0);
+            */
+            //----
+            if(Nc > lc_.N_cali_frms_max)
+                break;
         }
-        vsn::show_loop();
+        //--- 
+
+        log_i("   Found good frms:"+to_string(Nc));
+        //----
+        //vsn::show_loop();
         //----cv::destroyAllWindows();
 
         cv::Mat mtxL,distL,R_L,T_L;
@@ -153,7 +170,19 @@ namespace{
                                     grayR.size(),
                                     1,
                                     grayR.size(),
-                                    0);        
+                                    0);
+        //---- result:
+        stringstream s;
+        s << "---- Camera L ----" << endl;
+        s << "R_L=" << R_L << endl;         
+        s << "T_L=" << T_L << endl;         
+        s << "---- Camera R ----" << endl;
+        s << "R_R=" << R_R << endl;         
+        s << "T_R=" << T_R << endl;         
+        s << "---- New Matrix ----" << endl;
+        s << "ML" << new_mtxL << endl; 
+        s << "MR" << new_mtxR << endl; 
+        log_i(s.str());
         return true;
     }
 }
