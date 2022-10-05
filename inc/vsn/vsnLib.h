@@ -188,6 +188,8 @@ namespace vsn{
         Rng<double> x,y,z;
         void upd(const vec3& v)
         { x.upd(v.x()); y.upd(v.y()); z.upd(v.z()); }
+        void upd(const vec3s& vs)
+        { for(auto& v : vs) upd(v); }
         vec3 min()const{ vec3 v; v << x.d0, y.d0, z.d0; return v; }
         vec3 max()const{ vec3 v; v << x.d1, y.d1, z.d1; return v; }
         Cube cube()const
@@ -211,9 +213,12 @@ namespace vsn{
         using Ptr = shared_ptr<CamCfg>;
         bool load(CStr& sf);
         vec2 proj(const vec3& p)const;
+        vec3  proj(const vec2& q, double z)const;
+        vec3s proj(const vec2s& qs, double z)const;
         Line2d proj(const Line& l)const;
         //--- on unit focal plane
-        vec3 proj(const vec2& p)const;
+        //vec3 proj(const vec2& p)const;
+        
         //---- camera distortion para
         struct Dist{
             Dist(){}
