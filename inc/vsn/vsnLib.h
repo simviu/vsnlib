@@ -405,7 +405,7 @@ namespace vsn{
         };
         //----
         struct Data{
-            vector<Inst> ins;
+            vector<Sp<Inst>> ins;
             Sp<Img> p_imo = nullptr;
             // blured
             Sp<Img> p_imb = nullptr;

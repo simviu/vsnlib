@@ -109,6 +109,7 @@ bool InstSegm::onImg(const Img& im)
         double ab = b.width*b.height;
         if(ab < lc_.box_area_TH)
             ab = -1;
+            
         //---- filter contour ara
         double a=-1;
         if(ab > 0)
@@ -118,10 +119,10 @@ bool InstSegm::onImg(const Img& im)
             continue;
 
         //---- filter result
-        Inst in;
-        in.box = ocv::toUt(b);  
-        conv_pnts(hull[i], in.hull);
-        data_.ins.push_back(in);
+        auto p = mkSp<Inst>();
+        p->box = ocv::toUt(b);  
+        conv_pnts(hull[i], p->hull);
+        data_.ins.push_back(p);
     }
 
     //---- show result
@@ -166,8 +167,9 @@ bool InstSegm::onImg(const Img& im)
     
     //---- draw instance
     cv::Mat im_cntr(sz.h, sz.w, CV_8UC1, {0,0,0});
-    for(auto& in : data_.ins)
+    for(auto p : data_.ins)
     {
+        auto& in = *p;
         vector<Point> h; 
         conv_pnts(in.hull, h);
         vector<vector<Point>> hs{h};
