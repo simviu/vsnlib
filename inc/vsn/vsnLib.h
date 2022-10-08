@@ -196,6 +196,10 @@ namespace vsn{
         { Pose p; p.t << x.mid(),y.mid(),z.mid(); 
           vec3 sz; sz << x.len(), y.len(), z.len();
           return {p, sz};  }
+        vec3 cntr()const
+        { vec3 v; v << x.mid(),y.mid(),z.mid();  return v; }
+        void upd(const Box3d& b)
+        { x.upd(b.x); y.upd(b.y); z.upd(b.z);  }
     };
 
     //---------

@@ -246,6 +246,8 @@ namespace ut
         void upd(const T& d)
         {   if(!val()) d0=d1=d; 
             else if(d>d1)d1=d; else if(d<d0)d0=d; }
+        void upd(const Rng<T>& r)
+        { upd(r.d0); upd(r.d1); }
         T len()const{ return fabs(d1-d0); }
         T mid()const{ return (d0+d1)*0.5; }
         bool val()const{ return d1>=d0; }
