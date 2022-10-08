@@ -107,6 +107,7 @@ vec3 CamCfg::proj(const vec2& q, double z)const
     return v;
 
 }
+
 //---
 vec3s CamCfg::proj(const vec2s& qs, double z)const
 {
@@ -123,6 +124,20 @@ vec3s CamCfg::proj(const vec2s& qs, double z)const
         vs.push_back(v);
     }
     return vs;
+}
+//-----
+Ray CamCfg::proj(const vec2& q)const
+{ 
+    auto& fx = K(0,0);
+    auto& fy = K(1,1);
+    auto& cx = K(0,2);
+    auto& cy = K(1,2);
+    //----
+    double x = (q.x() - cx)/fx;
+    double y = (q.y() - cy)/fy;
+    vec3 v; v << x, y, 1.0;
+    vec3 o; o<<0,0,0; 
+    return Ray(o, v); 
 }
 
 //----

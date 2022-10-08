@@ -124,6 +124,24 @@ namespace vsn{
          string str()const ;
          void trans(const Pose& P);
          double len()const{ return (p2-p1).norm(); }
+         //--- 2 line cross
+         //struct Crossr{bool bPar; Line x; };
+         //Crossr operator ^(const Line& l);
+    };
+    //-----
+    struct Ray{
+        Ray(const Line& l){ o = l.p1; n = l.nv(); }
+        Ray(const vec3& p1, const vec3& p2)
+        { o = p1; n = (p2 - p1); n.normalize(); }
+        Ray(){ o << 0,0,0; n<<0,0,1;}
+        vec3 o;
+        vec3 n;
+        // intersection
+        struct Xd{bool bPar=false; Line l; };
+        Xd operator ^(const Ray& r)const;
+        vec3 operator ^(const vec3& p)const;
+        vec3 operator () (double t)const { return o + n*t; }
+        Ray trans(const Pose& T)const;
     };
     //---- 
     struct Plane{
@@ -200,6 +218,8 @@ namespace vsn{
         { vec3 v; v << x.mid(),y.mid(),z.mid();  return v; }
         void upd(const Box3d& b)
         { x.upd(b.x); y.upd(b.y); z.upd(b.z);  }
+        void scale(double s)
+        { x.scale(s); y.scale(s); z.scale(s); }
     };
 
     //---------
@@ -218,6 +238,7 @@ namespace vsn{
         bool load(CStr& sf);
         vec2 proj(const vec3& p)const;
         vec3  proj(const vec2& q, double z)const;
+        Ray proj(const vec2& q)const;
         vec3s proj(const vec2s& qs, double z)const;
         Line2d proj(const Line& l)const;
         //--- on unit focal plane
