@@ -252,7 +252,7 @@ namespace ut
         T mid()const{ return (d0+d1)*0.5; }
         void scale(T s)
         {   T l = len(); T c = mid(); 
-            d0 = c-l*0.5; d1 = c + l*0.5; }
+            d0 = c-l*0.5*s; d1 = c + l*0.5*s; }
         bool val()const{ return d1>=d0; }
         string str()const
         { stringstream s; s << d0 <<"," << d1; return s.str(); }
