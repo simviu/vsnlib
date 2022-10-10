@@ -98,11 +98,16 @@ namespace vsn{
          { vec2 v = dv();return atan2(v.y(), v.x()); }
          double dist(const vec2& v)const
          {  
+            vec2 vp = (*this) ^ v;
+            return (v - vp).norm();
+         }
+         vec2 operator ^ (const vec2& v)const 
+         { 
             vec2 n = this->nv(); 
             vec2 vi = v - p1;
             double t = n.dot(vi);
             vec2 vp = p1 + t*n;
-            return (v - vp).norm();
+            return vp;
          }
          vec2 cntr()const{ return (p1+p2)*0.5; }
     };
@@ -113,6 +118,15 @@ namespace vsn{
     { return Line2d(l.p1 + v, l.p2 + v); }
     inline Line2d operator - (const Line2d& l, const vec2& v)
     { return Line2d(l.p1 - v, l.p2 - v); }
+    //------
+    struct RRect2d // rotate Rect
+    {
+        RRect2d(){ sz <<0,0; c << 0,0; }
+        vec2 sz;
+        vec2 c;
+        float a = 0; // rad
+        
+    };
     //---- Line
     struct Line{
          Line(const vec3& p1,
@@ -201,6 +215,29 @@ namespace vsn{
         virtual vec3s points()const override;
         virtual vector<Line> edges()const override;
     };
+    //---- Box2d
+    struct Box2d{
+        Rng<double> x,y;
+        void upd(const vec2& v)
+        { x.upd(v.x()); y.upd(v.y()); }
+        void upd(const vec2s& vs)
+        { for(auto& v : vs) upd(v); }
+        vec2 min()const{ vec2 v; v << x.d0, y.d0; return v; }
+        vec2 max()const{ vec2 v; v << x.d1, y.d1; return v; }
+        Cube cube()const
+        { Pose p; p.t << x.mid(),y.mid(); 
+          vec2 sz; sz << x.len(), y.len();
+          return {p, sz};  }
+        vec2 cntr()const
+        { vec2 v; v << x.mid(),y.mid();  return v; }
+        void upd(const Box2d& b)
+        { x.upd(b.x); y.upd(b.y);  }
+        void scale(double s)
+        { x.scale(s); y.scale(s);  }
+        vec2 sz()const
+        { vec2 sz; sz << x.len(), y.len();  return sz; }
+    };
+
     //---- Box3d
     struct Box3d{
         Rng<double> x,y,z;

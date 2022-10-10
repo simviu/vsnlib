@@ -40,6 +40,11 @@ namespace egn{
     //-- rotation
     inline mat3 rotmat(const vec3& v, double rad)
     {  return Eigen::AngleAxisd(rad, v).matrix(); }
+    inline mat2 rotmat(double rad)
+    {   double c = cos(rad); double s = sin(rad);
+        mat2 m; m << c,-s, 
+                     s, c; 
+        return m;  }
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
     inline vec2 px2v(const Px& p){ vec2 v; v << p.x, p.y; return v; };
