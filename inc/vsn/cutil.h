@@ -218,6 +218,7 @@ namespace ut
         string str()const
         {  stringstream s; s << w << "," << h << endl; return s.str(); }
         bool set(const string& s, char c_deli=',');
+        void operator *= (float s){ w*=s; h*=s; }
     };
     inline ostream& operator << (ostream& s, const Sz& sz)
     {  s << sz.w << ", " << sz.h; return s; }
@@ -229,9 +230,13 @@ namespace ut
         Sz sz;
         Px p0()const { return Px(cntr.x - sz.w*0.5, cntr.y - sz.h*0.5); }
         Px p1()const { return Px(cntr.x + sz.w*0.5, cntr.y + sz.h*0.5); }
+        bool is_in(const Px& p)const 
+        {  Px q = p; q -= cntr; q += Px(sz.w/2, sz.h/2); 
+           return (q.x<=sz.w)&&(q.y<=sz.h)&&(q.x>=0)&&(q.y>=0); }
         string str()const 
         { return "{ c:\"" + cntr.str() + "\", sz:\""+ 
                 sz.str()+"\"}"; }
+
     };
     //-------------
     // util stuct
