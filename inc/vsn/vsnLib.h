@@ -222,6 +222,8 @@ namespace vsn{
         { x.upd(v.x()); y.upd(v.y()); }
         void upd(const vec2s& vs)
         { for(auto& v : vs) upd(v); }
+        void upd(const Rect& r)
+        {  upd(px2v(r.p0())); upd(px2v(r.p1())); }
         vec2 min()const{ vec2 v; v << x.d0, y.d0; return v; }
         vec2 max()const{ vec2 v; v << x.d1, y.d1; return v; }
         
@@ -233,6 +235,8 @@ namespace vsn{
         { x.scale(s); y.scale(s);  }
         vec2 sz()const
         { vec2 sz; sz << x.len(), y.len();  return sz; }
+        bool isIn(const vec2& p)const
+        {  return x.isIn(p.x()) && y.isIn(p.y()); }
     };
 
     //---- Box3d
