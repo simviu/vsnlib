@@ -224,10 +224,7 @@ namespace vsn{
         { for(auto& v : vs) upd(v); }
         vec2 min()const{ vec2 v; v << x.d0, y.d0; return v; }
         vec2 max()const{ vec2 v; v << x.d1, y.d1; return v; }
-        Cube cube()const
-        { Pose p; p.t << x.mid(),y.mid(); 
-          vec2 sz; sz << x.len(), y.len();
-          return {p, sz};  }
+        
         vec2 cntr()const
         { vec2 v; v << x.mid(),y.mid();  return v; }
         void upd(const Box2d& b)
