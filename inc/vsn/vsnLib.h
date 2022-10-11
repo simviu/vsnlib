@@ -118,15 +118,7 @@ namespace vsn{
     { return Line2d(l.p1 + v, l.p2 + v); }
     inline Line2d operator - (const Line2d& l, const vec2& v)
     { return Line2d(l.p1 - v, l.p2 - v); }
-    //------
-    struct RRect2d // rotate Rect
-    {
-        RRect2d(){ sz <<0,0; c << 0,0; }
-        vec2 sz;
-        vec2 c;
-        float a = 0; // rad
-        
-    };
+    
     //---- Line
     struct Line{
          Line(const vec3& p1,
@@ -141,6 +133,20 @@ namespace vsn{
          //--- 2 line cross
          //struct Crossr{bool bPar; Line x; };
          //Crossr operator ^(const Line& l);
+    };
+//------
+    struct RRect2d // rotate Rect
+    {
+        RRect2d(){ sz <<0,0; c << 0,0; }
+        vec2 sz;
+        vec2 c;
+        // Note: Coordinate of 2d plotting,
+        //   based on +y up, +x right,
+        //   rotation angle rad between +x, 
+        //  counter clockwise, y oppsite vs image.
+        float a = 0; // rad
+        
+        vector<Line2d> lines()const;
     };
     //-----
     struct Ray{
@@ -222,7 +228,7 @@ namespace vsn{
         { x.upd(v.x()); y.upd(v.y()); }
         void upd(const vec2s& vs)
         { for(auto& v : vs) upd(v); }
-        void upd(const Rect& r)
+        void upd(const ut::Rect& r)
         {  upd(px2v(r.p0())); upd(px2v(r.p1())); }
         vec2 min()const{ vec2 v; v << x.d0, y.d0; return v; }
         vec2 max()const{ vec2 v; v << x.d1, y.d1; return v; }

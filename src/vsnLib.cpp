@@ -120,6 +120,28 @@ void Line::trans(const Pose& P)
     p1 = P.q*p1 + P.t;
     p2 = P.q*p2 + P.t;
 }
+//----
+vector<Line2d> RRect2d::lines()const
+{
+    vector<Line2d> lns;
+    double dx = sz.x()/2;
+    double dy = sz.y()/2;
+    vec2 p0; p0 << -dx,  dy;
+    vec2 p1; p1 <<  dx,  dy;
+    vec2 p2; p2 <<  dx, -dy;
+    vec2 p3; p3 << -dx, -dy;
+    vec2s ps{p0, p1, p2, p3};
+    mat2 R = rotmat(a);
+    //----
+    for(auto& p : ps)
+        p = (R*p) + c;
+    //----
+    for(int i=0;i<4;i++)
+        lns.push_back(
+            Line2d(ps[i], ps[(i==3)?0:i+1]));
+    
+    return lns;
+}
 
 //----
 Pose Pose::inv()const
