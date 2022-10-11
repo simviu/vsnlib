@@ -56,9 +56,9 @@ namespace vsn{
         vec3 operator *(const vec3& v)const;
         static Pose avg(const vector<Pose>& ps);
         //--- rotate locally on it's own axis
-        void rotx(double d){ q = q * rotmat(nx3(), d); }
-        void roty(double d){ q = q * rotmat(ny3(), d); }
-        void rotz(double d){ q = q * rotmat(nz3(), d); }
+        void rotx(double d){ q = rotmat(nx3(), d) * q; }
+        void roty(double d){ q = rotmat(ny3(), d) * q; }
+        void rotz(double d){ q = rotmat(nz3(), d) * q; }
     };
     //---- Euler
     // Use opencv camera coordinate order:
@@ -95,7 +95,13 @@ namespace vsn{
          vec2 nv()const{ return dv().normalized(); }
          double len()const{ return dv().norm(); }
          double ang()const
-         { vec2 v = dv();return atan2(v.y(), v.x()); }
+         { 
+            vec2 v = dv();
+            float a = atan2(v.y(), v.x());
+            if(a > M_PI/2)  a -= M_PI;
+            if(a < -M_PI/2) a += M_PI;
+            return a; 
+        }
          double dist(const vec2& v)const
          {  
             vec2 vp = (*this) ^ v;
@@ -161,7 +167,8 @@ namespace vsn{
         Xd operator ^(const Ray& r)const;
         vec3 operator ^(const vec3& p)const;
         vec3 operator () (double t)const { return o + n*t; }
-        Ray trans(const Pose& T)const;
+        void trans(const Pose& T);
+        Line line()const{ return Line(o, o+n); }
     };
     //---- 
     struct Plane{
@@ -170,8 +177,9 @@ namespace vsn{
         vec3 c = zerov3();
         vec3 n;
         //---- Projection
-        vec3 proj(const vec3& p);
-        bool cross(const Line& l, vec3& p);
+        vec3 proj(const vec3& p)const;
+        bool cross(const Line& l, vec3& p)const;
+        vec3 operator ^ (const Ray& r)const ;
         string str()const
         { return string("{ c:{") + vsn::str(c) + "}, n:{" + vsn::str(n)+"} }"; }
     };

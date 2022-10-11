@@ -199,15 +199,15 @@ Ray::Xd Ray::operator ^(const Ray& r)const
     return xd;
 }
 //----
-Ray Ray::trans(const Pose& T)const
+void Ray::trans(const Pose& T)
 {
-    Ray y;
-    y.o = T * o;
-    y.n = T.q * n;
-    y.n.normalize();
+    vec3 o1 = T * o;
+    o = o1;
+    mat3 R(T.q);
+    vec3 n1 = R * n;
+    n = n1;
+    n.normalize();
     
-    return y;
-
 }
 
 //----------------------------
