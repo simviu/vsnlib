@@ -196,8 +196,16 @@ bool CmdVideo::run_crop(CStrs& args)
         for(int y=0;y<vdsz.h;y++)
         {
             Color c; 
-            if(!im.get(Px(vdsz.w/2, y), c))continue;
-            if(c.isBlack()) continue;
+            bool b_blk = true;
+            for(int x=0;x<vdsz.w;x++)
+            {
+                if(!im.get(Px(vdsz.w/2, y), c)) continue;
+                if(c.isBlack()) continue;
+                b_blk = false; break;
+            }
+            if(b_blk)continue;
+
+            //---- found none black
             px.y = y; 
             stringstream s;
             s << "  Found auto y start:" << y;
