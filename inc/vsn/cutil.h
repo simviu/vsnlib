@@ -219,6 +219,7 @@ namespace ut
         string str()const
         {  stringstream s; s << w << "," << h << endl; return s.str(); }
         bool set(const string& s, char c_deli=',');
+        void operator *= (float s){ w*=s; h*=s; }
     };
     inline ostream& operator << (ostream& s, const Sz& sz)
     {  s << sz.w << ", " << sz.h; return s; }
@@ -230,9 +231,13 @@ namespace ut
         Sz sz;
         Px p0()const { return Px(cntr.x - sz.w*0.5, cntr.y - sz.h*0.5); }
         Px p1()const { return Px(cntr.x + sz.w*0.5, cntr.y + sz.h*0.5); }
+        bool is_in(const Px& p)const 
+        {  Px q = p; q -= cntr; q += Px(sz.w/2, sz.h/2); 
+           return (q.x<=sz.w)&&(q.y<=sz.h)&&(q.x>=0)&&(q.y>=0); }
         string str()const 
         { return "{ c:\"" + cntr.str() + "\", sz:\""+ 
                 sz.str()+"\"}"; }
+
     };
     //-------------
     // util stuct
@@ -247,8 +252,13 @@ namespace ut
         void upd(const T& d)
         {   if(!val()) d0=d1=d; 
             else if(d>d1)d1=d; else if(d<d0)d0=d; }
+        void upd(const Rng<T>& r)
+        { upd(r.d0); upd(r.d1); }
         T len()const{ return fabs(d1-d0); }
         T mid()const{ return (d0+d1)*0.5; }
+        void scale(T s)
+        {   T l = len(); T c = mid(); 
+            d0 = c-l*0.5*s; d1 = c + l*0.5*s; }
         bool val()const{ return d1>=d0; }
         string str()const
         { stringstream s; s << d0 <<"," << d1; return s.str(); }

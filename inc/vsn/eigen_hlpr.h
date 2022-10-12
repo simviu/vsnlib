@@ -10,6 +10,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 #include <Eigen/Geometry> 
+#include <cmath>
 
 namespace egn{
     using namespace ut;
@@ -37,9 +38,18 @@ namespace egn{
     inline vec3 nx3(){ vec3 v; v << 1,0,0; return v; }
     inline vec3 ny3(){ vec3 v; v << 0,1,0; return v; }
     inline vec3 nz3(){ vec3 v; v << 0,0,1; return v; }
+    inline bool isNan(const vec2& v)
+    { return std::isnan(v.x()) || std::isnan(v.y()); }
+    inline bool isNan(const vec3& v)
+    { return std::isnan(v.x()) || std::isnan(v.y()) || std::isnan(v.z()); }
     //-- rotation
     inline mat3 rotmat(const vec3& v, double rad)
     {  return Eigen::AngleAxisd(rad, v).matrix(); }
+    inline mat2 rotmat(double rad)
+    {   double c = cos(rad); double s = sin(rad);
+        mat2 m; m << c,-s, 
+                     s, c; 
+        return m;  }
     //-- conv
     inline Px toPx(const vec2& v){ return {(int)v.x(), (int)v.y()}; };
     inline vec2 px2v(const Px& p){ vec2 v; v << p.x, p.y; return v; };

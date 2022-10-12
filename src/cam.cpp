@@ -94,6 +94,54 @@ Line2d CamCfg::proj(const Line& l)const
     return ll;
 }
 //----
+vec3 CamCfg::proj(const vec2& q, double z)const
+{
+    auto& fx = K(0,0);
+    auto& fy = K(1,1);
+    auto& cx = K(0,2);
+    auto& cy = K(1,2);
+    //----
+    double x = z*(q.x() - cx)/fx;
+    double y = z*(q.y() - cy)/fy;
+    vec3 v; v << x, y, z;
+    return v;
+
+}
+
+//---
+vec3s CamCfg::proj(const vec2s& qs, double z)const
+{
+    auto& fx = K(0,0);
+    auto& fy = K(1,1);
+    auto& cx = K(0,2);
+    auto& cy = K(1,2);
+    vec3s vs;
+    for(auto& q : qs)
+    {
+        double x = z*(q.x() - cx)/fx;
+        double y = z*(q.y() - cy)/fy;
+        vec3 v; v << x, y, z;
+        vs.push_back(v);
+    }
+    return vs;
+}
+//-----
+Ray CamCfg::proj(const vec2& q)const
+{ 
+    auto& fx = K(0,0);
+    auto& fy = K(1,1);
+    auto& cx = K(0,2);
+    auto& cy = K(1,2);
+    //----
+    double x = (q.x() - cx)/fx;
+    double y = (q.y() - cy)/fy;
+    vec3 v; v << x, y, 1.0;
+    vec3 o; o<<0,0,0; 
+    return Ray(o, v); 
+}
+
+//----
+/*
 vec3 CamCfg::proj(const vec2& p)const
 {
     
@@ -106,7 +154,7 @@ vec3 CamCfg::proj(const vec2& p)const
     vec3 v; v << x, y, 1.0;
     return v;
 }
-
+*/
 //-----
 // ref : https://blog.csdn.net/jonathanzh/article/details/104418758
 void CamCfg::undis(const vec2s& vds, vec2s& vs)const

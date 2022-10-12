@@ -120,6 +120,28 @@ void Line::trans(const Pose& P)
     p1 = P.q*p1 + P.t;
     p2 = P.q*p2 + P.t;
 }
+//----
+vector<Line2d> RRect2d::lines()const
+{
+    vector<Line2d> lns;
+    double dx = sz.x()/2;
+    double dy = sz.y()/2;
+    vec2 p0; p0 << -dx,  dy;
+    vec2 p1; p1 <<  dx,  dy;
+    vec2 p2; p2 <<  dx, -dy;
+    vec2 p3; p3 << -dx, -dy;
+    vec2s ps{p0, p1, p2, p3};
+    mat2 R = rotmat(a);
+    //----
+    for(auto& p : ps)
+        p = (R*p) + c;
+    //----
+    for(int i=0;i<4;i++)
+        lns.push_back(
+            Line2d(ps[i], ps[(i==3)?0:i+1]));
+    
+    return lns;
+}
 
 //----
 Pose Pose::inv()const
@@ -132,6 +154,63 @@ Pose Pose::inv()const
     return p;
 } 
 //----
+/*
+Line::Crossr Line::operator ^(const Line& l)
+{
+    Crossr r;
+    return r;
+}
+*/
+//----
+vec3 Ray::operator ^(const vec3& p)const
+{
+    double t = n.dot(p - o);
+    return o + n*t;
+}
+
+//----
+Ray::Xd Ray::operator ^(const Ray& r)const
+{
+    Xd xd;
+    auto& p1 = o;
+    auto& p2 = r.o;
+    auto& n1 = n;
+    auto& n2 = r.n;
+    vec3 x12 = n1.cross(n2);
+    double d12 = x12.squaredNorm(); 
+    // parallel :
+    //   calc center of p1,p2
+    //   proj onto ray1, ray2
+    if(d12==0) 
+    {
+        xd.bPar = true;
+        vec3 c = (p1+p2)*0.5;
+        vec3 a = (*this)^c;
+        vec3 b = r^c;
+        xd.l = Line(a, b);
+        return xd;
+    }
+    //----
+    double t1 = ((p2-p1).cross(n2)).dot(x12) / d12; 
+    double t2 = ((p2-p1).cross(n1)).dot(x12) / d12; 
+    vec3 a = p1 + n1*t1;
+    vec3 b = p2 + n2*t2;
+    xd.l = Line(a, b);
+    return xd;
+}
+//----
+void Ray::trans(const Pose& T)
+{
+    vec3 o1 = T * o;
+    o = o1;
+    mat3 R(T.q);
+    vec3 n1 = R * n;
+    n = n1;
+    n.normalize();
+    
+}
+
+//----------------------------
 Pose Pose::operator *(const Pose& p)const
 {
     //  | R1 t1 | x | R2 t2 | = | R1R2  R1t2+t1 | 

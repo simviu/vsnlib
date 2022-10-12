@@ -15,7 +15,7 @@
 using namespace vsn;
 
 //----- projection fucntions
-vec3 Plane::proj(const vec3& p)
+vec3 Plane::proj(const vec3& p)const
 {
     vec3 pc = p-c;
     float l = n.norm(); // dbg
@@ -24,17 +24,35 @@ vec3 Plane::proj(const vec3& p)
     vec3 pp = p - dv;
     return pp;
 }
-bool Plane::cross(const Line& l, vec3& p)
+//-----
+bool Plane::cross(const Line& l, vec3& p)const
 {
     vec3 nl = l.nv();
-    if(nl == n) return false; // parellel
+    double a = nl.dot(-n);
+    if(a == 0) return false; // parellel
     vec3 p1 = l.p1;
     vec3 pp = proj(p1);
     double d = (pp - p1).norm();
     // nl proj on vertial n, causing scale.
-    double s = 1.0/nl.dot(-n); 
+    double s = 1.0/a; 
     p = p1 + nl*(d*s);
     return true;
+}
+//-------
+vec3 Plane::operator ^ (const Ray& r)const 
+{
+    double nf = NAN;
+    vec3 p; p << nf, nf, nf;
+    vec3 nl = r.n;
+    double a = nl.dot(-n);
+    if(a == 0) return p; // parellel
+    vec3 p1 = r.o;
+    vec3 pp = proj(p1);
+    double d = (pp - p1).norm();
+    // nl proj on vertial n, causing scale.
+    double s = 1.0/a; 
+    p = p1 + nl*(d*s);
+    return p;    
 }
 
 //-------

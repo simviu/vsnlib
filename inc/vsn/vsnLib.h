@@ -56,9 +56,9 @@ namespace vsn{
         vec3 operator *(const vec3& v)const;
         static Pose avg(const vector<Pose>& ps);
         //--- rotate locally on it's own axis
-        void rotx(double d){ q = q * rotmat(nx3(), d); }
-        void roty(double d){ q = q * rotmat(ny3(), d); }
-        void rotz(double d){ q = q * rotmat(nz3(), d); }
+        void rotx(double d){ q = rotmat(nx3(), d) * q; }
+        void roty(double d){ q = rotmat(ny3(), d) * q; }
+        void rotz(double d){ q = rotmat(nz3(), d) * q; }
     };
     //---- Euler
     // Use opencv camera coordinate order:
@@ -95,14 +95,25 @@ namespace vsn{
          vec2 nv()const{ return dv().normalized(); }
          double len()const{ return dv().norm(); }
          double ang()const
-         { vec2 v = dv();return atan2(v.y(), v.x()); }
+         { 
+            vec2 v = dv();
+            float a = atan2(v.y(), v.x());
+            if(a > M_PI/2)  a -= M_PI;
+            if(a < -M_PI/2) a += M_PI;
+            return a; 
+        }
          double dist(const vec2& v)const
          {  
+            vec2 vp = (*this) ^ v;
+            return (v - vp).norm();
+         }
+         vec2 operator ^ (const vec2& v)const 
+         { 
             vec2 n = this->nv(); 
             vec2 vi = v - p1;
             double t = n.dot(vi);
             vec2 vp = p1 + t*n;
-            return (v - vp).norm();
+            return vp;
          }
          vec2 cntr()const{ return (p1+p2)*0.5; }
     };
@@ -113,6 +124,7 @@ namespace vsn{
     { return Line2d(l.p1 + v, l.p2 + v); }
     inline Line2d operator - (const Line2d& l, const vec2& v)
     { return Line2d(l.p1 - v, l.p2 - v); }
+    
     //---- Line
     struct Line{
          Line(const vec3& p1,
@@ -124,6 +136,39 @@ namespace vsn{
          string str()const ;
          void trans(const Pose& P);
          double len()const{ return (p2-p1).norm(); }
+         //--- 2 line cross
+         //struct Crossr{bool bPar; Line x; };
+         //Crossr operator ^(const Line& l);
+    };
+//------
+    struct RRect2d // rotate Rect
+    {
+        RRect2d(){ sz <<0,0; c << 0,0; }
+        vec2 sz;
+        vec2 c;
+        // Note: Coordinate of 2d plotting,
+        //   based on +y up, +x right,
+        //   rotation angle rad between +x, 
+        //  counter clockwise, y oppsite vs image.
+        float a = 0; // rad
+        
+        vector<Line2d> lines()const;
+    };
+    //-----
+    struct Ray{
+        Ray(const Line& l){ o = l.p1; n = l.nv(); }
+        Ray(const vec3& p1, const vec3& p2)
+        { o = p1; n = (p2 - p1); n.normalize(); }
+        Ray(){ o << 0,0,0; n<<0,0,1;}
+        vec3 o;
+        vec3 n;
+        // intersection
+        struct Xd{bool bPar=false; Line l; };
+        Xd operator ^(const Ray& r)const;
+        vec3 operator ^(const vec3& p)const;
+        vec3 operator () (double t)const { return o + n*t; }
+        void trans(const Pose& T);
+        Line line()const{ return Line(o, o+n); }
     };
     //---- 
     struct Plane{
@@ -132,8 +177,9 @@ namespace vsn{
         vec3 c = zerov3();
         vec3 n;
         //---- Projection
-        vec3 proj(const vec3& p);
-        bool cross(const Line& l, vec3& p);
+        vec3 proj(const vec3& p)const;
+        bool cross(const Line& l, vec3& p)const;
+        vec3 operator ^ (const Ray& r)const ;
         string str()const
         { return string("{ c:{") + vsn::str(c) + "}, n:{" + vsn::str(n)+"} }"; }
     };
@@ -183,17 +229,49 @@ namespace vsn{
         virtual vec3s points()const override;
         virtual vector<Line> edges()const override;
     };
+    //---- Box2d
+    struct Box2d{
+        Rng<double> x,y;
+        void upd(const vec2& v)
+        { x.upd(v.x()); y.upd(v.y()); }
+        void upd(const vec2s& vs)
+        { for(auto& v : vs) upd(v); }
+        void upd(const ut::Rect& r)
+        {  upd(px2v(r.p0())); upd(px2v(r.p1())); }
+        vec2 min()const{ vec2 v; v << x.d0, y.d0; return v; }
+        vec2 max()const{ vec2 v; v << x.d1, y.d1; return v; }
+        
+        vec2 cntr()const
+        { vec2 v; v << x.mid(),y.mid();  return v; }
+        void upd(const Box2d& b)
+        { x.upd(b.x); y.upd(b.y);  }
+        void scale(double s)
+        { x.scale(s); y.scale(s);  }
+        vec2 sz()const
+        { vec2 sz; sz << x.len(), y.len();  return sz; }
+        bool isIn(const vec2& p)const
+        {  return x.isIn(p.x()) && y.isIn(p.y()); }
+    };
+
     //---- Box3d
     struct Box3d{
         Rng<double> x,y,z;
         void upd(const vec3& v)
         { x.upd(v.x()); y.upd(v.y()); z.upd(v.z()); }
+        void upd(const vec3s& vs)
+        { for(auto& v : vs) upd(v); }
         vec3 min()const{ vec3 v; v << x.d0, y.d0, z.d0; return v; }
         vec3 max()const{ vec3 v; v << x.d1, y.d1, z.d1; return v; }
         Cube cube()const
         { Pose p; p.t << x.mid(),y.mid(),z.mid(); 
           vec3 sz; sz << x.len(), y.len(), z.len();
           return {p, sz};  }
+        vec3 cntr()const
+        { vec3 v; v << x.mid(),y.mid(),z.mid();  return v; }
+        void upd(const Box3d& b)
+        { x.upd(b.x); y.upd(b.y); z.upd(b.z);  }
+        void scale(double s)
+        { x.scale(s); y.scale(s); z.scale(s); }
     };
 
     //---------
@@ -211,9 +289,13 @@ namespace vsn{
         using Ptr = shared_ptr<CamCfg>;
         bool load(CStr& sf);
         vec2 proj(const vec3& p)const;
+        vec3  proj(const vec2& q, double z)const;
+        Ray proj(const vec2& q)const;
+        vec3s proj(const vec2s& qs, double z)const;
         Line2d proj(const Line& l)const;
         //--- on unit focal plane
-        vec3 proj(const vec2& p)const;
+        //vec3 proj(const vec2& p)const;
+        
         //---- camera distortion para
         struct Dist{
             Dist(){}
@@ -400,7 +482,7 @@ namespace vsn{
         };
         //----
         struct Data{
-            vector<Inst> ins;
+            vector<Sp<Inst>> ins;
             Sp<Img> p_imo = nullptr;
             // blured
             Sp<Img> p_imb = nullptr;
