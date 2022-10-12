@@ -199,7 +199,7 @@ bool CmdVideo::run_crop(CStrs& args)
             bool b_blk = true;
             for(int x=0;x<vdsz.w;x++)
             {
-                if(!im.get(Px(vdsz.w/2, y), c)) continue;
+                if(!im.get(Px(x, y), c)) continue;
                 if(c.isBlack()) continue;
                 b_blk = false; break;
             }
@@ -304,7 +304,6 @@ bool CmdVideo::run_crop_stereo(CStrs& args)
     Sz vdsz = vd.cfg_.sz;
     Sz sz = vdsz;
     sz.w /= 2;
-    sz.h /= 2; 
    
     bool ok = true;
     int xs=0,ys=0; 
