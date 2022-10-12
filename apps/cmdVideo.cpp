@@ -13,6 +13,10 @@
 
 using namespace app;
 
+namespace {
+    
+}
+
 //----
 CmdVideo::CmdVideo():
     Cmd("Video commands")
@@ -41,6 +45,7 @@ CmdVideo::CmdVideo():
         add("enc", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_enc(args); }));
     }
+    
 }
 
 //------
@@ -148,6 +153,10 @@ bool CmdVideo::video_frm_ui(const Img& im)
 bool CmdVideo::run_crop(CStrs& args)
 {
     StrTbl kv;   parseKV(args, kv);
+    if(has(kv, "-stereo"))
+        return run_crop_stereo(args);
+
+    //---- normal crop
     string sf  = lookup(kv, string("file"));
     string sfw = lookup(kv, string("filew"));
     if(sf=="" || sfw=="")
@@ -160,18 +169,45 @@ bool CmdVideo::run_crop(CStrs& args)
     if(p_vd==nullptr)
         return false;
     auto& vd = *p_vd;
-
-    //----
-    bool ok = true;
-    Px px;  ok &= px.set(lookup(kv, "start"));
-    Sz sz;  ok &= sz.set(lookup(kv, "sz")); 
     Sz vdsz = vd.cfg_.sz;
+    auto p_im0 = vd.read(); // read 1st frm for some calculation
+
+    //--------
+    Px px;  Sz sz;
+    bool ok = true;
+
+    ok &= px.set(lookup(kv, "start"));
+    ok &= sz.set(lookup(kv, "sz")); 
+    
+    //----
     if(!ok)
     {
         log_e("  Parsing arg fail");
         return false;
     }
+    //----- find auto y-start
+    if(px.y==-1)
+    {
+        auto& im = *p_im0;
+        //---- top boarder
+        for(int y=0;y<vdsz.h;y++)
+        {
+            Color c; 
+            if(!im.get(Px(vdsz.w/2, y), c))continue;
+            if(c.isBlack()) continue;
+            px.y = y; 
+            stringstream s;
+            s << "  Found auto y start:" << y;
+            log_i(s.str()); break;
+        }
+        //----
+        if(px.y==-1)
+        {
+            log_e("  Not found auto y");
+            return false;
+        }
 
+    }
     //---- command print
     string s = "Crop video: src sz=" + vdsz.str();
     s += ", start=" + px.str();
@@ -194,10 +230,13 @@ bool CmdVideo::run_crop(CStrs& args)
         log_ef(sfw);
         return false;
     }
+
     //----
+    int i=0;
     while(true)
     {
-        auto p_im = vd.read();
+        auto p_im = p_im0;
+        if(i>0) p_im = vd.read();
         if(p_im==nullptr) break;
         auto p_imc = p_im->crop(r);
         if(p_imc==nullptr)
@@ -211,14 +250,147 @@ bool CmdVideo::run_crop(CStrs& args)
         }
         //----
         p_vdw->write(*p_imc);
-
+        i++;
     }
     //---- done
     p_vdw->close();
-    
+
+    {
+        stringstream s;
+        s << "write to video:'"+sfw +"' ok, ";
+        s << "frms:" << i ;
+        log_i(s.str());
+    }
     return true;
 }
 
+
+//------
+bool CmdVideo::run_crop_stereo(CStrs& args)
+{
+    StrTbl kv; parseKV(args, kv);
+    //---- normal crop
+    string sf  = lookup(kv, string("file"));
+    if(sf=="")
+    {
+        log_e("  file not provided");
+        return false;
+    }
+    //----
+    sys::FPath fp(sf);
+    string swd = lookup(kv, string("wdir"));
+    if(swd=="") 
+         swd = fp.path + "/";
+    else swd += "/";
+
+    //---- open video        
+    auto p_vd = vsn::Video::open(sf);
+    if(p_vd==nullptr)
+        return false;
+    auto& vd = *p_vd;
+    Sz vdsz = vd.cfg_.sz;
+    Sz sz = vdsz;
+    sz.w /= 2;
+    sz.h /= 2; 
+   
+    bool ok = true;
+    int xs=0,ys=0; 
+    string s_xs = lookup(kv, "xs");
+    string s_ys = lookup(kv, "ys");
+    string s_sz = lookup(kv, "sz");
+    if(s_xs!="") ok &= s2d(s_xs, xs);
+    if(s_ys!="") ok &= s2d(s_ys, ys);
+    if(s_sz!="") ok &= sz.set(s_sz); 
+
+    if(!ok)
+    {
+        log_e("  Parsing arg fail");
+        return false;
+    }
+    //-----
+    {
+        stringstream s;
+        s << "Crop video: src sz="  << vdsz.str();
+        s << ", ys=" << ys;
+        log_i(s.str());
+    }
+    
+    //---- auto calc y offset if set -1
+    auto p_im0 = vd.read();
+    if(ys==-1)
+    {
+        stringstream s;
+        auto& im = *p_im0;
+        for(int y =0; y<sz.h; y++)
+        {
+            Color c;
+            if(!im.get(Px(xs+10, y), c)) break;
+            if(c.isBlack())continue;
+            ys = y; break;
+            s << "  Found auto ys = " << y;
+            log_i(s.str());
+        }
+        if(ys==-1)
+        {
+            log_e("   Auto y offset failed, set ys manally");
+            return false;
+        }
+
+    }
+
+    //---- Left/Right img
+    Px rcsL{xs +  sz.w/2, ys + sz.h/2};
+    //---- assume Right rect start in middle
+    Px rcsR{vdsz.w/2 + sz.w/2, ys + sz.h/2};
+    Rect rL(rcsL, sz);
+    Rect rR(rcsR, sz);
+
+    Color cr{255,0,0,255};
+    
+    //---- Open video to write
+
+    auto wvc = vd.cfg_;
+    wvc.sz = sz;
+    auto p_vL = Video::create(swd + "L.mkv", wvc);
+    auto p_vR = Video::create(swd + "R.mkv", wvc);
+    if(p_vL==nullptr || p_vR==nullptr)
+    {
+        log_e("Fail to create videos in dir:"+swd);
+        return false;
+    }
+    //----
+    int i=0;
+    while(true)
+    {
+        auto p_im = p_im0;
+        if(i>0) p_im = vd.read();
+        if(p_im==nullptr) break;
+        auto p_imL = p_im->crop(rL);
+        auto p_imR = p_im->crop(rR);
+        if(p_imL==nullptr || p_imR==nullptr)
+        {
+            string s = "  Rect out of range, ";
+            s += " Video sz:[" + vdsz.str() + "], ";
+            s += "    crop rectL:[" + rL.p0().str()+"->"+ 
+                rL.p1().str() +"]\n";
+            s += "    crop rectR:[" + rR.p0().str()+"->"+ 
+                rR.p1().str() +"]\n";
+            log_e(s);
+            return false;
+        }
+        //----
+        p_vL->write(*p_imL);
+        p_vR->write(*p_imR);
+        i++;
+    }
+    
+    //---- done
+    p_vL->close();
+    p_vR->close();
+    log_i("  Total frms:"+to_string(i));
+    log_i("  Crop into L/R.mkv in dir:"+swd);
+    return true;
+}
 
 //------
 bool CmdVideo::run_enc(CStrs& args)

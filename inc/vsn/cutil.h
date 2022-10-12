@@ -198,11 +198,18 @@ namespace ut
         uint8_t g=0; 
         uint8_t b=0;
         uint8_t a=255;
+        bool set(const string& s, char c_deli=',');
         string str()const 
         { stringstream s; 
           s << (int)r <<","<< (int)g << ","
              << (int)b << "," << (int)a; 
           return s.str(); } 
+        bool isBlack()const 
+        { return r==0 && g==0 && b==0; }
+        bool operator == (const Color& c)const
+        { return r==c.r && g==c.g && b==c.b && a==c.a; }
+        bool operator != (const Color& c)const
+        { return !(*this == c); }
     };
     inline ostream& operator << (ostream& s, const Px& px)
     {  s << px.str(); return s; }

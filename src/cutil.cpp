@@ -198,6 +198,17 @@ namespace sys
 //--------------------
 // Elements
 //--------------------
+bool Color::set(const string& s, char c_deli)
+{
+    vector<int> ds;
+    if( (!s2data(s, ds, c_deli)) || ds.size()<3 )
+        return false;
+    r = ds[0]; g=ds[1]; b=ds[2];
+    if(ds.size()>3) a=ds[3];
+    return true; 
+}
+
+//----
 bool Px::set(const string& s, char c_deli)
 {   
     vector<double> ds;
@@ -207,6 +218,7 @@ bool Px::set(const string& s, char c_deli)
     x = ds[0]; y=ds[1]; 
     return true; 
 }
+
 //-----
 bool Sz::set(const string& s, char c_deli)
 {

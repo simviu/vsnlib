@@ -61,6 +61,7 @@ namespace app
         bool video_frm_ui(const Img& im);
         bool run_frames(CStrs& args);
         bool run_crop(CStrs& args);
+        bool run_crop_stereo(CStrs& args);
         bool run_enc(CStrs& args);
         bool save_frm(const Img& im);
 
