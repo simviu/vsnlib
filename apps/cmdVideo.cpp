@@ -173,18 +173,21 @@ bool CmdVideo::run_crop(CStrs& args)
     auto p_im0 = vd.read(); // read 1st frm for some calculation
 
     //--------
-    Px px;  Sz sz;
+    Px px;  Sz sz = vdsz;
     bool ok = true;
 
     ok &= px.set(lookup(kv, "start"));
-    ok &= sz.set(lookup(kv, "sz")); 
-    
+    Sz szi; ok &= szi.set(lookup(kv, "sz")); 
+
     //----
     if(!ok)
     {
         log_e("  Parsing arg fail");
         return false;
     }
+    if(szi.w!=-1) sz.w = szi.w;
+    if(szi.h!=-1) sz.h = szi.h;
+
     //----- find auto y-start
     if(px.y==-1)
     {
@@ -208,6 +211,8 @@ bool CmdVideo::run_crop(CStrs& args)
         }
 
     }
+    
+
     //---- command print
     string s = "Crop video: src sz=" + vdsz.str();
     s += ", start=" + px.str();
