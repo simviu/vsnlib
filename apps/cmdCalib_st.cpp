@@ -19,7 +19,7 @@ using namespace app;
 namespace{
     struct LCfg{
         float contrast_scl = 1.0;
-        int N_cali_frms_max = 10;
+        int N_cali_frms_max = 100;
     }; LCfg lc_;
 
     //---------------------
@@ -28,7 +28,7 @@ namespace{
     bool stereo_calib_step1(const string& sDir)
     {
         // Defining the dimensions of checkerboard
-        int CHECKERBOARD[2]{3,4}; 
+        int CHECKERBOARD[2]{7,9}; 
 
         // Creating vector to store vectors of 3D points for each checkerboard image
         std::vector<std::vector<cv::Point3f> > objpoints;
@@ -66,6 +66,8 @@ namespace{
         // Looping over all the images in the directory
         for(int i{0}; i<N; i++)
         {
+            vsn::cv_waitkey(1);
+
             cv::Mat grayL0, grayR0; // tmp hack
 
             frameL = cv::imread(imagesL[i]);
@@ -105,10 +107,19 @@ namespace{
                 // refining pixel coordinates for given 2d points.
                 cv::cornerSubPix(grayL,corner_ptsL,cv::Size(11,11), cv::Size(-1,-1),criteria);
                 cv::cornerSubPix(grayR,corner_ptsR,cv::Size(11,11), cv::Size(-1,-1),criteria);
+                //---- save frm pairs
+                sys::FPath fpL(imagesL[i]); 
+                sys::FPath fpR(imagesR[i]);
+
+                cv::imwrite("frms/ch_pairs/L/" + fpL.base + fpL.ext, frameL);
+                cv::imwrite("frms/ch_pairs/R/" + fpR.base + fpR.ext, frameR);
 
                 // Displaying the detected corner points on the checker board
                 cv::drawChessboardCorners(frameL, cv::Size(CHECKERBOARD[0],CHECKERBOARD[1]), corner_ptsL,successL);
                 cv::drawChessboardCorners(frameR, cv::Size(CHECKERBOARD[0],CHECKERBOARD[1]), corner_ptsR,successR);
+                cv::imshow("chessL", frameL); 
+                cv::imshow("chessR", frameR);
+                vsn::cv_waitkey(1);
 
                 objpoints.push_back(objp);
                 imgpointsL.push_back(corner_ptsL);
@@ -174,11 +185,11 @@ namespace{
         //---- result:
         stringstream s;
         s << "---- Camera L ----" << endl;
-        s << "R_L=" << R_L << endl;         
-        s << "T_L=" << T_L << endl;         
+        s << "mtxL=" << mtxL << endl;         
+        s << "distL=" << distL << endl;         
         s << "---- Camera R ----" << endl;
-        s << "R_R=" << R_R << endl;         
-        s << "T_R=" << T_R << endl;         
+        s << "mtxR=" << mtxR << endl;         
+        s << "distR=" << distR << endl;         
         s << "---- New Matrix ----" << endl;
         s << "ML" << new_mtxL << endl; 
         s << "MR" << new_mtxR << endl; 

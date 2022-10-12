@@ -95,15 +95,6 @@ namespace ut{
     }
 
 
-//-----
-FPath::FPath(const string& sf)
-{
-    std::filesystem::path p(sf);
-    path = string(p.parent_path()) + "/";
-    base = p.stem();
-    ext = p.extension();
-}
-
 //-------------
 // logf
 //-------------
@@ -158,6 +149,16 @@ namespace utlog
 //--------------------
 namespace sys
 {
+
+    //-----
+    FPath::FPath(const string& sf)
+    {
+        std::filesystem::path p(sf);
+        path = string(p.parent_path()) + "/";
+        base = p.stem();
+        ext = p.extension();
+    }
+
     extern string pwd()
     {
         char s[PATH_BUF_LEN];

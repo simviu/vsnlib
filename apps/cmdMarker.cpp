@@ -106,7 +106,7 @@ bool CmdMarker::run_pose_img(CStr& sf)
     //--- write output
     CStr& swd = cfg_.swd;
     if(!cfg_.enWr) return ok;
-    FPath psf(sf);
+    sys::FPath psf(sf);
     string sfw = swd +"/" + psf.base + psf.ext;
     im.save(sfw);
     return ok;
@@ -122,7 +122,7 @@ bool CmdMarker::run_pose_video(CStr& sf)
      Sp<Video> pw = nullptr;
      if(cfg_.enWr)
      {
-        FPath p(sf);
+        sys::FPath p(sf);
         string sfw = cfg_.swd +"/" +p.base + p.ext;
         pw = Video::create(sfw, pv->cfg_);
      }

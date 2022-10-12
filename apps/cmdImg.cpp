@@ -147,7 +147,7 @@ bool CmdImg::run_crop(CStrs& args)
              {px.x + (sz.w*3)/2, px.y + sz.h/2}};
     int N = b_stereo? 2:1;
     Color cr[]{{255,0,0,255}, {0,255,0,255}};
-    FPath fp(sf);
+    sys::FPath fp(sf);
 
     // For stereo, crop 2 imgs, otherwise 1 img.    
     for(int i=0;i<N;i++)

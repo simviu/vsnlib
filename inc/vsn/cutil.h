@@ -76,10 +76,7 @@ namespace ut
     }
     */
    // file path decode
-    struct FPath{
-        FPath(const string& sf);
-        string path, base, ext;
-    };
+    
     //-----------
     // container utils
     //-----------
@@ -111,6 +108,10 @@ namespace ut
     const auto log_ef = utlog::errf;
     //----
     namespace sys{
+        struct FPath{
+            FPath(const string& sf);
+            string path, base, ext;
+        };
         extern string pwd();
         inline void sleepMS(int ms){
             this_thread::sleep_for(chrono::milliseconds(ms) );

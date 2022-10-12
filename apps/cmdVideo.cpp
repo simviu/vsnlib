@@ -184,7 +184,7 @@ bool CmdVideo::run_crop(CStrs& args)
     Rect r(rcs, sz);
     
     //---- Open video to write
-    FPath fp(sf);
+    sys::FPath fp(sf);
 
     auto wvc = vd.cfg_;
     wvc.sz = sz;
