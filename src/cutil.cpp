@@ -193,6 +193,11 @@ namespace sys
         fps_ = n / dt_sum ;
 
     }
+    //----
+    extern bool exists(const string& s)
+    {
+        return filesystem::exists(s);
+    }
 
 }
 //--------------------

@@ -246,3 +246,15 @@ extern void vsn::show_loop()
 {
     while(!cv_waitESC(10));
 }
+extern bool vsn::findImgs(const string& sdir,
+                        vector<string>& sfs)
+{
+    if(!sys::exists(sdir))
+    {
+        log_e("Dir not exists: '"+sdir+"'");
+        return false;
+    }
+    //----
+    cv::glob(sdir, sfs);
+    return true;
+}

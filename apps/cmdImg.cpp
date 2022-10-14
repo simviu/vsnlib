@@ -108,8 +108,9 @@ bool CmdImg::run_picker(CStrs& args)
 
     cv::namedWindow(sWin);//declaring window to show image//
     cv::setMouseCallback(sWin, picker::mouse_callbk, &ud);//Mouse callback function on define window//
-    //cv::imshow(sf, im);//showing image on the window//
-    cv::waitKey(0);//wait for keystroke//
+    p_im->show(sWin);//showing image on the window//
+    //cv::waitKey(0);//wait for keystroke//
+    vsn::show_loop();
     return true;
 }
 

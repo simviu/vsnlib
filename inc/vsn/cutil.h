@@ -135,6 +135,8 @@ namespace ut
             Time t_ = now();
             list<double> dts;
         };
+        //----
+        extern bool exists(const string& s);
     }
     
     //----------------
