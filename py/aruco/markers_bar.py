@@ -47,6 +47,6 @@ def gen_bar(idx0, N):
 
 
 if __name__ == "__main__":
-    gen_bar(20, 4)
+    gen_bar(14, 4)
     
     
