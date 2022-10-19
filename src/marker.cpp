@@ -289,8 +289,8 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
                     Board::Cfg::Mark m;
                     m.id = ids +j;
                     m.w = wm;
-                    double x = j*wg +b;
-                    double y = b;
+                    double x = (j+0.5)*wg;
+                    double y = wg/2;
                     m.xy << x, y;
                     bc.marks.push_back(m);
 
@@ -435,8 +435,8 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         //--- board box
         auto lns = pc->box.cube().edges();
         Pose Tcw = b.pose.inv();
-        //for(auto& l : lns) 
-        //    l.trans(b.pose);
+        for(auto& l : lns) 
+            l.trans(b.pose);
         imo.draw(camc, lns, cb, 2);
     }
 
