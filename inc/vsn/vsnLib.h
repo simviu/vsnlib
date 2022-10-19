@@ -136,6 +136,7 @@ namespace vsn{
          string str()const ;
          void trans(const Pose& P);
          double len()const{ return (p2-p1).norm(); }
+         vec3 cntr()const{ return (p1 + p2)*0.5; }
          //--- 2 line cross
          //struct Crossr{bool bPar; Line x; };
          //Crossr operator ^(const Line& l);
@@ -163,12 +164,15 @@ namespace vsn{
         vec3 o;
         vec3 n;
         // intersection
-        struct Xd{bool bPar=false; Line l; };
+        struct Xd{bool bPar=false; bool bBehind=false; bool bVal=false;
+                  Line l; double t1=0; double t2=0; };
         Xd operator ^(const Ray& r)const;
         vec3 operator ^(const vec3& p)const;
         vec3 operator () (double t)const { return o + n*t; }
         void trans(const Pose& T);
         Line line()const{ return Line(o, o+n); }
+        string str()const 
+        { return vsn::str(o) +"->" + vsn::str(n); }
     };
     //---- 
     struct Plane{

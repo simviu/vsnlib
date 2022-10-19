@@ -258,15 +258,45 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
             auto pBc = Board::Cfg::create();
             auto& bc = *pBc;
             bc.sName = jbrd["name"].asString();
-            auto& jms = jbrd["markers"];
-            for(auto& jm : jms)
+            string st = jbrd["type"].asString();
+            //---- normal boards
+            if(st=="normal")
             {
-                Board::Cfg::Mark m;
-                m.id = jm["id"].asInt();
-                m.w = jm["w"].asDouble();
-                ok &= s2v(jm["xy"].asString(), m.xy);
-                bc.marks.push_back(m);
+                auto& jms = jbrd["markers"];
+                for(auto& jm : jms)
+                {
+                    Board::Cfg::Mark m;
+                    m.id = jm["id"].asInt();
+                    m.w = jm["w"].asDouble();
+                    ok &= s2v(jm["xy"].asString(), m.xy);
+                    bc.marks.push_back(m);
+                }
             }
+            //----- banner
+            else if(st=="banner")
+            {
+                double L = jbrd["total_len"].asDouble();
+                int ids = jbrd["id_start"].asInt();
+                double mo = jbrd["marker_occupy"].asDouble();
+                int Nm = jbrd["num"].asInt();
+                assert(Nm!=0);
+                //----
+                double wg = L/Nm;
+                double wm = wg * mo;
+                double b = (wg - wm)*0.5;
+                for(int j=0;j<Nm;j++)
+                {
+                    Board::Cfg::Mark m;
+                    m.id = ids +j;
+                    m.w = wm;
+                    double x = (j+0.5)*wg;
+                    double y = wg/2;
+                    m.xy << x, y;
+                    bc.marks.push_back(m);
+
+                }
+            }
+            //----
             pBc->init(dict_id_);
             boards_.push_back(pBc);
         }
@@ -405,8 +435,8 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         //--- board box
         auto lns = pc->box.cube().edges();
         Pose Tcw = b.pose.inv();
-        //for(auto& l : lns) 
-        //    l.trans(b.pose);
+        for(auto& l : lns) 
+            l.trans(b.pose);
         imo.draw(camc, lns, cb, 2);
     }
 
