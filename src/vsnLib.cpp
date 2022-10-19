@@ -195,7 +195,13 @@ Ray::Xd Ray::operator ^(const Ray& r)const
     double t2 = ((p2-p1).cross(n1)).dot(x12) / d12; 
     vec3 a = p1 + n1*t1;
     vec3 b = p2 + n2*t2;
+
+    //----
     xd.l = Line(a, b);
+    xd.t1 = t1;
+    xd.t2 = t2;
+    xd.bBehind = (t1<0) || (t2<0); 
+    xd.bVal = !(xd.bBehind || xd.bPar);
     return xd;
 }
 //----
