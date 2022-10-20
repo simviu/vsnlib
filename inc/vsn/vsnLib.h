@@ -45,6 +45,7 @@ namespace vsn{
         string str()const
         { stringstream ss; ss << (int)h << "," << (int)s << "," << (int)v; 
           return ss.str(); }
+        bool set(const string& str);
     };
     //----- Pose
     struct Pose{ 

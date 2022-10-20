@@ -13,6 +13,19 @@ using namespace vsn;
 using namespace ocv;
 using namespace cv;
 
+
+bool HSV::set(const string& str)
+{
+    vector<int> ds;
+    if(!s2data(str, ds)) return false;
+    if(ds.size()<3) return false;
+    h = ds[0];
+    s = ds[1];
+    v = ds[2];
+
+    return true;
+}
+
 //-----------
 // Eulter
 //-----------
