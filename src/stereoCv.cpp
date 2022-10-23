@@ -308,7 +308,8 @@ bool StereoVOcv::solve_2d3d(const FrmCv& frm1,
     cv::Mat inlrs;
     cv::Mat K; 
     cv::eigen2cv(cfg_.camc.K, K);
-    if(!cv::solvePnPRansac(pts_3d, pts_2d, K, cv::Mat(), r, t, inlrs))
+    if(!cv::solvePnPRansac(pts_3d, pts_2d, K,
+                           cv::Mat(), r, t,true))
     {
         log_e("  solvePnPRansac() failed");
         return false;
