@@ -260,7 +260,7 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
             bc.sName = jbrd["name"].asString();
             string st = jbrd["type"].asString();
             //---- normal boards
-            if(st=="normal")
+            if(st=="flat")
             {
                 auto& jms = jbrd["markers"];
                 for(auto& jm : jms)
@@ -295,6 +295,10 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
                     bc.marks.push_back(m);
 
                 }
+            }
+            else{
+                log_e("  not found 'type' for banner '"+ bc.sName +"'");
+                return false;
             }
             //----
             pBc->init(dict_id_);
