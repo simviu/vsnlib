@@ -140,15 +140,15 @@ namespace{
                 return false;
             }
             //--- check if there is transform
-            if(j.isMember("Twb"))
+            if(j.isMember("T"))
             {
                 Pose Twb;
-                auto& jt = j["Twb"];
-                ok &= s2v(jt["xyz"].asString(), Twb.t);  
+                auto& jt = j["T"];
+
+                ok &= s2v(jt["xyz"].asString(), T.t);  
                 Euler e; 
                 ok &= e.parse(jt["ypr"].asString());
-                Twb.q = to_q(e);
-                Tbw = Twb.inv();
+                T.q = to_q(e);
             }
             //-----
             return ok;
@@ -207,7 +207,8 @@ namespace{
             Tcb.t << v.x, v.y, v.z; 
             //--- further transform
             // ( pose is Tcw)
-            pose = Tcb * Tbw;
+            Pose Tbo = T.inv();
+            pose = Tcb * Tbo;
             return true;
         }
     };
@@ -468,8 +469,8 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         assert(pc!=nullptr);
         //----
         auto& Tcw = b.pose;
-        auto& Tbw = pc->Tbw;
-        Pose Tcb = Tcw*Tbw.inv();
+        auto& Twb = pc->T;
+        Pose Tcb = Tcw*Twb;
         //---- axis
         imo.draw(camc, {Tcw, 0.3, 2});
 

@@ -532,7 +532,7 @@ namespace vsn{
                     vector<Mark> marks;
                     static Sp<Cfg> create();
                     virtual void init(int dict_id)=0;
-                    Pose Tbw;
+                    Pose T;
                 };
                 //---- result
                 Pose pose;
