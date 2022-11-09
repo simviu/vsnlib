@@ -33,7 +33,18 @@ namespace{
         map<int, DictPtr> tbl;
     };
     DictionTbl dictTbl_;
-
+    //---- Euler to quat for ArUco marker
+    // z-up, x-right, y-forward 
+    quat to_q(const Euler& e)
+    {
+        vec3 nx,ny,nz;
+        nx << 1,0,0; ny << 0,1,0; nz << 0,0,1;
+        mat3 my = rotmat(ny, toRad(e.r));
+        mat3 mp = rotmat(nx, toRad(e.p));
+        mat3 mr = rotmat(nz, toRad(e.y));
+        quat q(my * mp * mr);
+        return q;
+    }
     //-----
     struct CvDetd{
         int dict_id = -1;
@@ -81,7 +92,66 @@ namespace{
     struct BrdCfgImp : public BoardCfg
     {
         Ptr<aruco::Board> pBrd = nullptr;
-        //----
+        //---- load json board cfg
+        bool load(const Json::Value& j)
+        {
+            bool ok = true;
+            sName = j["name"].asString();
+            string st = j["type"].asString();
+            //---- normal boards
+            if(st=="flat")
+            {
+                auto& jms = j["markers"];
+                for(auto& jm : jms)
+                {
+                    Board::Cfg::Mark m;
+                    m.id = jm["id"].asInt();
+                    m.w = jm["w"].asDouble();
+                    ok &= s2v(jm["xy"].asString(), m.xy);
+                    marks.push_back(m);
+                }
+            }
+            //----- banner
+            else if(st=="banner")
+            {
+                double L = j["total_len"].asDouble();
+                int ids = j["id_start"].asInt();
+                double mo = j["marker_occupy"].asDouble();
+                int Nm = j["num"].asInt();
+                assert(Nm!=0);
+                //----
+                double wg = L/Nm;
+                double wm = wg * mo;
+                double b = (wg - wm)*0.5;
+                for(int j=0;j<Nm;j++)
+                {
+                    Board::Cfg::Mark m;
+                    m.id = ids +j;
+                    m.w = wm;
+                    double x = (j+0.5)*wg;
+                    double y = wg/2;
+                    m.xy << x, y;
+                    marks.push_back(m);
+
+                }
+            }
+            else{
+                log_e("  not found 'type' for banner '"+ sName +"'");
+                return false;
+            }
+            //--- check if there is transform
+            if(j.isMember("Twb"))
+            {
+                auto& jt = j["Twb"];
+                ok &= s2v(jt["xyz"].asString(), Twb.t);  
+                Euler e; 
+                ok &= e.parse(jt["ypr"].asString());
+                Twb.q = to_q(e);
+            }
+            //-----
+            return ok;
+        }
+        //---- init
         virtual void init(int dict_id)override
         {
                 //---- create board
@@ -256,51 +326,10 @@ bool Marker::PoseEstimator::MCfg::load(CStr& sf)
         for(auto& jbrd : jbrds)
         {
             auto pBc = Board::Cfg::create();
-            auto& bc = *pBc;
-            bc.sName = jbrd["name"].asString();
-            string st = jbrd["type"].asString();
-            //---- normal boards
-            if(st=="flat")
-            {
-                auto& jms = jbrd["markers"];
-                for(auto& jm : jms)
-                {
-                    Board::Cfg::Mark m;
-                    m.id = jm["id"].asInt();
-                    m.w = jm["w"].asDouble();
-                    ok &= s2v(jm["xy"].asString(), m.xy);
-                    bc.marks.push_back(m);
-                }
-            }
-            //----- banner
-            else if(st=="banner")
-            {
-                double L = jbrd["total_len"].asDouble();
-                int ids = jbrd["id_start"].asInt();
-                double mo = jbrd["marker_occupy"].asDouble();
-                int Nm = jbrd["num"].asInt();
-                assert(Nm!=0);
-                //----
-                double wg = L/Nm;
-                double wm = wg * mo;
-                double b = (wg - wm)*0.5;
-                for(int j=0;j<Nm;j++)
-                {
-                    Board::Cfg::Mark m;
-                    m.id = ids +j;
-                    m.w = wm;
-                    double x = (j+0.5)*wg;
-                    double y = wg/2;
-                    m.xy << x, y;
-                    bc.marks.push_back(m);
+            auto& bc = static_cast<BrdCfgImp&>(*pBc);            
+            if(!bc.load(jbrd)) 
+                continue;
 
-                }
-            }
-            else{
-                log_e("  not found 'type' for banner '"+ bc.sName +"'");
-                return false;
-            }
-            //----
             pBc->init(dict_id_);
             boards_.push_back(pBc);
         }
