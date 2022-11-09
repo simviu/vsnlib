@@ -142,11 +142,13 @@ namespace{
             //--- check if there is transform
             if(j.isMember("Twb"))
             {
+                Pose Twb;
                 auto& jt = j["Twb"];
                 ok &= s2v(jt["xyz"].asString(), Twb.t);  
                 Euler e; 
                 ok &= e.parse(jt["ypr"].asString());
                 Twb.q = to_q(e);
+                Tbw = Twb.inv();
             }
             //-----
             return ok;
@@ -194,13 +196,18 @@ namespace{
             if(valid==0) return false;
             cv::Mat R; Rodrigues(r, R);
             mat3 Re; cv::cv2eigen(R, Re);
-            pose.q = quat(Re);
+            //----
+            Pose Tcb;
+            Tcb.q = quat(Re);
 
             //Mat Ri;transpose(R, Ri);
             //Mat ti = - Ri * t;
             //----- Unkown hack:
             Point3f v(t);
-            pose.t << v.x, v.y, v.z; 
+            Tcb.t << v.x, v.y, v.z; 
+            //--- further transform
+            // ( pose is Tcw)
+            pose = Tcb * Tbw;
             return true;
         }
     };
