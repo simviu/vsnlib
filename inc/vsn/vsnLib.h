@@ -62,17 +62,14 @@ namespace vsn{
         void rotz(double d){ q = rotmat(nz3(), d) * q; }
     };
     //---- Euler
-    // Use opencv camera coordinate order:
-    //   z forward, y down, x right
-    //   Order: (y):yaw, (x):pitch, (z):roll 
-    //   Unit degree.
+    // The conversion to quat is application
+    // specific.
     struct Euler{
         double y = 0;
         double p = 0;
         double r = 0;
         Euler(){};
         bool parse(const string& s);
-        quat q()const;
     };
 
     //------------
