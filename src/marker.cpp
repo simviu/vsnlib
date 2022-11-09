@@ -466,18 +466,25 @@ Sp<Img> Marker::PoseEstimator::gen_imo(const Img& im)const
         auto& b = *p;
         auto pc = p->p_cfg;
         assert(pc!=nullptr);
-        vec2 vc = camc.proj(b.pose.t);
-        imo.draw(camc, {b.pose, 0.3, 10});
-        
-        imo.draw(pc->sName, toPx(vc), cb);
-        string s = "t="+ egn::str(b.pose.t, 2);
-        imo.draw(s, toPx(vc)+Px(dw,dh), cb);
+        //----
+        auto& Tcw = b.pose;
+        auto& Tbw = pc->Tbw;
+        Pose Tcb = Tcw*Tbw.inv();
+        //---- axis
+        imo.draw(camc, {Tcw, 0.3, 2});
+
         //--- board box
         auto lns = pc->box.cube().edges();
-        Pose Tcw = b.pose.inv();
         for(auto& l : lns) 
-            l.trans(b.pose);
+            l.trans(Tcb);
         imo.draw(camc, lns, cb, 2);
+
+        //--- txt        
+        vec2 vc = camc.proj(Tcb.t);
+        imo.draw(pc->sName, toPx(vc), cb);
+        string s = "t="+ egn::str(Tcb.t, 2);
+        imo.draw(s, toPx(vc)+Px(dw,dh), cb);
+        
     }
 
     return p_imo;
