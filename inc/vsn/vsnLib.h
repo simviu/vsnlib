@@ -70,6 +70,10 @@ namespace vsn{
         double r = 0;
         Euler(){};
         bool parse(const string& s);
+        string str()const 
+        { return vsn::str(y) + ","+
+                 vsn::str(p) + ","+
+                 vsn::str(r);  }
     };
 
     //------------
