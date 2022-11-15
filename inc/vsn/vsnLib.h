@@ -65,10 +65,13 @@ namespace vsn{
     // The conversion to quat is application
     // specific.
     struct Euler{
+        Euler(){};
+        Euler(double y, double p, double r):
+            y(y), p(p), r(r){}
         double y = 0;
         double p = 0;
         double r = 0;
-        Euler(){};
+
         bool parse(const string& s);
         string str()const 
         { return vsn::str(y) + ","+
