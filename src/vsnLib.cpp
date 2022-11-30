@@ -60,17 +60,7 @@ bool Euler::parse(const string& s)
     return true;
 }
 
-//-----
-quat Euler::q()const
-{
-    vec3 nx,ny,nz;
-    nx << 1,0,0; ny << 0,1,0; nz << 0,0,1;
-    mat3 my = rotmat(ny, toRad(r));
-    mat3 mp = rotmat(nx, toRad(p));
-    mat3 mr = rotmat(nz, toRad(y));
-    quat q(my * mp * mr);
-    return q;
-}
+
 
 //---- Pose
 string Pose::str()const{

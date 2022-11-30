@@ -14,7 +14,7 @@ using namespace ut;
 namespace{
     struct LCfg{
         // very small specle filter
-        float box_area_TH = 0.005;
+     //   float box_area_TH = 0.005;
     }; LCfg lc_;
     //----
     void conv_pnts(const vector<cv::Point>& ps, vec2s& vs)
@@ -108,16 +108,18 @@ bool InstSegm::onImg(const Img& im)
         convexHull(Mat(contrs[i]), hull[i], false);
         cv::Rect b = boundingRect(hull[i]);  
         //--- min speckle filter
-        double ab = b.width*b.height*a_scl;
-        if(ab < lc_.box_area_TH)
-            ab = -1;
+      //  double ab = b.width*b.height*a_scl;
+      //  if(ab < lc_.box_area_TH)
+      //      ab = -1;
             
         //---- filter contour ara
         double a=-1;
-        if(ab > 0)
-            a = contourArea(hull[i]) * a_scl;
-        areas.push_back(a);
+      //  if(ab > 0)
+        a = contourArea(hull[i]) * a_scl;
         if(a < cfg_.areaTH)
+            a = -1;
+        areas.push_back(a);
+        if(a<0)
             continue;
 
         //---- filter result

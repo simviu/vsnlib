@@ -62,17 +62,21 @@ namespace vsn{
         void rotz(double d){ q = rotmat(nz3(), d) * q; }
     };
     //---- Euler
-    // Use opencv camera coordinate order:
-    //   z forward, y down, x right
-    //   Order: (y):yaw, (x):pitch, (z):roll 
-    //   Unit degree.
+    // The conversion to quat is application
+    // specific.
     struct Euler{
+        Euler(){};
+        Euler(double y, double p, double r):
+            y(y), p(p), r(r){}
         double y = 0;
         double p = 0;
         double r = 0;
-        Euler(){};
+
         bool parse(const string& s);
-        quat q()const;
+        string str()const 
+        { return vsn::str(y) + ","+
+                 vsn::str(p) + ","+
+                 vsn::str(r);  }
     };
 
     //------------
@@ -535,7 +539,7 @@ namespace vsn{
                     vector<Mark> marks;
                     static Sp<Cfg> create();
                     virtual void init(int dict_id)=0;
-
+                    Pose T;
                 };
                 //---- result
                 Pose pose;
