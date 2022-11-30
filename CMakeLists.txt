@@ -6,7 +6,7 @@ add_definitions(-fPIC)
 #set( OpenCV_STATIC ON ) 
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-find_package (JsonCpp REQUIRED)
+find_package (jsoncpp REQUIRED)
 find_package(OpenCV 4.5 REQUIRED)
 find_package(Gflags REQUIRED)
 find_package(PCL 1.3 REQUIRED COMPONENTS common io filters visualization)
@@ -32,7 +32,7 @@ include_directories(
     ${JsonCpp_INCLUDE_DIR}
     ${PCL_INCLUDE_DIRS}
     #${CMAKE_PREFIX_PATH}/include
-    #/usr/include/jsoncpp
+    /usr/include/jsoncpp
     #/opt/dep/local/include
     inc
     )
@@ -56,7 +56,7 @@ target_link_libraries(vsnLib
     ${Eigen3_LIBRARY}    
     ${JsonCpp_LIBRARIES} 
     ${PCL_LIBRARIES}
-    JsonCpp::JsonCpp
+    jsoncpp
     )
     
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
