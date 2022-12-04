@@ -296,6 +296,15 @@ string Test::getTestsStr()const
     return s;
 }
  
+bool Cmd::run(int argc, char ** argv)
+{
+    Strs args;
+    for(int i=1;i<argc;i++)
+        args.push_back(argv[i]);
+    bool ok = run(args);
+    return ok?0:1;
+}
+
 //--------------------
 // Cmd
 //--------------------

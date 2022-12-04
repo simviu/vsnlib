@@ -312,6 +312,7 @@ namespace ut
         virtual bool run(CStrs& args);
         bool parse(CStr& s);
         bool runFile(CStr& sf);
+        virtual bool run(int argc, char ** argv);
     protected:
         string sHelp_;
         Fun f_=nullptr;

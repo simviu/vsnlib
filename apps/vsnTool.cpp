@@ -14,31 +14,15 @@ using namespace app;
 //---------
 // initCmd
 //---------
-void VsnTool::initCmd(CStrs& args)
+void VsnTool::initCmd()
 {
     //----
-    cmd_.add("calib",   mkSp<CmdCalib>());
-    cmd_.add("marker",  mkSp<CmdMarker>());
-    cmd_.add("image",   mkSp<CmdImg>());
-    cmd_.add("video",   mkSp<CmdVideo>());
+    add("calib",   mkSp<CmdCalib>());
+    add("marker",  mkSp<CmdMarker>());
+    add("image",   mkSp<CmdImg>());
+    add("video",   mkSp<CmdVideo>());
 }
 
-//---------
-// run
-//--------- 
-bool VsnTool::run(CStrs& args)
-{
-    log_i("-- run VsnTool --");
-    log_i("cur dir:"+sys::pwd());
-
-    //---- init cmd
-    initCmd(args);
-
-    //--- run
-    cmd_.run(args);
-
-    return true;
-}
 
 
 
@@ -48,11 +32,10 @@ bool VsnTool::run(CStrs& args)
 //----------
 int main(int argc, char ** argv)
 {
-    log_i("---- run "+string(argv[0]));
+
+    log_i("-- run VsnTool --");
+    log_i("cur dir:"+sys::pwd());
+
     VsnTool tool;
-    Strs args;
-    for(int i=1;i<argc;i++)
-        args.push_back(argv[i]);
-    bool ok = tool.run(args);
-    return ok?0:1;
+    return tool.run(argc, argv);
 }

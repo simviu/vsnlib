@@ -74,9 +74,9 @@ namespace vsn{
 
         bool parse(const string& s);
         string str()const 
-        { return vsn::str(y) + ","+
-                 vsn::str(p) + ","+
-                 vsn::str(r);  }
+        { return vsn::str(y,1) + ","+
+                 vsn::str(p,1) + ","+
+                 vsn::str(r,1);  }
     };
 
     //------------

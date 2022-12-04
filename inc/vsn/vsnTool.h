@@ -97,12 +97,11 @@ namespace app
     //-----------
     // VsnTool
     //-----------
-    class VsnTool{
+    class VsnTool : public Cmd{
     public:
-        bool run(CStrs& args);
+        VsnTool(){ initCmd(); }
     protected:
-        Cmd cmd_;
-        void initCmd(CStrs& args);
+        void initCmd();
         
     };
 }
