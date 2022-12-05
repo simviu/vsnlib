@@ -301,12 +301,19 @@ namespace ut
     // socket
     //-------------
     namespace socket{
-        using FuncRcv=std::function<void(char* buf, int n)>;
+        using FuncRcv=std::function<void(const char* buf, int n)>;
         class Node{
         public:
+            struct Cntx{
+                int port = 0;
+                string sHost = "undef";
+                bool bConnected = false;
+                int cur_socket = -1;
+            }; Cntx cntx_;
             void setRcv(FuncRcv f){ f_rcv_ = f; }
         protected:
             FuncRcv f_rcv_ = nullptr;
+            void read_loop();
         };
         
         
@@ -316,21 +323,20 @@ namespace ut
             struct Cfg{
             }; Cfg cfg_;
             ~Server(){ close(); }
-            void start(int port, FuncRcv f_rcv);
+            void start(int port);
             void close();
-            void send(const string& s);
+            void send(const char* buf, int len);
         protected:
-            struct Cntx{
-                int port = 0;
-                bool bConnected = false;
-                int cur_socket = -1;
-            }; Cntx cntx_;
-            void listen_thd();
+            void run_thd();
             std::thread thd_;
 
         };
         class Client : public Node{
         public:
+            bool connect(const string& sHost, int port);
+        protected:
+            void run_thd();
+            std::thread thd_;
         };
     }
     //-------------
