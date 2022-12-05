@@ -305,16 +305,27 @@ namespace ut
         public:
         };
         //---
+        class Connection{
+        public:
+        };
+        //---
         class Server : public Node{
         public:
+            struct Cfg{
+                bool bTxt=true; // text mode
+                int N_max_conn = 1;
+            }; Cfg cfg_;
             ~Server(){ close(); }
             void start(int port);
             void close();
+            virtual void onRecv(const string& sample)const{};
+            void send(const string& s);
         protected:
             struct Cntx{
                 int port = 0;
+                int n_conn = 0;
             }; Cntx cntx_;
-            void run_thd();
+            void listen_thd();
             std::thread thd_;
 
         };

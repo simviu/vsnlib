@@ -16,7 +16,7 @@
 using namespace vsn;
 using namespace socket;
 
-// ref : 
+// ref :
 //    https://www.geeksforgeeks.org/socket-programming-cc/
 
 //------
