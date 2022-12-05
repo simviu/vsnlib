@@ -303,6 +303,8 @@ namespace ut
     namespace socket{
         class Node{
         public:
+        protected:
+            
         };
         //---
         class Connection{
@@ -323,7 +325,8 @@ namespace ut
         protected:
             struct Cntx{
                 int port = 0;
-                int n_conn = 0;
+                bool bConnected = false;
+                int cur_socket = -1;
             }; Cntx cntx_;
             void listen_thd();
             std::thread thd_;

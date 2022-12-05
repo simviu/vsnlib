@@ -19,22 +19,28 @@ using namespace socket;
 // ref :
 //    https://www.geeksforgeeks.org/socket-programming-cc/
 
+#define BUF_LEN 1024
+namespace {
+    struct LCfg{
+
+    }; LCfg lc_;
+}
+
 //------
-void Server::run_thd()
+void Server::listen_thd()
 {
 
-    int server_fd, new_socket, valread;
+    int server_fd, valread;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = { 0 };
-    char* hello = "Hello from server";
- 
+    char buffer[BUF_LEN] = { 0 };
+
     // Creating socket file descriptor
     server_fd = ::socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
+        log_e("Server socket failed");
+        return;
     }
  
     // Forcefully attaching socket to the port 8080
@@ -55,35 +61,51 @@ void Server::run_thd()
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
-    if (listen(server_fd, 3) < 0) {
-        perror("listen");
-        exit(EXIT_FAILURE);
+    //----- main loop
+    while(1)
+    {
+        auto& new_socket = cntx_.cur_socket;
+        if (listen(server_fd, 1) < 0) {
+            log_e("Server listen failed");
+            return;
+        }
+        
+        //---- wait connection
+        log_i("Server wait connection on port "+
+                    str(cntx_.port)+"...");
+        if ((new_socket
+            = accept(server_fd, (struct sockaddr*)&address,
+                    (socklen_t*)&addrlen))
+            < 0) {
+            log_e("Server error when accept connection.");
+        }
+        log_i("Connected with client, socket="+str(new_socket));
+        //----- read loop
+        while(valread >=0)
+        {
+            valread = read(new_socket, buffer, 1024);
+            //printf("%s\n", buffer);
+            //send(new_socket, hello, strlen(hello), 0);
+            //printf("Hello message sent\n");
+            log_d(" server read bytes "+str(valread));
+            sys::sleepMS(10);
+        }
+        //----
+        // closing the connected socket
+        log_i("Disconnected with client");
+        ::close(new_socket);
     }
-    if ((new_socket
-         = accept(server_fd, (struct sockaddr*)&address,
-                  (socklen_t*)&addrlen))
-        < 0) {
-        perror("accept");
-        exit(EXIT_FAILURE);
-    }
-    //----- read
-    valread = read(new_socket, buffer, 1024);
-    printf("%s\n", buffer);
-    send(new_socket, hello, strlen(hello), 0);
-    printf("Hello message sent\n");
-
-    //----
-    // closing the connected socket
-    ::close(new_socket);
     // closing the listening socket
     ::shutdown(server_fd, SHUT_RDWR);
+    log_i("Socket closed");
+
 }
 //------
 void Server::start(int port)
 {
     cntx_.port = port;
     thd_ = std::thread([&](){
-        run_thd();
+        listen_thd();
     });
     thd_.join();
 }
