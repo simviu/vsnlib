@@ -298,6 +298,27 @@ namespace ut
     };
 
     //-------------
+    // socket
+    //-------------
+    namespace socket{
+        class Node{
+        public:
+        };
+        //---
+        class Server : public Node{
+        public:
+            ~Server(){ close(); }
+            void start(int port);
+            void close();
+        protected:
+            void main_thd();
+
+        };
+        class Client : public Node{
+        public:
+        };
+    }
+    //-------------
     // Cmds
     //-------------
     // string cmd line handler
