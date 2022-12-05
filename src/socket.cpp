@@ -20,7 +20,7 @@ using namespace socket;
 //    https://www.geeksforgeeks.org/socket-programming-cc/
 
 //------
-void Server::run_thd()
+void Server::listen_thd()
 {
 
     int server_fd, new_socket, valread;
@@ -83,7 +83,7 @@ void Server::start(int port)
 {
     cntx_.port = port;
     thd_ = std::thread([&](){
-        run_thd();
+        listen_thd();
     });
     thd_.join();
 }
