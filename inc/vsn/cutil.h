@@ -301,26 +301,23 @@ namespace ut
     // socket
     //-------------
     namespace socket{
+        using FuncRcv=std::function<void(char* buf, int n)>;
         class Node{
         public:
+            void setRcv(FuncRcv f){ f_rcv_ = f; }
         protected:
-            
+            FuncRcv f_rcv_ = nullptr;
         };
-        //---
-        class Connection{
-        public:
-        };
+        
+        
         //---
         class Server : public Node{
         public:
             struct Cfg{
-                bool bTxt=true; // text mode
-                int N_max_conn = 1;
             }; Cfg cfg_;
             ~Server(){ close(); }
-            void start(int port);
+            void start(int port, FuncRcv f_rcv);
             void close();
-            virtual void onRecv(const string& sample)const{};
             void send(const string& s);
         protected:
             struct Cntx{

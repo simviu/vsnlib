@@ -88,6 +88,7 @@ void Server::listen_thd()
             //send(new_socket, hello, strlen(hello), 0);
             //printf("Hello message sent\n");
             log_d(" server read bytes "+str(valread));
+            if(f_)
             sys::sleepMS(10);
         }
         //----
