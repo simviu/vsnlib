@@ -311,7 +311,11 @@ namespace ut
             void start(int port);
             void close();
         protected:
-            void main_thd();
+            struct Cntx{
+                int port = 0;
+            }; Cntx cntx_;
+            void run_thd();
+            std::thread thd_;
 
         };
         class Client : public Node{
