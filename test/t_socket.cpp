@@ -31,7 +31,7 @@ bool TestSocketSrvr::run()
         string s(buf, len);
         log_i("  server recv:'"+s+"'");
         //---- echo back
-        string s1 = "ack "+str(i++);
+        string s1 = "ack "+to_string(i++);
         srv.send(s1);
     });
 
@@ -52,9 +52,12 @@ bool TestSocketClnt::run()
     //------
     int i=0;
     bool ok = clnt.connect(lc_.host, lc_.port);
+
     while(ok)
     {
-        string s = "hello "+str(i++);
+
+        string s = "hello "+to_string(i++);
+        log_i("send :'"+s+"'");
         clnt.send(s);
         sys::sleepMS(1000);
     }

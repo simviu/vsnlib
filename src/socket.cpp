@@ -30,32 +30,36 @@ namespace {
 }
 
 //------
-void Node::read_loop()
+void read_loop(Node::Cntx& cntx)
 {
     char buffer[BUF_LEN] = { 0 };
-    int valread =0;
-    while(valread >=0)
+
+    while(1)
     {
-        valread = ::read(cntx_.cur_socket, buffer, 1024);
+        int n = ::read(cntx.cur_socket, buffer, 1024);
         //printf("%s\n", buffer);
         //send(new_socket, hello, strlen(hello), 0);
         //printf("Hello message sent\n");
-        log_d(" server read bytes "+str(valread));
-        if(f_rcv_!=nullptr)
-            f_rcv_(buffer, valread);
+        //log_d("  recv bytes "+to_string(valread));
+        if(n>0 && cntx.f_rcv_!=nullptr)
+            cntx.f_rcv_(buffer, n);
         sys::sleepMS(10);
     }
 }
 //------
-void Node::send(const char* buf, int len)
+bool Node::send(const char* buf, int len)
 {
-    if(!cntx_.bConnected) return;
-    ::send(cntx_.cur_socket, buf, len, 0);
+    if(!cntx_.bConnected) 
+        return false;
+    
+    size_t n = ::send(cntx_.cur_socket, buf, len, 0);
+
+    return (n==len);
 
 }
 
 //------
-bool Server::run_thd()
+bool server_thd(Node::Cntx& cntx)
 {
 
     int server_fd;
@@ -63,7 +67,8 @@ bool Server::run_thd()
     int opt = 1;
     int addrlen = sizeof(address);
 
-    auto& sock = cntx_.cur_socket;
+    auto& sock = cntx.cur_socket;
+    //int sock=0;
     // Creating socket file descriptor
     server_fd = ::socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
@@ -80,7 +85,7 @@ bool Server::run_thd()
     }
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(cntx_.port);
+    address.sin_port = htons(cntx.port);
  
     // Forcefully attaching socket to the port 8080
     if (::bind(server_fd, (struct sockaddr*)&address,
@@ -94,7 +99,7 @@ bool Server::run_thd()
     while(1)
     {
             
-        cntx_.bConnected = false;
+        cntx.bConnected = false;
         if (::listen(server_fd, 1) < 0) {
             log_e("Server listen failed");
             break;
@@ -102,8 +107,8 @@ bool Server::run_thd()
 
         //---- wait connection
         log_i("Server wait connection on port "+
-                    str(cntx_.port)+"...");
-        if ((cntx_.cur_socket
+                    to_string(cntx.port)+"...");
+        if ((cntx.cur_socket
             = ::accept(server_fd, (struct sockaddr*)&address,
                     (socklen_t*)&addrlen))
             < 0) {
@@ -112,20 +117,20 @@ bool Server::run_thd()
         }
 
         //---- connected
-        cntx_.bConnected = true;
+        cntx.bConnected = true;
         log_i("Connected with client, socket="+
-            str(sock));
+            to_string(sock));
 
         //----- read loop
-        read_loop();
+        read_loop(cntx);
 
         //---- when loop done,
         // closing the connected socket
         log_i("Disconnected with client");
-        log_i("  Socket closed: "+str(sock));
+        log_i("  Socket closed: "+to_string(sock));
         ::close(sock);
     }
-    cntx_.isRunning = false;
+    cntx.isRunning = false;
     // closing the listening socket
     ::shutdown(server_fd, SHUT_RDWR);
     log_i("Server shutdown");
@@ -139,9 +144,11 @@ bool Server::start(int port)
     cntx_.isRunning = true;
     //---- main connection loop thread
     thd_ = std::thread([&](){
-        run_thd();
+        server_thd(cntx_);
     });
-    thd_.join();
+    thd_.detach();
+    
+    return true;
 }
 
 //----
@@ -150,9 +157,14 @@ void Server::close()
     
 }
 
-//---------- Client
-void Client::run_thd()
+//----
+bool Client::connect(const string& sHost, int port)
 {
+    log_i("Socket client connect to "+
+        sHost + " : "+to_string(port));
+    cntx_.port = port;
+    cntx_.sHost = sHost;
+    
     cntx_.bConnected = false;
 
 	int client_fd;
@@ -162,19 +174,18 @@ void Client::run_thd()
     sock = ::socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) {
 		log_e("Client socket creation failed");
-		return;
+		return false;
 	}
 
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(cntx_.port);
 
-    const auto& sHost = cntx_.sHost;
 	// Convert IPv4 and IPv6 addresses from text to binary
 	// form
 	if (inet_pton(AF_INET, sHost.c_str(), &serv_addr.sin_addr)
 		<= 0) {
 		log_e("Invalid host address:'"+sHost+"'");
-		return;
+		return false;
 	}
     //------
 	if ((client_fd
@@ -182,35 +193,32 @@ void Client::run_thd()
 				sizeof(serv_addr)))
 		< 0) {
 		log_e("Failed to connect to:'"+sHost+"' : "+str(cntx_.port));
-		return;
+		return false;
 	}
-    //---- Connected
-    cntx_.bConnected = true;
-	
-    //---- read loop
-    read_loop();
+    log_i("Socket client connected");
 
-    //--- exit
-    log_i("Socket client disconnected");
-    cntx_.bConnected = false;
-
-	// closing the connected socket
-	close(client_fd);
-}
-
-
-
-
-//----
-bool Client::connect(const string& sHost, int port)
-{
-    cntx_.port = port;
-    cntx_.sHost = sHost;
+    //---- read thread
     thd_ = std::thread([&](){
-        run_thd();
+        read_loop(cntx_);
+
+
+        //--- exit
+        log_i("Socket client disconnected");
+        cntx_.bConnected = false;
+
+        // closing the connected socket
+        close(client_fd);
+
     });
-    thd_.join();
+    thd_.detach();
+   //---- Connected
+    cntx_.bConnected = true;
+    log_i("Client ready");
 
     return true;
 }
+
+
+
+
 

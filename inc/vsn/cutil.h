@@ -310,18 +310,18 @@ namespace ut
                 bool bConnected = false;
                 int cur_socket = -1;
                 bool isRunning = false;
+                FuncRcv f_rcv_ = nullptr;
             }; Cntx cntx_;
-            void setRcv(FuncRcv f){ f_rcv_ = f; }
+            void setRcv(FuncRcv f){ cntx_.f_rcv_ = f; }
 
-            void send(const char* buf, int len);
-            void send(const string& s)
-            { send(s.c_str(), s.length()); }
+            bool send(const char* buf, int len);
+            bool send(const string& s)
+            { return send(s.c_str(), s.length()); }
             bool isRunning()const
             { return cntx_.isRunning; }
 
         protected:
-            FuncRcv f_rcv_ = nullptr;
-            void read_loop();
+            //void read_loop();
         };
         
         
@@ -334,7 +334,7 @@ namespace ut
             bool start(int port);
             void close();
         protected:
-            bool run_thd();
+           // bool run_thd();
             std::thread thd_;
 
         };

@@ -57,6 +57,7 @@ target_link_libraries(vsnLib
     ${JsonCpp_LIBRARIES} 
     ${PCL_LIBRARIES}
     jsoncpp
+    pthread
     )
     
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
