@@ -295,7 +295,13 @@ string Test::getTestsStr()const
         s += it.first; s += " ";
     return s;
 }
- 
+//--------
+bool Cmd::run(const string& sLn)
+{
+    return run(tokens(sLn, ' '));
+}
+
+//--------
 bool Cmd::run(int argc, char ** argv)
 {
     Strs args;

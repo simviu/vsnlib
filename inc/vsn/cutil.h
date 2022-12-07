@@ -358,6 +358,7 @@ namespace ut
         Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
         void add(CStr& s, Sp<Cmd> p)
         { cmds_[s]=p; }
+        virtual bool run(const string& sLn);
         virtual bool run(CStrs& args);
         bool parse(CStr& s);
         bool runFile(CStr& sf);
