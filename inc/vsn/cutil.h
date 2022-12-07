@@ -309,8 +309,16 @@ namespace ut
                 string sHost = "undef";
                 bool bConnected = false;
                 int cur_socket = -1;
+                bool isRunning = false;
             }; Cntx cntx_;
             void setRcv(FuncRcv f){ f_rcv_ = f; }
+
+            void send(const char* buf, int len);
+            void send(const string& s)
+            { send(s.c_str(), s.length()); }
+            bool isRunning()const
+            { return cntx_.isRunning; }
+
         protected:
             FuncRcv f_rcv_ = nullptr;
             void read_loop();
@@ -323,11 +331,10 @@ namespace ut
             struct Cfg{
             }; Cfg cfg_;
             ~Server(){ close(); }
-            void start(int port);
+            bool start(int port);
             void close();
-            void send(const char* buf, int len);
         protected:
-            void run_thd();
+            bool run_thd();
             std::thread thd_;
 
         };

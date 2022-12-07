@@ -12,7 +12,18 @@
 using namespace vsn;
 
 namespace test{
-     //------
+    //------
+    class TestSocketSrvr : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
+    class TestSocketClnt : public Test
+    {
+    public:
+        virtual bool run() override;
+    };
+    //------
     class TestInst : public Test
     {
     public:

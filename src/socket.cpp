@@ -25,6 +25,8 @@ namespace {
     struct LCfg{
 
     }; LCfg lc_;
+    
+    
 }
 
 //------
@@ -44,81 +46,8 @@ void Node::read_loop()
         sys::sleepMS(10);
     }
 }
-
 //------
-void Server::run_thd()
-{
-
-    int server_fd;
-    struct sockaddr_in address;
-    int opt = 1;
-    int addrlen = sizeof(address);
-
-    // Creating socket file descriptor
-    server_fd = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd < 0) {
-        log_e("Server socket failed");
-        return;
-    }
- 
-    // Forcefully attaching socket to the port 8080
-    if (setsockopt(server_fd, SOL_SOCKET,
-                   SO_REUSEADDR | SO_REUSEPORT, &opt,
-                   sizeof(opt))) {
-        log_e("Socket server setsockopt() failed");
-        return;
-    }
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(cntx_.port);
- 
-    // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr*)&address,
-             sizeof(address))
-        < 0) {
-        log_e("Socket server bind failed");
-        return;
-    }
-    //----- main loop for each new connection
-    while(1)
-    {
-        cntx_.bConnected = false;
-        if (listen(server_fd, 1) < 0) {
-            log_e("Server listen failed");
-            return;
-        }
-        
-        //---- wait connection
-        log_i("Server wait connection on port "+
-                    str(cntx_.port)+"...");
-        if ((cntx_.cur_socket
-            = accept(server_fd, (struct sockaddr*)&address,
-                    (socklen_t*)&addrlen))
-            < 0) {
-            log_e("Server error when accept connection.");
-            continue;
-        }
-        //---- connected
-
-        cntx_.bConnected = true;
-        log_i("Connected with client, socket="+
-            str(cntx_.cur_socket));
-
-        //----- read loop
-        read_loop();
-
-        //----
-        // closing the connected socket
-        log_i("Disconnected with client");
-        ::close(cntx_.cur_socket);
-    }
-    // closing the listening socket
-    ::shutdown(server_fd, SHUT_RDWR);
-    log_i("Socket closed");
-
-}
-//------
-void Server::send(const char* buf, int len)
+void Node::send(const char* buf, int len)
 {
     if(!cntx_.bConnected) return;
     ::send(cntx_.cur_socket, buf, len, 0);
@@ -126,9 +55,89 @@ void Server::send(const char* buf, int len)
 }
 
 //------
-void Server::start(int port)
+bool Server::run_thd()
+{
+
+    int server_fd;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+
+    auto& sock = cntx_.cur_socket;
+    // Creating socket file descriptor
+    server_fd = ::socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd < 0) {
+        log_e("Server socket failed");
+        return false;
+    }
+ 
+    // Forcefully attaching socket to the port 8080
+    if (setsockopt(server_fd, SOL_SOCKET,
+                   SO_REUSEADDR | SO_REUSEPORT, &opt,
+                   sizeof(opt))) {
+        log_e("Socket server setsockopt() failed");
+        return false;
+    }
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(cntx_.port);
+ 
+    // Forcefully attaching socket to the port 8080
+    if (::bind(server_fd, (struct sockaddr*)&address,
+             sizeof(address))
+        < 0) {
+        log_e("Socket server bind failed");
+        return false;
+    }
+
+    //---- connection loop
+    while(1)
+    {
+            
+        cntx_.bConnected = false;
+        if (::listen(server_fd, 1) < 0) {
+            log_e("Server listen failed");
+            break;
+        }
+
+        //---- wait connection
+        log_i("Server wait connection on port "+
+                    str(cntx_.port)+"...");
+        if ((cntx_.cur_socket
+            = ::accept(server_fd, (struct sockaddr*)&address,
+                    (socklen_t*)&addrlen))
+            < 0) {
+            log_e("Server error when accept connection.");
+            break;
+        }
+
+        //---- connected
+        cntx_.bConnected = true;
+        log_i("Connected with client, socket="+
+            str(sock));
+
+        //----- read loop
+        read_loop();
+
+        //---- when loop done,
+        // closing the connected socket
+        log_i("Disconnected with client");
+        log_i("  Socket closed: "+str(sock));
+        ::close(sock);
+    }
+    cntx_.isRunning = false;
+    // closing the listening socket
+    ::shutdown(server_fd, SHUT_RDWR);
+    log_i("Server shutdown");
+    return true;
+}
+
+//------
+bool Server::start(int port)
 {
     cntx_.port = port;
+    cntx_.isRunning = true;
+    //---- main connection loop thread
     thd_ = std::thread([&](){
         run_thd();
     });

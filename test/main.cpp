@@ -20,7 +20,9 @@ namespace{
         {"feature"  , mkSp<TestFeature>()}, 
         {"stereo"   , mkSp<TestStereo>()}, 
         {"inst"     , mkSp<TestInst>()}, 
-        {"points"   , mkSp<TestPoints>()}
+        {"points"   , mkSp<TestPoints>()},
+        {"server"   , mkSp<TestSocketSrvr>()},
+        {"client"   , mkSp<TestSocketClnt>()}
     };
 }
 //-------
