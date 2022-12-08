@@ -161,7 +161,7 @@ void Server::close()
 bool Client::connect(const string& sHost, int port)
 {
     log_i("Socket client connect to "+
-        sHost + " : "+to_string(port));
+        sHost + " : "+to_string(port) + " ...");
     cntx_.port = port;
     cntx_.sHost = sHost;
     
