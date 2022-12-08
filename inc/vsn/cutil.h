@@ -305,7 +305,7 @@ namespace ut
         class Node{
         public:
             struct Cntx{
-                int port = 0;
+                int port = -1;
                 string sHost = "undef";
                 bool bConnected = false;
                 int cur_socket = -1;
