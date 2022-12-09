@@ -41,8 +41,8 @@ namespace egn
     extern string str(const quat& q, int deci)
     {
         stringstream s; ss_deci(s, deci); 
-        s << q.w() << "," << q.x() << ","
-            << q.y() << "," << q.z();
+        s << q.w() << ", " << q.x() << ", "
+            << q.y() << ", " << q.z();
         return s.str(); 
 
     }

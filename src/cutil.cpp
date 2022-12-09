@@ -34,6 +34,14 @@ namespace ut{
             return("");
         }
     }
+    //----
+    string remove(const string& s, const char c)
+    {
+        string s1 = s;
+        s1.erase(remove(s1.begin(), s1.end(), c), s1.end()); 
+        return s1;
+    }
+
     //---- 
     extern bool parseKV(CStrs& ss, StrTbl& kv)
     {

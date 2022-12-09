@@ -51,6 +51,8 @@ namespace ut
     inline bool has(CStrTbl& m, CStr& sk)
     { auto it=m.find(sk); return it!=m.end(); }
     //----
+    extern string remove(const string& s, const char c);
+    //----
     template<typename T>
         bool s2d(const string& s, T& d)
         { stringstream t(s); t>>d; return !t.fail(); }
@@ -114,6 +116,10 @@ namespace ut
         };
         extern string pwd();
         inline void sleepMS(int ms){
+            this_thread::sleep_for(chrono::milliseconds(ms) );
+        }
+        inline void sleep(double s){
+            size_t ms = s * 1000;
             this_thread::sleep_for(chrono::milliseconds(ms) );
         }
         //--- time functions
