@@ -458,7 +458,8 @@ namespace vsn{
             float fps=30;
         };
 
-        static Sp<Video> open(CStr& s);
+        static Sp<Video> open(CStr& s); // video file
+        static Sp<Video> open(int i); // camera
         static Sp<Video> create(CStr& sf, const Cfg& cfg);
         virtual Sp<Img> read()=0;
         virtual bool write(const Img& im)=0;

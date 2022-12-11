@@ -11,34 +11,64 @@
 using namespace ocv;
 
 //--------
+VideoCv::VideoCv(int idx)
+{
+    cap_.open(idx);
+    if(!cap_.isOpened())
+        return;
+
+    init();
+}
+
+//--------
 VideoCv::VideoCv(CStr& s)
 {
     cap_.open(s, CAP_FFMPEG);
-    bool ok = cap_.isOpened();
-    if(!ok) return;
+    if(!cap_.isOpened())
+        return;
+
+    init();
+}
+
+//----
+void VideoCv::init()
+{
     //-- get properties
     cfg_.sz.w = cap_.get(CAP_PROP_FRAME_WIDTH);
     cfg_.sz.h = cap_.get(CAP_PROP_FRAME_HEIGHT);
     cfg_.fps = cap_.get(CAP_PROP_FPS);
+
+    //----
+    stringstream ss;
+    ss << "  Open video OK" << endl;
+    auto& c = cfg_;
+    ss << "  size:" << c.sz.w << "x" << c.sz.h << ", ";
+    ss << "  fps:" << c.fps << endl;
+
+    log_i(ss.str());
+}
+
+//--------
+Sp<Video> Video::open(int i)
+{
+
+    auto p = mkSp<VideoCv>(i);
+    if(p->isOpen()) 
+        return p;
+    log_e("Failed to open camera:"+to_string(i));
+    return nullptr;
+
 }
 //--------
 Sp<Video> Video::open(CStr& s)
 {
-    
-    auto p = mkSp<VideoCv>(s);
-    if(!p->isOpen()) 
-    {
-        log_e("Failed to open video:"+s);
-        return nullptr;
-    }
-    stringstream ss;
-    ss << "Open OK video:" << s << endl;
-    auto& c = p->cfg_;
-    ss << "  size:" << c.sz.w << "x" << c.sz.h << ", ";
-    ss << "fps:" << c.fps << endl;
 
-    log_i(ss.str());
-    return p;
+    auto p = mkSp<VideoCv>(s);
+    if(p->isOpen()) 
+        return p;
+    log_e("Failed to open video:"+s);
+    return nullptr;
+
 }
 //--------
 Sp<Img> VideoCv::read()

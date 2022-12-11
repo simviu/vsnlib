@@ -84,6 +84,7 @@ namespace vsn
     class VideoCv : public vsn::Video{
     public:
         VideoCv(){};
+        VideoCv(int idx); // cam index
         VideoCv(CStr& s);
         virtual Sp<Img> read()override;
         
@@ -95,6 +96,7 @@ namespace vsn
     protected:
         cv::VideoCapture cap_;
         Sp<cv::VideoWriter> p_vwr = nullptr;
+        void init();
 
     };
 
