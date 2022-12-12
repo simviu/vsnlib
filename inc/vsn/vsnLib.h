@@ -578,6 +578,9 @@ namespace vsn{
                 //---- boards
                 vector<Sp<Board>> boards;
                 Sp<const Board> nearstBoard(const string& s)const;
+                //---- estimate average pose of multiple boards
+                bool find_pose(const vector<string> sBoards,
+                               Pose& Tcb)const;
             }; Result result_;
             //---- detect
             bool onImg(const Img& im);

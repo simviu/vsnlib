@@ -572,4 +572,36 @@ Sp<const Board> MarkerPE::Result::
     }
     return pr;
 }
+//----
+bool MarkerPE::Result::find_pose(
+    const vector<string> sBoards, Pose& Tcb)const
+{
+    // Note: here 'w' frame mean 
+    // multi-board frame, for easier convention.
+    // Same as 'b' frame as output boards frame.
+
+    //--- find board "platte"
+    vector<Pose> Tcws;
+    for(auto& s : sBoards)
+    {
+        auto pb = nearstBoard(s);
+        if(pb==nullptr) continue;
+        Pose Tcw = pb->pose;
+        //---- origin
+        //Pose Tcb = pb->pose; // detected pose
+        //Pose Tcw = Tcb * r.Tbw;
+        Tcws.push_back(Tcw);
+    }    
+    //-----
+    if(Tcws.size()==0)
+    {
+        log_e("   Could not find marker board '");
+        return false;
+    }
+
+    //--- fit average
+    Tcb = Pose::avg(Tcws);
+
+    return true;
+}
 
