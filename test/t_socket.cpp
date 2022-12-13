@@ -57,12 +57,15 @@ bool TestSocketClnt::run()
     while(ok)
     {
 
-        string s = "hello "+to_string(i++);
+        string s = "hello "+to_string(i++)+"\n";
         log_i("send :'"+s+"'");
         clnt.send(s);
+        log_i("  sent");
         //--
+        log_i("readLn...");
         if(!clnt.readLn(s)) 
             break;
+        
         log_i("  client recv:'"+s+"'");
 
         sys::sleepMS(1000);

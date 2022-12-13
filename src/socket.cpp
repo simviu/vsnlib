@@ -65,7 +65,7 @@ namespace {
                     *buf++ = ch;
                 }
 
-                if (ch == '\n')
+                if (ch == '\n' || ch=='\r' )
                     break;
             }
         }
@@ -78,7 +78,6 @@ namespace {
 //-----
 void Node::onDisconnect()
 {
-    mtx_.lock();
     cntx_.bConnected = false;
     //---- when loop done,
     // closing the connected socket
@@ -86,12 +85,15 @@ void Node::onDisconnect()
     int sock = cntx_.cur_socket;
     log_i("  Socket closed: "+to_string(sock));
     ::close(sock);
-    mtx_.unlock();
 
 }
 //------
 bool Node::readLn(string& sln)
 {
+    std::unique_lock<std::mutex> lk(rd_mtx_);
+    if(!cntx_.bConnected) 
+        return false;
+
     sln = "";
     char buffer[BUF_LEN] = { 0 };
     ssize_t n = c_readLine(cntx_.cur_socket, buffer, 1024);
@@ -106,41 +108,24 @@ bool Node::readLn(string& sln)
 }
 
 //------
-/*
-void read_loop(Node::Cntx& cntx)
-{
-    char buffer[BUF_LEN] = { 0 };
-
-    while(1)
-    {
-        auto n = ::read(cntx.cur_socket, buffer, 1024);
-        //printf("%s\n", buffer);
-        //send(new_socket, hello, strlen(hello), 0);
-        //printf("Hello message sent\n");
-        //log_d("  recv bytes "+to_string(valread));
-        if(n<0) break; // client down
-        if(n==0) continue;
-        if(cntx.f_rcv_!=nullptr)
-            cntx.f_rcv_(buffer, n);
-        else if(cntx.f_rcvln_!=nullptr)
-            cntx.f_rcvln_(string(buffer, n));
-        else {
-            log_e("Rcv function not set");
-            break;
-        }
-        sys::sleepMS(10);
-    }
-}
-*/
-//------
 bool Node::send(const char* buf, int len)
 {
+    std::unique_lock<std::mutex> lk(wr_mtx_);
     if(!cntx_.bConnected) 
         return false;
     
     size_t n = ::send(cntx_.cur_socket, buf, len, 0);
-
-    return (n==len);
+    if(n<0){
+        onDisconnect();
+        return false;
+    }
+    if(n!=len)
+    {
+        log_e("Send length differ");
+        onDisconnect();
+        return false;
+    }
+    return true;
 
 }
 

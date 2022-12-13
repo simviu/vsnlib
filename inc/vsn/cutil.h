@@ -174,6 +174,16 @@ namespace ut
                 while(!que_.empty())
                     que_.pop();
             }
+            size_t size(){
+                std::unique_lock<std::mutex> ul(m_);  
+                return que_.size();
+            }
+            T pop(){
+                std::unique_lock<std::mutex> ul(m_);  
+                auto d = que_.front();
+                que_.pop();
+                return d;
+            }
         protected:
             queue<T> que_;
             std::condition_variable cv_;
@@ -324,7 +334,8 @@ namespace ut
             { return cntx_.isRunning; }
             bool readLn(string& sln);
         protected:
-            std::mutex mtx_;
+            std::mutex rd_mtx_;
+            std::mutex wr_mtx_;
             void onDisconnect();
         };
         

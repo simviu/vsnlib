@@ -32,7 +32,7 @@ while True:
     line = line.replace("\n","")   # remove newline character
     print( "recv:"+line )     
     #--- echo
-    s = "ack " + str(i)
+    s = "ack " + str(i)+"\n"
     i = i + 1
     conn.send(bytes(s, "utf-8"))
 
