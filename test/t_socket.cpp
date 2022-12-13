@@ -27,17 +27,20 @@ bool TestSocketSrvr::run()
         return false;
 
     int i=0;
-    srv.setRcv([&](const char* buf, int len){
-        string s(buf, len);
-        log_i("  server recv:'"+s+"'");
-        //---- echo back
-        string s1 = "ack "+to_string(i++);
-        srv.send(s1);
-    });
-
+    
+    
     //----
     while(1)
+    {
+        string s;
+        if(!srv.readLn(s))
+            break;
+        log_i("Recv: '"+s+"'");
+        //---- ack
+        if(!srv.send("ack:"+to_string(i)))
+            break;
         sys::sleepMS(500);
+    }
     return true;
 }
 
@@ -45,10 +48,8 @@ bool TestSocketSrvr::run()
 bool TestSocketClnt::run()
 {
     socket::Client clnt;
-    clnt.setRcv([&](const char* buf, int len){
-        string s(buf, len);
-        log_i("  client recv:'"+s+"'");
-    });
+    
+    
     //------
     int i=0;
     bool ok = clnt.connect(lc_.host, lc_.port);
@@ -59,6 +60,11 @@ bool TestSocketClnt::run()
         string s = "hello "+to_string(i++);
         log_i("send :'"+s+"'");
         clnt.send(s);
+        //--
+        if(!clnt.readLn(s)) 
+            break;
+        log_i("  client recv:'"+s+"'");
+
         sys::sleepMS(1000);
     }
     return ok;

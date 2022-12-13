@@ -26,10 +26,87 @@ namespace {
 
     }; LCfg lc_;
     
+    //---- Linux C read line
+    // Ref: https://www.man7.org/tlpi/code/online/dist/sockets/read_line.c.html
+    ssize_t
+    c_readLine(int fd, char *buffer, size_t n)
+    {
+        ssize_t numRead;                    /* # of bytes fetched by last read() */
+        size_t totRead;                     /* Total bytes read so far */
+        char *buf;
+        char ch;
+
+        if (n <= 0 || buffer == NULL) {
+            errno = EINVAL;
+            return -1;
+        }
+
+        buf = buffer;                       /* No pointer arithmetic on "void *" */
+
+        totRead = 0;
+        for (;;) {
+            numRead = read(fd, &ch, 1);
+
+            if (numRead == -1) {
+                if (errno == EINTR)         /* Interrupted --> restart read() */
+                    continue;
+                else
+                    return -1;              /* Some other error */
+
+            } else if (numRead == 0) {      /* EOF */
+                if (totRead == 0)           /* No bytes read; return 0 */
+                    return 0;
+                else                        /* Some bytes read; add '\0' */
+                    break;
+
+            } else {                        /* 'numRead' must be 1 if we get here */
+                if (totRead < n - 1) {      /* Discard > (n - 1) bytes */
+                    totRead++;
+                    *buf++ = ch;
+                }
+
+                if (ch == '\n')
+                    break;
+            }
+        }
+
+        *buf = '\0';
+        return totRead;
+    }
+        
+}
+//-----
+void Node::onDisconnect()
+{
+    mtx_.lock();
+    cntx_.bConnected = false;
+    //---- when loop done,
+    // closing the connected socket
+    log_i("Disconnected with client");
+    int sock = cntx_.cur_socket;
+    log_i("  Socket closed: "+to_string(sock));
+    ::close(sock);
+    mtx_.unlock();
+
+}
+//------
+bool Node::readLn(string& sln)
+{
+    sln = "";
+    char buffer[BUF_LEN] = { 0 };
+    ssize_t n = c_readLine(cntx_.cur_socket, buffer, 1024);
     
+    if(n<=0){
+        onDisconnect();
+        return false;
+    }
+
+    sln = string(buffer, n);
+    return true;
 }
 
 //------
+/*
 void read_loop(Node::Cntx& cntx)
 {
     char buffer[BUF_LEN] = { 0 };
@@ -54,6 +131,7 @@ void read_loop(Node::Cntx& cntx)
         sys::sleepMS(10);
     }
 }
+*/
 //------
 bool Node::send(const char* buf, int len)
 {
@@ -130,13 +208,13 @@ bool server_thd(Node::Cntx& cntx)
             to_string(sock));
 
         //----- read loop
-        read_loop(cntx);
+        //read_loop(cntx);
+        while(cntx.bConnected)
+            sys::sleepMS(100);
 
-        //---- when loop done,
-        // closing the connected socket
-        log_i("Disconnected with client");
-        log_i("  Socket closed: "+to_string(sock));
-        ::close(sock);
+        // when disconnected , 
+        // loop over next connection.
+        
     }
     cntx.isRunning = false;
     // closing the listening socket
@@ -203,25 +281,10 @@ bool Client::connect(const string& sHost, int port)
 		log_e("Failed to connect to:'"+sHost+"' : "+str(cntx_.port));
 		return false;
 	}
+
+    //---- Connected
     log_i("Socket client connected");
-
-    //---- read thread
-    thd_ = std::thread([&](){
-        read_loop(cntx_);
-
-
-        //--- exit
-        log_i("Socket client disconnected");
-        cntx_.bConnected = false;
-
-        // closing the connected socket
-        close(client_fd);
-
-    });
-    thd_.detach();
-   //---- Connected
     cntx_.bConnected = true;
-    log_i("Client ready");
 
     return true;
 }
