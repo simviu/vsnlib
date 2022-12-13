@@ -308,6 +308,7 @@ namespace ut
     //-------------
     namespace socket{
         using FuncRcv=std::function<void(const char* buf, int n)>;
+        using FuncRcvLn=std::function<void(const string& sLn)>;
         class Node{
         public:
             struct Cntx{
@@ -316,9 +317,12 @@ namespace ut
                 bool bConnected = false;
                 int cur_socket = -1;
                 bool isRunning = false;
+                // set only one of following method
                 FuncRcv f_rcv_ = nullptr;
+                FuncRcvLn f_rcvln_ = nullptr;
             }; Cntx cntx_;
             void setRcv(FuncRcv f){ cntx_.f_rcv_ = f; }
+            void setRcv(FuncRcvLn f){ cntx_.f_rcvln_ = f; }
 
             bool send(const char* buf, int len);
             bool send(const string& s)

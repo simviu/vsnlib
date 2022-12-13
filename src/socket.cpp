@@ -36,13 +36,21 @@ void read_loop(Node::Cntx& cntx)
 
     while(1)
     {
-        int n = ::read(cntx.cur_socket, buffer, 1024);
+        auto n = ::read(cntx.cur_socket, buffer, 1024);
         //printf("%s\n", buffer);
         //send(new_socket, hello, strlen(hello), 0);
         //printf("Hello message sent\n");
         //log_d("  recv bytes "+to_string(valread));
-        if(n>0 && cntx.f_rcv_!=nullptr)
+        if(n<0) break; // client down
+        if(n==0) continue;
+        if(cntx.f_rcv_!=nullptr)
             cntx.f_rcv_(buffer, n);
+        else if(cntx.f_rcvln_!=nullptr)
+            cntx.f_rcvln_(string(buffer, n));
+        else {
+            log_e("Rcv function not set");
+            break;
+        }
         sys::sleepMS(10);
     }
 }
