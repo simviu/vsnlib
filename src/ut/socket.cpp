@@ -6,7 +6,7 @@
    Website: https://www.simviu.com
  */
 
-#include "vsn/vsnLib.h"
+#include "ut/cutil.h"
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -14,7 +14,7 @@
 #include <stdlib.h> 
 #include <netinet/in.h>
 
-using namespace vsn;
+using namespace ut;
 using namespace socket;
 
 // ref :
@@ -263,7 +263,8 @@ bool Client::connect(const string& sHost, int port)
 		= ::connect(sock, (struct sockaddr*)&serv_addr,
 				sizeof(serv_addr)))
 		< 0) {
-		log_e("Failed to connect to:'"+sHost+"' : "+str(cntx_.port));
+		log_e("Failed to connect to:'"+sHost+"' : "+
+            to_string(cntx_.port));
 		return false;
 	}
 
