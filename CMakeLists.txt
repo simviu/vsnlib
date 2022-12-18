@@ -49,6 +49,16 @@ link_directories(
 
     
 #---- vsnLib 
+FILE(GLOB  SRC_UTLIB src/ut/*.cpp)
+add_library(utLib ${SRC_UTLIB})
+target_link_libraries(utLib   
+    ${JsonCpp_LIBRARIES} 
+    jsoncpp
+    pthread
+    )
+    
+    
+#---- vsnLib 
 FILE(GLOB  SRC_VSNLIB src/*.cpp)
 add_library(vsnLib ${SRC_VSNLIB})
 target_link_libraries(vsnLib   
@@ -56,8 +66,7 @@ target_link_libraries(vsnLib
     ${Eigen3_LIBRARY}    
     ${JsonCpp_LIBRARIES} 
     ${PCL_LIBRARIES}
-    jsoncpp
-    pthread
+    utLib
     )
     
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})

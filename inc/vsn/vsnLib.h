@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "vsn/cutil.h"
+#include "ut/cutil.h"
 #include "vsn/eigen_hlpr.h"
 
 
