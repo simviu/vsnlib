@@ -3,8 +3,9 @@ import numpy as np
 import os
 from PIL import Image, ImageOps, ImageDraw
 
-K_pathw =  "arucod/4x4_100/"
-K_pathwb = "arucod/4x4_100_b/"
+K_aruco_dict = "4x4_100"
+K_pathw =  "arucod/"+K_aruco_dict+"/"
+K_pathwb = "arucod/"+K_aruco_dict+"_b/"
 K_dict = cv.aruco.DICT_4X4_100
 WM = 240 # marker width
 BD = 40  # boader size
@@ -39,6 +40,11 @@ def gen_marker(idx):
     wb,hb = bimg.size[0], bimg.size[1]
     draw.rectangle( (0, 0, wb-1, hb-1), fill=None, outline=(0))
 
+    #-- draw text
+    st = "m"+str(idx) # + "  ("+K_aruco_dict+")"
+    draw.text((wb*0.5, hb*0.95),st ,fill=(0))
+
+    #-- save
     sfwb = os.path.join(K_pathwb, str(idx)+".png")
     print("save:"+sfwb)
     bimg.save(sfwb)

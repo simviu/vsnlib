@@ -32,7 +32,13 @@ def gen_bar(idx0, N):
         print("Insert :"+sf + " at "+str(x))
         im = Image.open(sf)
         imw.paste(im, (x,0))
-        
+    
+    #--- draw ref at bottom/left corner
+    drawer = ImageDraw.Draw(imw)
+    ln = [( 0 , h*0.92 ), (w*0.082 , h )] 
+#    drawer.line(ln, fill=(0, 0, 0), width=3) 
+    drawer.ellipse((-h*0.025, h*0.975, w*0.025, h*1.025), fill=(0, 0, 0))
+
     #---- done    
     if not os.path.exists(K_pathw):
         os.mkdir(K_pathw)
@@ -47,7 +53,12 @@ def gen_bar(idx0, N):
 
 
 if __name__ == "__main__":
+    gen_bar(10, 4)
+    gen_bar(14, 4)
+    gen_bar(20, 4)
+    gen_bar(24, 4)
     gen_bar(30, 4)
+    gen_bar(34, 4)
 
     
     
