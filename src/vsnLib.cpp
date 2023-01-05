@@ -99,6 +99,39 @@ Pose Pose::avg(const vector<Pose>& ps)
 }
 
 
+//----
+Pose Pose::inv()const
+{
+    // inv[ R | t] = [R^T | -R^T*t]
+    Pose p;
+    p.q = q.inverse();
+    mat3 RT(p.q);
+    p.t = -RT*t;
+    return p;
+} 
+
+//----------------------------
+Pose Pose::operator *(const Pose& p)const
+{
+    //  | R1 t1 | x | R2 t2 | = | R1R2  R1t2+t1 | 
+    //  | 0   1 |   |  0  1 |   |  0       1    |
+    //
+    Pose T;
+
+    T.q = q * p.q;
+    mat3 R1(q);
+    T.t = R1*p.t + t;
+    return T;
+}
+//----
+vec3 Pose::operator *(const vec3& v)const
+{
+    vec3 vr;
+    mat3 R(q);
+    vr = R*v + t;
+    return vr;
+}
+
 
 //-------
 //----
@@ -146,16 +179,6 @@ vector<Line2d> RRect2d::lines()const
     return lns;
 }
 
-//----
-Pose Pose::inv()const
-{
-    // inv[ R | t] = [R^T | -R^T*t]
-    Pose p;
-    p.q = q.inverse();
-    mat3 RT(p.q);
-    p.t = -RT*t;
-    return p;
-} 
 //----
 /*
 Line::Crossr Line::operator ^(const Line& l)
@@ -217,28 +240,6 @@ void Ray::trans(const Pose& T)
     n = n1;
     n.normalize();
     
-}
-
-//----------------------------
-Pose Pose::operator *(const Pose& p)const
-{
-    //  | R1 t1 | x | R2 t2 | = | R1R2  R1t2+t1 | 
-    //  | 0   1 |   |  0  1 |   |  0       1    |
-    //
-    Pose T;
-
-    T.q = q * p.q;
-    mat3 R1(q);
-    T.t = R1*p.t + t;
-    return T;
-}
-//----
-vec3 Pose::operator *(const vec3& v)const
-{
-    vec3 vr;
-    mat3 R(q);
-    vr = R*v + t;
-    return vr;
 }
 
 //----- utils
