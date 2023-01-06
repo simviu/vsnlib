@@ -378,9 +378,11 @@ namespace ut
         bool parse(CStr& s);
         bool runFile(CStr& sf);
         virtual bool run(int argc, char ** argv);
-        string help()const;
-    protected:
+        string help(const string& s_prefix="")const;
+        auto& cmds(){ return cmds_; }
+        auto& cmds()const{ return cmds_; }
         string sHelp_;
+    protected:
         Fun f_=nullptr;
         map<string, Sp<Cmd>> cmds_;
         

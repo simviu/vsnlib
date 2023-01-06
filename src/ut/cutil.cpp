@@ -316,7 +316,7 @@ bool Cmd::run(int argc, char ** argv)
     for(int i=1;i<argc;i++)
         args.push_back(argv[i]);
     bool ok = run(args);
-    return ok?0:1;
+    return ok;
 }
 
 //--------------------
@@ -336,6 +336,13 @@ bool Cmd::run(CStrs& args)
     }
     //-------
     string sc = args[0];
+    if(sc=="help")
+    {
+        log_i(help());
+        return true;
+
+    }
+    //----
     auto p = lookup(cmds_, sc);
     if(p==nullptr)
     {
@@ -350,9 +357,16 @@ bool Cmd::run(CStrs& args)
 
 }
 //-----
-string Cmd::help()const
+string Cmd::help(const string& s_prefix)const
 {
-    string s= sHelp_ + "\n";
+    string s= s_prefix + " "+ sHelp_ + "\n";
+    for(auto& it : cmds_)
+    {
+        auto& sCmd = it.first;
+        auto p = it.second;
+        s += p->help("  "+s_prefix + " " + sCmd);        
+    }
+   
     return s;
 }
 
