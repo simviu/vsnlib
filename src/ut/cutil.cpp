@@ -349,6 +349,13 @@ bool Cmd::run(CStrs& args)
     return p->run(ss);
 
 }
+//-----
+string Cmd::help()const
+{
+    string s= sHelp_ + "\n";
+    return s;
+}
+
 
 
 }// namespace ut
