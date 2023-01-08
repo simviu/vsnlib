@@ -303,7 +303,10 @@ string Test::getTestsStr()const
         s += it.first; s += " ";
     return s;
 }
-//--------
+
+//--------------------
+// Cmd
+//--------------------
 bool Cmd::run(const string& sLn)
 {
     return run(tokens(sLn, ' '));
@@ -315,13 +318,24 @@ bool Cmd::run(int argc, char ** argv)
     Strs args;
     for(int i=1;i<argc;i++)
         args.push_back(argv[i]);
+    //---- Check console mode
+    if(argc==1)
+        return run_console();
+
+    //---- run with args
     bool ok = run(args);
     return ok;
 }
-
-//--------------------
-// Cmd
-//--------------------
+//----
+bool Cmd::run_console()
+{
+    while(1)
+    {
+        
+    }
+    return true;
+}
+//-----
 bool Cmd::run(CStrs& args)
 {
     //--- run
@@ -329,9 +343,9 @@ bool Cmd::run(CStrs& args)
         return f_(args);
 
     // check subcmds
-    if(args.size()==0) 
+    if(cmds_.size()==0) 
     {
-        log_e("cmd function null and sub cmd not provided");
+        log_e("Cmd not init and no subcmds");
         return false;
     }
     //-------
@@ -342,6 +356,7 @@ bool Cmd::run(CStrs& args)
         return true;
 
     }
+    
     //----
     auto p = lookup(cmds_, sc);
     if(p==nullptr)

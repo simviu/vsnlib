@@ -382,6 +382,7 @@ namespace ut
         string help(const string& s_prefix="")const;
         auto& cmds(){ return cmds_; }
         auto& cmds()const{ return cmds_; }
+        bool run_console();
         string sHelp_;
     protected:
         Fun f_=nullptr;
