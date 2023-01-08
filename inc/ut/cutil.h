@@ -26,6 +26,7 @@
 #include <mutex>
 #include <chrono>
 #include <condition_variable>
+#include <assert.h>
 
 namespace ut
 {
