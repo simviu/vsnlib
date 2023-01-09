@@ -292,10 +292,42 @@ namespace ut
         T d1=0; 
     };
     //-------------
-    // file utils
+    //  utils
     //-------------
     bool fexist(CStr& sf);
 
+    //---- Binary Buf
+    struct Buf{
+        Buf(){}
+        Buf(uint8_t* p, size_t n):
+        p(p), n(n){}
+        Buf(uint8_t n) { resize(n); }
+        void resize(size_t nn)
+        { 
+            if(p!=nullptr) delete p;
+            p = new uint8_t[nn];
+            n = nn;
+            bDel = true;
+        }
+        ~Buf()
+        { if(bDel && p!=nullptr) 
+            delete p; }
+
+
+        size_t n = 0;
+        uint8_t* p = nullptr; 
+    protected:
+        bool bDel = false;
+    };
+
+    //---- Legacy C file handler helper
+    struct CFile
+    {
+
+        CFile(int fd):fd_(fd){}
+        int fd_ = -1;
+        bool readln(string& sln);
+    };
     //-------------
     // Test
     //-------------

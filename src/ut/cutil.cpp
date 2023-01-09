@@ -254,6 +254,46 @@ bool fexist(CStr& sf)
     f.close();
     return ok;
 }
+//----
+bool CFile::readln(string& sln)
+{
+    sln.clear();
+
+    ssize_t numRead;                    /* # of bytes fetched by last read() */
+    size_t totRead;                     /* Total bytes read so far */
+    char ch;
+
+    totRead = 0;
+    for (;;) {
+        numRead = read(fd_, &ch, 1);
+
+        if (numRead == -1) {
+            if (errno == EINTR)         /* Interrupted --> restart read() */
+                continue;
+            else 
+                // was return -1
+                return false;              /* Some other error */
+
+        } else if (numRead == 0) {      /* EOF */
+            if (totRead == 0)           /* No bytes read; return 0 */
+                return false; // was return 0
+            else                        /* Some bytes read; add '\0' */
+                break;
+
+        } else {
+                                    /* 'numRead' must be 1 if we get here */
+        //    if (totRead < n - 1) {      /* Discard > (n - 1) bytes */
+        //        totRead++;
+        //    }
+            
+            sln += ch;
+            if (ch == '\n' || ch=='\r' )
+                break;
+        }
+    }
+
+    return true;
+}
 
 //--------------------
 // Test
@@ -329,9 +369,16 @@ bool Cmd::run(int argc, char ** argv)
 //----
 bool Cmd::run_console()
 {
+    std::cout << "Cmd console, 'help' for help, 'quit' to exit\n";
     while(1)
     {
-        
+        std::cout << "> " ;
+        string sln;
+        std::getline(std::cin, sln);
+        if(sln=="")continue;
+
+        auto args = tokens(sln, ',');
+        run(args);
     }
     return true;
 }
@@ -352,7 +399,7 @@ bool Cmd::run(CStrs& args)
     string sc = args[0];
     if(sc=="help")
     {
-        log_i(help());
+        std::cout << help() << std::endl;
         return true;
 
     }
