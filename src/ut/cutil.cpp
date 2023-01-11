@@ -376,8 +376,12 @@ bool Cmd::run_console()
         string sln;
         std::getline(std::cin, sln);
         if(sln=="")continue;
+        
+        //--- check quit
+        if(sln=="quit") break;
 
-        auto args = tokens(sln, ',');
+        //--- run
+        auto args = tokens(sln, ' ');
         run(args);
     }
     return true;
