@@ -254,46 +254,6 @@ bool fexist(CStr& sf)
     f.close();
     return ok;
 }
-//----
-bool CFile::readln(string& sln)
-{
-    sln.clear();
-
-    ssize_t numRead;                    /* # of bytes fetched by last read() */
-    size_t totRead;                     /* Total bytes read so far */
-    char ch;
-
-    totRead = 0;
-    for (;;) {
-        numRead = read(fd_, &ch, 1);
-
-        if (numRead == -1) {
-            if (errno == EINTR)         /* Interrupted --> restart read() */
-                continue;
-            else 
-                // was return -1
-                return false;              /* Some other error */
-
-        } else if (numRead == 0) {      /* EOF */
-            if (totRead == 0)           /* No bytes read; return 0 */
-                return false; // was return 0
-            else                        /* Some bytes read; add '\0' */
-                break;
-
-        } else {
-                                    /* 'numRead' must be 1 if we get here */
-        //    if (totRead < n - 1) {      /* Discard > (n - 1) bytes */
-        //        totRead++;
-        //    }
-            
-            sln += ch;
-            if (ch == '\n' || ch=='\r' )
-                break;
-        }
-    }
-
-    return true;
-}
 
 //--------------------
 // Test

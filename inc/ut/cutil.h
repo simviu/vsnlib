@@ -321,12 +321,23 @@ namespace ut
     };
 
     //---- Legacy C file handler helper
-    struct CFile
+    // for streamming, such as Serial/ Socket
+    class CStream
     {
-
-        CFile(int fd):fd_(fd){}
+    public:
+        struct TCfg{
+            double timeout = 1;
+            // query interval 1ms
+            double t_query_int = 0.001;
+        }; TCfg cfg_;
+        struct Status{
+            bool eTimeout = false;
+        }; Status st_;
+        
+        CStream(int fd):fd_(fd){}
         int fd_ = -1;
         bool readln(string& sln);
+        
     };
     //-------------
     // Test
