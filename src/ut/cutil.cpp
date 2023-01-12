@@ -332,7 +332,7 @@ bool Cmd::run_console()
     std::cout << "Cmd console, 'help' for help, 'quit' to exit\n";
     while(1)
     {
-        std::cout << "> " ;
+        std::cout << "\n> " ;
         string sln;
         std::getline(std::cin, sln);
         if(sln=="")continue;
