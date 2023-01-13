@@ -335,9 +335,12 @@ namespace ut
         }; Status st_;
         
         CStream(int fd):fd_(fd){}
-        int fd_ = -1;
         bool readln(string& sln);
-        
+        void flush();
+    protected:
+        int fd_ = -1;
+        bool readFrm(const string& sHeader, 
+                     Buf& buf);
     };
     //-------------
     // Test
