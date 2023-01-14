@@ -309,6 +309,12 @@ string Test::getTestsStr()const
 //--------------------
 // Cmd
 //--------------------
+string Cmd::rm_comment(CStr & s)const
+{
+    auto n = s.find('#');
+    return s.substr(0, n);
+}
+//----
 bool Cmd::run(const string& sLn)
 {
     return run(tokens(sLn, ' '));
@@ -317,6 +323,7 @@ bool Cmd::run(const string& sLn)
 //--------
 bool Cmd::run(int argc, char ** argv)
 {
+
     //---- Check console mode
     if(argc==1)
         return run_console();
@@ -359,8 +366,9 @@ bool Cmd::runFile(CStr& sf)
     while(!f.eof())
     {
         i++;
-        string s;
-        getline(f, s);
+        string si;
+        getline(f, si);
+        string s = rm_comment(si);
         if(s=="")continue;
 
         ok = run(s);
@@ -379,20 +387,19 @@ bool Cmd::runFile(CStr& sf)
 //----
 bool Cmd::run_console()
 {
-    log_i("Cmd console, 'help' for help, 'quit' to exit\n");
-
+    log_i("Cmd console, 'help' for help, 'quit' to exit.\n");
     while(1)
     {
         log_s("> ") ;
         string sln;
         std::getline(std::cin, sln);
-        if(sln=="")continue;
         
         //--- check quit
         if(sln=="quit") break;
 
         //--- run
         auto args = tokens(sln, ' ');
+        
         run(args);
     }
     return true;

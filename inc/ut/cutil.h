@@ -435,6 +435,7 @@ namespace ut
     protected:
         Fun f_=nullptr;
         map<string, Sp<Cmd>> cmds_;
+        string rm_comment(CStr & s)const;
         
     };
 }
