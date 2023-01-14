@@ -103,8 +103,10 @@ namespace ut
         extern void inf(CStr& s);
         extern void err(CStr& s);
         extern void errf(CStr& s);
+        extern void str(CStr& s);
     }
     // shortcuts
+    const auto log_s = utlog::str;
     const auto log_i = utlog::inf;
     const auto log_d = utlog::dbg;
     const auto log_e = utlog::err;

@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define _POSIX_SOURCE
 #include <termios.h>
 
 

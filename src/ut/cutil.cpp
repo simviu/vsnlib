@@ -131,26 +131,28 @@ namespace utlog
     void logs(CStr& s, bool isErr = false)
     {
         if(isErr)
-            cerr << s << endl << flush;
+            cerr << s << flush;
         else
-            cout << s << endl << flush;
+            cout << s << flush;
         //----
         if(logFile_)
         {
-            logFile_ << (s + "\n");
+            logFile_ << s;
             logFile_.flush();
         }
     }
 
     //-----
+    extern void str(CStr& s)
+    { logs(s); }
     extern void dbg(CStr& s)
-    { logs("[dbg]:"+s); }
+    { logs("[dbg]:"+s +"\n"); }
     extern void inf(CStr& s)
-    { logs("[info]:"+s); }
+    { logs("[info]:"+s +"\n"); }
     extern void err(CStr& s)
-    { logs("[err]:"+s, true); }
+    { logs("[err]:"+s +"\n", true); }
     extern void errf(CStr& s)
-    { logs("[err]: Failed to open file:"+s, true); }
+    { logs("[err]: Failed to open file:"+s +"\n", true); }
 }
 //--------------------
 // sys
@@ -315,24 +317,73 @@ bool Cmd::run(const string& sLn)
 //--------
 bool Cmd::run(int argc, char ** argv)
 {
-    Strs args;
-    for(int i=1;i<argc;i++)
-        args.push_back(argv[i]);
     //---- Check console mode
     if(argc==1)
         return run_console();
 
     //---- run with args
+    Strs args;
+    for(int i=1;i<argc;i++)
+        args.push_back(argv[i]);
+    
+    //--- check script -f
+    if(args[0]=="-f")
+    {
+        if(args.size()<2)
+        {
+            log_e("Expect <FILE> after '-f'");
+            return false;
+        }
+        //----
+        return runFile(args[1]);
+    }
+
+    //---- Normal run
     bool ok = run(args);
     return ok;
 }
 //----
+bool Cmd::runFile(CStr& sf)
+{
+    log_i("Cmd::runFile() :'"+sf+"'...");
+    ifstream f;
+    f.open(sf);
+    if(!f.is_open())
+    {
+        log_ef(sf);
+        return false;
+    }
+    //
+    int i=0;
+    bool ok = true;
+    while(!f.eof())
+    {
+        i++;
+        string s;
+        getline(f, s);
+        if(s=="")continue;
+
+        ok = run(s);
+        if(!ok)
+        {
+            log_e("Line "+to_string(i)+" in '"+sf+"':");
+            log_e("  Cmd fail:'"+s+"'");
+            break;
+        }
+    }
+    log_e("Cmd::runFile() done");
+    return true;
+
+}
+
+//----
 bool Cmd::run_console()
 {
-    std::cout << "Cmd console, 'help' for help, 'quit' to exit\n";
+    log_i("Cmd console, 'help' for help, 'quit' to exit\n");
+
     while(1)
     {
-        std::cout << "\n> " ;
+        log_s("> ") ;
         string sln;
         std::getline(std::cin, sln);
         if(sln=="")continue;
