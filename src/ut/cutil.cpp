@@ -314,6 +314,19 @@ string Cmd::rm_comment(CStr & s)const
     auto n = s.find('#');
     return s.substr(0, n);
 }
+//---- 
+string Cmd::usage()const
+{
+    string s;
+    s += "  Command line options:\n";
+    s += "    -h  : Help\n";
+    s += "    -console  : Console\n";
+    s += "    -file <CMD_FILE> : Run cmd file\n";
+    s += "    -server port=<PORT> : TCP server\n";
+    s += "    <CMD> [ARGS] \n";
+    return s;
+}
+
 //----
 bool Cmd::run(const string& sLn)
 {
@@ -324,9 +337,13 @@ bool Cmd::run(const string& sLn)
 bool Cmd::run(int argc, char ** argv)
 {
 
-    //---- Check console mode
+    //---- no arg
     if(argc==1)
-        return run_console();
+    {
+        log_i(usage());
+        return true;
+    }
+
 
     //---- run with args
     Strs args;
@@ -334,7 +351,13 @@ bool Cmd::run(int argc, char ** argv)
         args.push_back(argv[i]);
     
     //--- check script -f
-    if(args[0]=="-f")
+    string scmd = args[0];
+    if(scmd=="--help")
+    {
+        log_i(help());
+        return true;
+    }
+    else if(scmd=="--file")
     {
         if(args.size()<2)
         {
@@ -344,10 +367,13 @@ bool Cmd::run(int argc, char ** argv)
         //----
         return runFile(args[1]);
     }
-
-    //---- Normal run
-    bool ok = run(args);
-    return ok;
+    else if(scmd=="--server")
+        return run_server(args);
+    else if(scmd=="--console")
+        return run_console();
+    else 
+        return run(args);
+    return true;
 }
 //----
 bool Cmd::runFile(CStr& sf)
@@ -382,6 +408,55 @@ bool Cmd::runFile(CStr& sf)
     log_e("Cmd::runFile() done");
     return true;
 
+}
+
+//----- arm server
+bool Cmd::run_server(CStrs& args)
+{
+
+    socket::Server svr;
+
+    StrTbl kv; parseKV(args, kv);
+    string s_port = lookup(kv, string("port"));
+    int port=0; 
+    if(!s2d(s_port, port))
+    {
+        log_e(" failed to get para 'port'");
+        return false;
+    }
+    
+    //-----
+    bool ok = svr.start(port);
+    if(!ok)
+    {
+        log_e("Failed to start server at port:"+to_string(port));
+        return false;
+    }
+    //---- server started
+
+    while(svr.isRunning())
+    {
+        string scmd;
+
+        if(!svr.readLn(scmd)) 
+        {
+            sys::sleep(0.2);
+            continue;
+        }
+
+        //---- run cmd
+        string s_res = "{}"; // TODO
+        bool ok = this->run(scmd);
+        string sj = string("{") +
+            (ok?"'ok':true" :"'ok':false") +
+            ",'res':" + s_res +
+            "}\n";
+        svr.send(sj);
+        sys::sleepMS(200);
+    }
+    log_i("Server shutdown");
+    //---- 
+    return true;
 }
 
 //----
@@ -421,7 +496,7 @@ bool Cmd::run(CStrs& args)
     string sc = args[0];
     if(sc=="help")
     {
-        std::cout << help() << std::endl;
+        log_i(help());
         return true;
 
     }

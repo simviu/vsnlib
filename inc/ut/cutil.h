@@ -431,11 +431,12 @@ namespace ut
         auto& cmds(){ return cmds_; }
         auto& cmds()const{ return cmds_; }
         bool run_console();
+        bool run_server(CStrs& args);
         string sHelp_;
     protected:
         Fun f_=nullptr;
         map<string, Sp<Cmd>> cmds_;
         string rm_comment(CStr & s)const;
-        
+        string usage()const;
     };
 }
