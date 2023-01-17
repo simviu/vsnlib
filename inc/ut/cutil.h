@@ -104,6 +104,8 @@ namespace ut
         extern void err(CStr& s);
         extern void errf(CStr& s);
         extern void str(CStr& s);
+        using FuncCbk=std::function<void(CStr& s)>;
+        extern void setCallbk(FuncCbk cbk);
     }
     // shortcuts
     const auto log_s = utlog::str;
