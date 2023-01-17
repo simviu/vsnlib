@@ -339,10 +339,10 @@ namespace ut
         CStream(int fd):fd_(fd){}
         bool readln(string& sln);
         void flush();
-    protected:
-        int fd_ = -1;
         bool readFrm(const string& sHeader, 
                      Buf& buf);
+    protected:
+        int fd_ = -1;
     };
     //-------------
     // Test
