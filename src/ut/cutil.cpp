@@ -319,10 +319,10 @@ string Cmd::usage()const
 {
     string s;
     s += "  Command line options:\n";
-    s += "    -h  : Help\n";
-    s += "    -console  : Console\n";
-    s += "    -file <CMD_FILE> : Run cmd file\n";
-    s += "    -server port=<PORT> : TCP server\n";
+    s += "    --help  : Help\n";
+    s += "    --console  : Console\n";
+    s += "    --file <CMD_FILE> : Run cmd file\n";
+    s += "    --server port=<PORT> : TCP server\n";
     s += "    <CMD> [ARGS] \n";
     return s;
 }
