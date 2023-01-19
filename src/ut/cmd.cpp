@@ -133,7 +133,7 @@ bool Cmd::runFile(CStr& sf)
             break;
         }
     }
-    log_e("Cmd::runFile() done");
+    log_i("Cmd::runFile() done");
     return true;
 
 }
