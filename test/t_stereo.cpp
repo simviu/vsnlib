@@ -54,7 +54,7 @@ bool TestStereo::testKittyGray()const
         return false;
     //---- load stereo cfg
     //---- stereo VO test
-    auto p_vo = StereoVO::create();
+    auto p_vo = VO::create();
     auto &vo = *p_vo;
     if (!vo.cfg_.load(lcfg_.sf_stereoc))
         return false;

@@ -672,152 +672,189 @@ namespace vsn{
     };
 
     //------------
-    // StereoVO
+    // Stereo
     //------------
-    //Stereo video odometry
-    class StereoVO{
-    public:
-
-        static Sp<StereoVO> create();
+    namespace stereo
+    {
+        //---- SGBM cfg
+        struct SGBM{
+            int  	minDisparity = 0;
+            int  	numDisparities = 16;
+            int  	blockSize = 3;
+            int  	P1 = 0;
+            int  	P2 = 0;
+            int  	disp12MaxDiff = 0;
+            int  	preFilterCap = 0;
+            int  	uniquenessRatio = 0;
+            int  	speckleWindowSize = 0;
+            int  	speckleRange = 0;
+            //--- disparity WSL filter
+            struct WLSFilter{
+                bool en=true;
+                float lambda=8000;
+                float sigma=1;
+            }; WLSFilter wls_filter;
+        };  // TODO: move to VOcv
         //---- disparity cfg
         struct DisparityCfg{
-            //---- SGBM cfg
-            struct SGBM{
-                int  	minDisparity = 0;
-                int  	numDisparities = 16;
-                int  	blockSize = 3;
-                int  	P1 = 0;
-                int  	P2 = 0;
-                int  	disp12MaxDiff = 0;
-                int  	preFilterCap = 0;
-                int  	uniquenessRatio = 0;
-                int  	speckleWindowSize = 0;
-                int  	speckleRange = 0;
-                //--- disparity WSL filter
-                struct WLSFilter{
-                    bool en=true;
-                    float lambda=8000;
-                    float sigma=1;
-                }; WLSFilter wls_filter;
-            }; SGBM sgbm;
+            
+            SGBM sgbm;
             float vis_mul = 8.0;
         };
-        //----
-        struct Cfg{
-            CamCfg camc;
-          //  bool bShow = false;
-            double baseline = 0.50;
-            struct Odom{
-                // 1:triangulation , 2:depth
-                int mode=1;
-                // z threshold
-                double z_TH = 50;
-            }; Odom odom;
-            struct Feature{
-                int Nf = 100;
-            }; Feature feature;
-
-            DisparityCfg dispar;
-
-            struct Run{
-                bool bShow=false;
-                bool enDense = false;
-                bool enDepth = false;
-                bool enWr = false;
-            }; Run run;
-
-            struct PointCloud{
-                double z_TH = 40;
-                struct Filter{
-                    bool en = true;
-                    float meanK = 50;
-                    float devTh = 1.0;
-                    float voxel_res = 0.03; 
-                }; Filter filter;
-            }; PointCloud pntCloud;
-
-            //---- omnidirectional
-            struct Omni{
-                // factory
-                static Sp<Omni> load(const string& sf); 
-            }; Sp<Omni> p_omni = nullptr;
-
-            //----
-            bool load(const string& sf);
-            string str()const;
-        };
-        Cfg cfg_;
-        //---- Depth
-        class Depth{
+        //Stereo video odometry
+        class VO{
         public:
-            //---- depth disparity map
-            Sp<Img> p_imd_ = nullptr;
-            //---- point cloud
-            struct PntCloud{
-                Sp<Points> p_dense  = nullptr;
-                Sp<Points> p_sparse = nullptr;
-            }; PntCloud pntc;
-        };
-        //---- Frm data
-        struct Frm{
-            // Triangulated feature points
-            //  in global space.
-            vec3s Pws; 
-            //---- Depth
-            Depth depth;
-        };
-        //----
-        struct Data{
-            int frmIdx = 0;
-            //----
-            struct Wr{
-                ofstream ofs_pnts_spar;
-                ofstream ofs_pnts_dense;
-                ofstream ofs_Tw;
-                bool open();
-                void close();
-            }; Wr wr;
-            // local points by stereo matching 
-            //   and triangulations.
-            //---
-            struct Odom{
-                Odom(){ reset(); }
-                mat3 Rw;
-                vec3 tw;
-                vec3 ew; // euler angle
-                void reset()
-                { Rw = mat3::Identity(); tw << 0,0,0; ew << 0,0,0; }
-            }; Odom odom;
+
+            static Sp<VO> create();
             
-            //---- current Frm result
-            Sp<Frm> p_frm = nullptr;
+            //----
+            struct Cfg{
+                CamCfg camc;
+            //  bool bShow = false;
+                double baseline = 0.50;
+                struct Odom{
+                    // 1:triangulation , 2:depth
+                    int mode=1;
+                    // z threshold
+                    double z_TH = 50;
+                }; Odom odom;
+                struct Feature{
+                    int Nf = 100;
+                }; Feature feature;
 
-            //---- vis
-            struct PntVis{
+                DisparityCfg dispar;
 
-                Sp<Points::Vis> p_vis_dense = nullptr;
-            }; PntVis pntVis;
+                struct Run{
+                    bool bShow=false;
+                    bool enDense = false;
+                    bool enDepth = false;
+                    bool enWr = false;
+                }; Run run;
 
-            // wr data
-            bool wrData();
-            void close(){ wr.close(); }
+                struct PointCloud{
+                    double z_TH = 40;
+                    struct Filter{
+                        bool en = true;
+                        float meanK = 50;
+                        float devTh = 1.0;
+                        float voxel_res = 0.03; 
+                    }; Filter filter;
+                }; PointCloud pntCloud;
+
+                //---- omnidirectional
+                struct Omni{
+                    // factory
+                    static Sp<Omni> load(const string& sf); 
+                }; Sp<Omni> p_omni = nullptr;
+
+                //----
+                bool load(const string& sf);
+                string str()const;
+            };
+            Cfg cfg_;
+            //---- Depth
+            class Depth{
+            public:
+                //---- depth disparity map
+                Sp<Img> p_imd_ = nullptr;
+                //---- point cloud
+                struct PntCloud{
+                    Sp<Points> p_dense  = nullptr;
+                    Sp<Points> p_sparse = nullptr;
+                }; PntCloud pntc;
+            };
+            //---- Frm data
+            struct Frm{
+                // Triangulated feature points
+                //  in global space.
+                vec3s Pws; 
+                //---- Depth
+                Depth depth;
+            };
+            //----
+            struct Data{
+                int frmIdx = 0;
+                //----
+                struct Wr{
+                    ofstream ofs_pnts_spar;
+                    ofstream ofs_pnts_dense;
+                    ofstream ofs_Tw;
+                    bool open();
+                    void close();
+                }; Wr wr;
+                // local points by stereo matching 
+                //   and triangulations.
+                //---
+                struct Odom{
+                    Odom(){ reset(); }
+                    mat3 Rw;
+                    vec3 tw;
+                    vec3 ew; // euler angle
+                    void reset()
+                    { Rw = mat3::Identity(); tw << 0,0,0; ew << 0,0,0; }
+                }; Odom odom;
+                
+                //---- current Frm result
+                Sp<Frm> p_frm = nullptr;
+
+                //---- vis
+                struct PntVis{
+
+                    Sp<Points::Vis> p_vis_dense = nullptr;
+                }; PntVis pntVis;
+
+                // wr data
+                bool wrData();
+                void close(){ wr.close(); }
+            };
+            //----
+            virtual bool onImg(const Img& im1, 
+                            const Img& im2)=0;
+
+            virtual bool genDepth(const Img& im1,  
+                                const Img& im2,
+                                Depth& depth)=0;
+
+            auto& getData()const{ return data_; }
+            void onFinish(){ data_.close(); }
+            void setFrmIdx(int i){ data_.frmIdx=i; }
+        //   void showLoop();
+        protected:
+
+            Data data_;
+        }; // VO
+
+        //------------
+        // Recon3d
+        //------------
+
+        //---- Re-construct 3d point cloud scene
+        class Recon3d : public Cmd{
+        public:
+
+            struct Frm{
+                struct Imgs{
+                    Sp<Img> pL = nullptr; // L
+                    Sp<Img> pR = nullptr; // R
+                    Sp<Img> pC = nullptr; // Color
+                    Sp<Img> pD = nullptr; // Depth
+                    Sp<Img> pN = nullptr; // Depth Confidence
+                    bool load(string sPath, int i);
+                }; Imgs imgs;
+                bool load(string sPath, int i);
+                Pose T;
+            };
+
+            Recon3d(){ init_cmds(); }
+            bool onImg(const Frm& frm);
+            bool run_frms(const string& sPath);
+        protected:
+            void init_cmds();
         };
-        //----
-        virtual bool onImg(const Img& im1, 
-                           const Img& im2)=0;
 
-        virtual bool genDepth(const Img& im1,  
-                              const Img& im2,
-                              Depth& depth)=0;
 
-        auto& getData()const{ return data_; }
-        void onFinish(){ data_.close(); }
-        void setFrmIdx(int i){ data_.frmIdx=i; }
-     //   void showLoop();
-    protected:
 
-        Data data_;
-    };
+    }// namespace stereo
 
 }
 
