@@ -64,19 +64,20 @@ namespace vsn{
     //---- Euler
     // The conversion to quat is application
     // specific.
+    // Unit : degree
     struct Euler{
         Euler(){};
-        Euler(double y, double p, double r):
-            y(y), p(p), r(r){}
-        double y = 0;
-        double p = 0;
-        double r = 0;
+        Euler(double x, double y, double z):
+            rx(x), ry(y), rz(z){}
+        double rx = 0;
+        double ry = 0;
+        double rz = 0;
 
-        bool parse(const string& s);
+        bool from(const string& s);
         string str()const 
-        { return vsn::str(y,1) + ","+
-                 vsn::str(p,1) + ","+
-                 vsn::str(r,1);  }
+        { return vsn::str(rx,1) + ","+
+                 vsn::str(ry,1) + ","+
+                 vsn::str(rz,1);  }
     };
 
     //------------

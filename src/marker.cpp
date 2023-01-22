@@ -39,10 +39,10 @@ namespace{
     {
         vec3 nx,ny,nz;
         nx << 1,0,0; ny << 0,1,0; nz << 0,0,1;
-        mat3 my = rotmat(ny, toRad(e.r));
-        mat3 mp = rotmat(nx, toRad(e.p));
-        mat3 mr = rotmat(nz, toRad(e.y));
-        quat q(my * mp * mr);
+        mat3 mx = rotmat(nx, toRad(e.rx));
+        mat3 my = rotmat(ny, toRad(e.ry));
+        mat3 mz = rotmat(nz, toRad(e.rz));
+        quat q(mz * my * mx);
         return q;
     }
     //-----
@@ -147,7 +147,7 @@ namespace{
 
                 ok &= s2v(jt["xyz"].asString(), T.t);  
                 Euler e; 
-                ok &= e.parse(jt["ypr"].asString());
+                ok &= e.from(jt["euler"].asString());
                 T.q = to_q(e);
             }
             //-----
