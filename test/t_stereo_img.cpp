@@ -15,7 +15,7 @@
 #include <opencv2/ccalib/omnidir.hpp>
 
 using namespace vsn;
-using namespace ut;
+using namespace stereo;
 using namespace test;
 using namespace cv;
 

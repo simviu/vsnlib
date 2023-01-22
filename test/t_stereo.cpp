@@ -11,6 +11,7 @@
 #include <filesystem>
 
 using namespace vsn;
+using namespace stereo;
 using namespace ut;
 using namespace test;
 using namespace cv;
