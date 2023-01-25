@@ -1,8 +1,16 @@
+/*
+   Author: Sherman Chen
+   Create Time: 2022-05-04
+   Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
+ */
+
 #include "vsn/vsnLib.h"
 #include "json/json.h"
 
 using namespace vsn;
-
+using namespace stereo;
 //----
 namespace{
     const struct{
@@ -30,7 +38,7 @@ namespace{
     }
     //---- load SGBM json cfg
     bool decode(const Json::Value& j,
-                StereoVO::DisparityCfg::SGBM& c)
+                SGBM& c)
     {
         c.minDisparity = j["minDisparity"].asInt();
         c.numDisparities = j["numDisparities"].asInt();
@@ -56,7 +64,7 @@ namespace{
     }
     //----
     bool decode(const Json::Value& j, 
-                StereoVO::DisparityCfg& c)
+                DisparityCfg& c)
     {
         bool ok = true;
         ok &= decode(j["sgbm"], c.sgbm);
@@ -70,7 +78,7 @@ namespace{
 }
 
 //-----------
-string StereoVO::Cfg::str()const
+string VO::Cfg::str()const
 {
     stringstream s;
     s << "{stereo:{";
@@ -80,9 +88,9 @@ string StereoVO::Cfg::str()const
 }
 
 //-----------
-bool StereoVO::Cfg::load(const string& sf)
+bool VO::Cfg::load(const string& sf)
 {
-    log_i("Load StereoVO cfg :'"+sf+"'");
+    log_i("Load VO cfg :'"+sf+"'");
     ifstream ifs(sf);
     if(!ifs)
     {
@@ -138,7 +146,7 @@ bool StereoVO::Cfg::load(const string& sf)
     return true;
 }
 //-----
-bool StereoVO::Data::Wr::open()
+bool VO::Data::Wr::open()
 {
     ofs_pnts_spar.open(lcfg_.sf_pnts_spar);
     bool ok1 = ofs_pnts_spar.is_open();
@@ -153,14 +161,14 @@ bool StereoVO::Data::Wr::open()
     return ok1 && ok2;
 }
 //----
-void StereoVO::Data::Wr::close()
+void VO::Data::Wr::close()
 { 
     ofs_pnts_spar.close(); 
     ofs_Tw.close(); 
 }
 
 //------------
-bool StereoVO::Data::wrData()
+bool VO::Data::wrData()
 {
     auto& fi = frmIdx;
     //--- write Tw
@@ -185,7 +193,7 @@ bool StereoVO::Data::wrData()
 
 //------------
 /*
-void StereoVO::showLoop()
+void VO::showLoop()
 {
     while(!cv_waitESC(10))
     {

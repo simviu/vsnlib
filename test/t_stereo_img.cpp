@@ -15,7 +15,7 @@
 #include <opencv2/ccalib/omnidir.hpp>
 
 using namespace vsn;
-using namespace ut;
+using namespace stereo;
 using namespace test;
 using namespace cv;
 
@@ -50,7 +50,7 @@ namespace{
 //   https://answers.opencv.org/question/223280/calculating-depth-with-ptrstereosgbm-black-bar-on-image/
 bool test_LR(const Img& imL, const Img& imR)
 {
-    auto p_vo = StereoVO::create();
+    auto p_vo = VO::create();
     auto& vo = *p_vo;
     if (!vo.cfg_.load(lc_.sf_stereoc))
         return false;

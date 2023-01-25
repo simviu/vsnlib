@@ -49,14 +49,15 @@ Euler::Euler(const quat& q)
 }
 */
 //-----
-bool Euler::parse(const string& s)
+
+bool Euler::from(const string& s)
 {
     vector<double> ds;
     if(!s2data(s, ds)) return false;
     if(ds.size()<3) return false;
-    y = ds[0];
-    p = ds[1];
-    r = ds[2];
+    rx = ds[0];
+    ry = ds[1];
+    rz = ds[2];
     return true;
 }
 

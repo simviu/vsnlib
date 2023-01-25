@@ -3,9 +3,10 @@
 
 
 using namespace vsn;
+using namespace stereo;
 //----
 namespace{
-    using OmniCfg = StereoVO::Cfg::Omni;
+    using OmniCfg = VO::Cfg::Omni;
     //---- impl
     struct OmniCfgImp : public OmniCfg{
         bool loadFile(const string& sf)

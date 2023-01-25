@@ -1,3 +1,11 @@
+/*
+   Author: Sherman Chen
+   Create Time: 2022-05-04
+   Email: schen@simviu.com
+   Copyright(c): Simviu Inc.
+   Website: https://www.simviu.com
+ */
+
 #include "vsn/vsnLibCv.h"
 //#include <opencv2/sfm/triangulation.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -7,7 +15,7 @@
 
 
 using namespace vsn;
-
+using namespace stereo;
 //----
 namespace{
     const struct{
@@ -19,13 +27,13 @@ namespace{
 
 
 //---- Factory
-Sp<StereoVO> StereoVO::create()
+Sp<VO> VO::create()
 {
-    return mkSp<StereoVOcv>();
+    return mkSp<VOcv>();
 }
 
 //-----------
-bool StereoVOcv::FrmCv::find(int i, bool bLeft, MPnt& mpnt)const
+bool VOcv::FrmCv::find(int i, bool bLeft, MPnt& mpnt)const
 {
     if(p_fm==nullptr) return false;
     auto& fm = *p_fm;
@@ -39,7 +47,7 @@ bool StereoVOcv::FrmCv::find(int i, bool bLeft, MPnt& mpnt)const
     return true;
 }
 //-----------
-bool StereoVOcv::FrmCv::at(int mi, MPnt& mpnt)const
+bool VOcv::FrmCv::at(int mi, MPnt& mpnt)const
 {
     if(mi<0 || mi>= mpnts.size())
         return false;
@@ -48,11 +56,11 @@ bool StereoVOcv::FrmCv::at(int mi, MPnt& mpnt)const
 }
  
 //-----------
-bool StereoVOcv::onImg(const Img& im1,  
-                       const Img& im2)
+bool VOcv::onImg(const Img& im1,  
+                 const Img& im2)
 {
     auto& camc = cfg_.camc;
-    auto& vod = StereoVO::data_;
+    auto& vod = VO::data_;
     auto& fi = vod.frmIdx;
     fi++;
     //--- initial file wr
@@ -82,9 +90,9 @@ bool StereoVOcv::onImg(const Img& im1,
     ok &= triangulate(fm, frm.mpnts);
 
     //---- gen depth
-    auto p_frmo = mkSp<StereoVO::Frm>();
+    auto p_frmo = mkSp<VO::Frm>();
     auto& frmo = *p_frmo;
-    StereoVO::data_.p_frm = p_frmo;
+    VO::data_.p_frm = p_frmo;
     auto& depth = frmo.depth;
     if(cfg_.run.enDepth)
         ok &= genDepth(im1, im2, depth);
@@ -111,8 +119,8 @@ bool StereoVOcv::onImg(const Img& im1,
     return ok;
 }
 //-----------------
-bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
-                             vector<MPnt>& mpnts)const
+bool VOcv::triangulate(const FeatureMatchCv& fm,
+                       vector<MPnt>& mpnts)const
 {
     bool ok = true;
     stringstream s;
@@ -183,8 +191,8 @@ bool StereoVOcv::triangulate(const FeatureMatchCv& fm,
 
 
 //-----------------
-bool StereoVOcv::odometry(const FrmCv& frm1,
-                          const FrmCv& frm2)
+bool VOcv::odometry(const FrmCv& frm1,
+                    const FrmCv& frm2)
 {
     stringstream s;
     auto& odomc = cfg_.odom;
@@ -213,7 +221,7 @@ bool StereoVOcv::odometry(const FrmCv& frm1,
     s << "ec=" << ec1 << ", tc=" << tc1 << endl; 
     // R/t is relative motion from frm1 to frm2
     //---- Update R/t global
-    auto& odom = StereoVO::data_.odom;
+    auto& odom = VO::data_.odom;
     mat3 Re; cv::cv2eigen(Rc, Re);
     vec3 te; cv::cv2eigen(tc, te);
     auto& Rw = odom.Rw;
@@ -243,11 +251,11 @@ bool StereoVOcv::odometry(const FrmCv& frm1,
 }
 
 //-----------------
-bool StereoVOcv::solve_2d3d(const FrmCv& frm1,
-                            const FrmCv& frm2,
-                            bool bLeft,
-                            cv::Mat& r, cv::Mat& t,
-                            set<int>& inliers)const
+bool VOcv::solve_2d3d(const FrmCv& frm1,
+                      const FrmCv& frm2,
+                      bool bLeft,
+                      cv::Mat& r, cv::Mat& t,
+                      set<int>& inliers)const
 {
     auto& odomc = cfg_.odom;
 
@@ -342,13 +350,13 @@ bool StereoVOcv::solve_2d3d(const FrmCv& frm1,
     
 }
 //-----------
-void StereoVOcv::calc_pnts(const FrmCv& frmc,
-                           const set<int>& mi_ary,
-                           vec3s& Ps)const
+void VOcv::calc_pnts(const FrmCv& frmc,
+                     const set<int>& mi_ary,
+                     vec3s& Ps)const
 {
     auto& odomc = cfg_.odom;
     auto& pcldc = cfg_.pntCloud;
-    auto& odom = StereoVO::data_.odom;
+    auto& odom = VO::data_.odom;
 
     auto& Rw = odom.Rw;
     auto& tw = odom.tw;
@@ -372,9 +380,9 @@ void StereoVOcv::calc_pnts(const FrmCv& frmc,
 }
 
 //-----------
-bool StereoVOcv::genDepth(const Img& im1,  
-                          const Img& im2,
-                          Depth& depth)
+bool VOcv::genDepth(const Img& im1,  
+                    const Img& im2,
+                    Depth& depth)
 {
     bool ok = true;
     //---- quasi slow and result not good
@@ -384,9 +392,9 @@ bool StereoVOcv::genDepth(const Img& im1,
 
 }
 //----------------
-bool StereoVOcv::run_quasi(const Img& im1,
-                           const Img& im2,
-                           Depth& depth)
+bool VOcv::run_quasi(const Img& im1,
+                     const Img& im2,
+                     Depth& depth)
 {
     bool ok = true;
 
@@ -410,9 +418,9 @@ bool StereoVOcv::run_quasi(const Img& im1,
 
 
 //----------------
-bool StereoVOcv::run_sgbm(const Img& im1,
-                          const Img& im2,
-                          Depth& depth)
+bool VOcv::run_sgbm(const Img& im1,
+                    const Img& im2,
+                    Depth& depth)
 {
     ocv::ImgCv imc1(im1);
     ocv::ImgCv imc2(im2);
@@ -501,9 +509,9 @@ bool StereoVOcv::run_sgbm(const Img& im1,
     return true;
 }
 //------
-bool StereoVOcv::genDense(const Img& imL)
+bool VOcv::genDense(const Img& imL)
 {
-    auto p_frmo = StereoVO::data_.p_frm;
+    auto p_frmo = VO::data_.p_frm;
     if(p_frmo==nullptr) return false;
     auto& frmo = *p_frmo;
     auto& depth = frmo.depth;
@@ -555,9 +563,9 @@ bool StereoVOcv::genDense(const Img& imL)
 
 
 //-----
-void StereoVOcv::show()
+void VOcv::show()
 {
-    auto p_frmo = StereoVO::data_.p_frm;
+    auto p_frmo = VO::data_.p_frm;
     if(p_frmo==nullptr)
         return;
     auto& frmo = *p_frmo;
@@ -575,7 +583,7 @@ void StereoVOcv::show()
     }
 
     //---- show points dense
-    auto& pvis = StereoVO::data_.pntVis;
+    auto& pvis = VO::data_.pntVis;
     if(pvis.p_vis_dense==nullptr)
         pvis.p_vis_dense = Points::Vis::create();
     auto& vden = *pvis.p_vis_dense;
