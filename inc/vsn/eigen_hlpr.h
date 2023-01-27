@@ -18,6 +18,7 @@ namespace egn{
     using vec3 = Eigen::Vector3d;
     using vec4 = Eigen::Vector4d;
     using vec5 = Eigen::Matrix<double,5,1>;
+    using vecxd = Eigen::VectorXd;
 
     using vec3s = vector<vec3>;
     using vec2s = vector<vec2>;

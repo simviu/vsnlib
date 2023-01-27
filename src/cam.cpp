@@ -24,7 +24,7 @@ bool CamCfg::load(CStr& sf)
         log_ef("CamCfg '"+ sf+"' not found"); 
         return false; }
     //----
-    Mat K1,vD1;
+    Mat K1,D1;
 
     try{
         FileStorage fs(sf, FileStorage::READ);
@@ -37,7 +37,7 @@ bool CamCfg::load(CStr& sf)
         
         //---- read yaml
         fs["camera_matrix"] >> K1;
-        fs["distortion_coefficients"] >> vD1;
+        fs["distortion_coefficients"] >> D1;
         fs["image_width"] >> sz.w;
         fs["image_height"] >> sz.h;
     }
@@ -48,22 +48,20 @@ bool CamCfg::load(CStr& sf)
     }
     //------
     cv2eigen(K1, K);
-    vec5 vD;
-    cv2eigen(vD1, vD);
-    D = Dist(vD);
+    cv2eigen(K1, D);
+   
     //----
     stringstream ss;
     ss << "read yaml : "+sf +" good" << endl;
     ss << "  WxH=" << sz.w << "x" << sz.h << endl;
     ss << "  K=" << K << endl;
     ss << "  D=" << D << endl;
-    log_i("Camera cfg loaded:"+sf);
     log_i(ss.str());
     Lense l;
     bool ok = toLense(l);
     log_i("Lense data: ");
     log_i(l.str());
-    log_i("Distortion:"+D.str());
+    log_i("Camera cfg loaded:"+sf);
     return ok; 
 }
 
@@ -170,7 +168,7 @@ void CamCfg::undis(const vec2s& vds, vec2s& vs)const
     }
     cv::Mat Kc,Dc; 
     eigen2cv(K, Kc);
-    eigen2cv(D.V(), Dc);
+    eigen2cv(D, Dc);
     cv::undistortPoints(cds, cs, Kc, Dc);
  //   s << "vs:" << endl;
     for(auto& c : cs) 
@@ -184,7 +182,7 @@ void CamCfg::undis(const vec2s& vds, vec2s& vs)const
     }
   //  log_d(s.str());
 }
-
+/*
 //----------
 // CamCfg::TDist
 //----------
@@ -198,6 +196,7 @@ string CamCfg::Dist::str()const
     s << "p2=" << p2 << ", ";
     return s.str();
 }
+*/
 
 //----------
 // CamCfg::TLense
