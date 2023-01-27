@@ -832,7 +832,15 @@ namespace vsn{
         //---- Re-construct 3d point cloud scene
         class Recon3d : public Cmd{
         public:
-
+            struct Cfg{
+                struct SCam{
+                    CamCfg camc;
+                    // Relative T from Left to this camera
+                    Pose T0; 
+                };
+                bool load(const string& sf);
+            }; Cfg cfg_;
+            //----
             struct Frm{
                 struct Imgs{
                     Sp<Img> pL = nullptr; // L
