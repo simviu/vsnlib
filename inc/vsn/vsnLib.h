@@ -309,6 +309,7 @@ namespace vsn{
         //vec3 proj(const vec2& p)const;
         
         //---- camera distortion para
+        /*
         struct Dist{
             Dist(){}
             Dist(const vec5& v): k1(v(0)),k2(v(1)),
@@ -318,12 +319,16 @@ namespace vsn{
             double p1=0;
             double p2=0;
             double k3=0;
+
+            double k4=0;
+            double k5=0;
+            double k6=0;
             vec5 V()const
             { vec5 v; v << k1,k2,p1,p2,k3; return v;}
             string str()const;
         };
 
-
+        */
         //---- Camera lens para
         struct Lense{
             double cx=0, cy=0, fx=0, fy=0;
@@ -341,14 +346,18 @@ namespace vsn{
         //--- camera intrinsic 3x3
         mat3 K;
         //--- camera distortion
-        Dist D; 
+        //  in order : k1,k2,p1,p2,k3,  
+        //             k4,k5,k6, 
+        //             s1,s2,s3,s4,tx,ty
+        // Length vary, most case 5
+        vecxd D; 
         //---- camera dimention
         Sz sz; 
 
     };
     //---- streamming
-    inline ostream& operator <<(ostream& s, const CamCfg::Dist& d)
-    { s << d.V(); return s;}
+    //inline ostream& operator <<(ostream& s, const CamCfg::Dist& d)
+    //{ s << d.V(); return s;}
     //------------
     // Camera
     //------------
@@ -832,7 +841,15 @@ namespace vsn{
         //---- Re-construct 3d point cloud scene
         class Recon3d : public Cmd{
         public:
-
+            struct Cfg{
+                struct SCam{
+                    CamCfg camc;
+                    // Relative T from Left to this camera
+                    Pose T0; 
+                };
+                bool load(const string& sf);
+            }; Cfg cfg_;
+            //----
             struct Frm{
                 struct Imgs{
                     Sp<Img> pL = nullptr; // L
