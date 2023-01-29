@@ -106,11 +106,11 @@ bool test_LR_omnidir(const Img& imL, const Img& imR)
     if (!camc.load(lc_.sf_camc))
         return false;
     cv::Mat K; cv::eigen2cv(camc.K, K);
-    auto& Dc = camc.D;
+    //auto& Dc = camc.D;
     double b = lc_.baseline;
     Mat R = (Mat_<double>(3, 3) << 1, 0, 0,  0, 1, 0, 0, 0, 1);    
     Mat T = (Mat_<double>(3, 1) << b,0,0);    
-    Mat D = (Mat_<double>(4, 1) << Dc.k1, Dc.k2, Dc.p1, Dc.p2);    
+    Mat D; cv::eigen2cv(camc.D, D);
     Mat imr1, imr2, pointCloud;
     double xi1=1, xi2=1;
     int pointType = omnidir::XYZRGB;

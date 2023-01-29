@@ -191,7 +191,7 @@ namespace{
             cv::Mat r,t;
             cv::Mat K,D ;
             cv::eigen2cv(camc.K, K);
-            cv::eigen2cv(camc.D.V(), D);
+            cv::eigen2cv(camc.D, D);
             int valid = cv::aruco::estimatePoseBoard(detd.corners, detd.ids, pBrd, K, D, r, t);
             if(valid==0) return false;
             cv::Mat R; Rodrigues(r, R);
@@ -499,8 +499,7 @@ bool Marker::pose_est(const CamCfg& cc, double wid)
 
     cv::Mat Kc,Dc;
     eigen2cv(cc.K, Kc);
-    vec5 Dv = cc.D.V();
-    eigen2cv(Dv, Dc);
+    eigen2cv(cc.D, Dc);
     //---- pose estimation for this marker
     vector<Vec3d> rs, ts;
     vector<Point2f> cs;

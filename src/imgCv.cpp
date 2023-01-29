@@ -33,7 +33,7 @@ void ImgCv::undistort(const CamCfg& cc)
 {
     cv::Mat Kc, Dc;
     eigen2cv(cc.K, Kc);
-    eigen2cv(cc.D.V(), Dc);    
+    eigen2cv(cc.D, Dc);    
     Mat imd;
     cv::undistort(im_, imd, Kc, Dc);
     im_ = imd;
