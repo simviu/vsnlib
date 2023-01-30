@@ -17,6 +17,18 @@ namespace app
     //-----------
 
     //-----------
+    // CmdMath
+    //-----------
+    class CmdMath:public Cmd{
+    public:
+        using Cmd::Cmd;
+        CmdMath();
+    protected:
+        bool conv_rot(CStrs& args);
+
+    };
+
+    //-----------
     // CmdCalib
     //-----------
     class CmdCalib:public Cmd{
