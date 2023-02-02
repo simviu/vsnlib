@@ -147,7 +147,7 @@ namespace{
 
                 ok &= s2v(jt["xyz"].asString(), T.t);  
                 Euler e; 
-                ok &= e.from(jt["euler"].asString());
+                ok &= e.set(jt["euler"].asString());
                 T.q = to_q(e);
             }
             //-----

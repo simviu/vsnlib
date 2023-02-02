@@ -73,7 +73,7 @@ namespace vsn{
         double ry = 0;
         double rz = 0;
 
-        bool from(const string& s);
+        bool set(const string& s); 
         string str()const 
         { return vsn::str(rx,1) + ","+
                  vsn::str(ry,1) + ","+

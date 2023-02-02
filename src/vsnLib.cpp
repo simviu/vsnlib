@@ -49,8 +49,8 @@ Euler::Euler(const quat& q)
 }
 */
 //-----
-
-bool Euler::from(const string& s)
+ 
+bool Euler::set(const string& s)
 {
     vector<double> ds;
     if(!s2data(s, ds)) return false;
