@@ -53,7 +53,6 @@ bool Cmd::run(const string& sLn_in)
         if(run(args))
             continue;
         
-        log_e("Failed cmd:'"+s+"'");
         return false;
     }
     return true;
@@ -215,9 +214,13 @@ bool Cmd::run_console()
 //-----
 bool Cmd::run(CStrs& args)
 {
-    //--- run
+    //--- run actual cmd
     if(f_!=nullptr)
-        return f_(args);
+    {
+        if(f_(args)) return true;
+        log_e("  Failed, args: '"+sHelp_ +"'");
+        return false;
+    }
 
     // check subcmds
     if(cmds_.size()==0) 
