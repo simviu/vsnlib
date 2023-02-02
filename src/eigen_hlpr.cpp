@@ -91,6 +91,25 @@ namespace egn
 
     }
     
+    extern bool s2q(const string& s, quat& q)
+    {
+        
+        string s1 = s;
+        std::replace(s1.begin(), s1.end(), ',', ' ');
+        stringstream ss(s1);
+        double w=0,x=0,y=0,z=0;
+        ss >> w;
+        ss >> x;
+        ss >> y;
+        ss >> z;
+        q = quat(w, x, y, z);
+        return !(ss.fail());
+        
+
+    }
+
+
+
     extern vec2 avg(const vec2s& vs)
     {
         vec2 v; v << 0,0;

@@ -305,30 +305,8 @@ namespace vsn{
         Ray proj(const vec2& q)const;
         vec3s proj(const vec2s& qs, double z)const;
         Line2d proj(const Line& l)const;
-        //--- on unit focal plane
-        //vec3 proj(const vec2& p)const;
         
-        //---- camera distortion para
-        /*
-        struct Dist{
-            Dist(){}
-            Dist(const vec5& v): k1(v(0)),k2(v(1)),
-            p1(v(2)),p2(v(3)),k3(v(4)){}
-            double k1=0;
-            double k2=0;
-            double p1=0;
-            double p2=0;
-            double k3=0;
-
-            double k4=0;
-            double k5=0;
-            double k6=0;
-            vec5 V()const
-            { vec5 v; v << k1,k2,p1,p2,k3; return v;}
-            string str()const;
-        };
-
-        */
+        
         //---- Camera lens para
         struct Lense{
             double cx=0, cy=0, fx=0, fy=0;
@@ -686,6 +664,20 @@ namespace vsn{
     //------------
     namespace stereo
     {
+        //---- Multi-Cam cfg
+        struct CamsCfg{
+            string sName;
+            struct OneCam{
+                string sName;
+                CamCfg camc;
+                // Relative T from Left to this camera
+                Pose T; 
+            };
+            vector<OneCam> cams;
+            bool load(const string& sf);
+            string str()const;
+        };
+
         //---- SGBM cfg
         struct SGBM{
             int  	minDisparity = 0;
@@ -842,12 +834,7 @@ namespace vsn{
         class Recon3d : public Cmd{
         public:
             struct Cfg{
-                struct SCam{
-                    CamCfg camc;
-                    // Relative T from Left to this camera
-                    Pose T0; 
-                };
-                bool load(const string& sf);
+                CamsCfg cams;
             }; Cfg cfg_;
             //----
             struct Frm{

@@ -204,3 +204,64 @@ void VO::showLoop()
     }
 }
 */
+
+//-----------
+string CamsCfg::str()const
+{
+    stringstream s;
+    s << sName <<":" << endl;
+    for(auto& c : cams)
+    {
+        s << "  " << sName << ":\n";
+        s << "  T=" << c.T.str() << "\n";
+    }
+
+    return s.str();
+}
+
+//-----------
+bool CamsCfg::load(const string& sf)
+{
+
+    log_i("Load Multi-Cam cfg :'"+sf+"'");
+    ifstream ifs(sf);
+    if(!ifs)
+    {
+        log_ef(sf);
+        return false;
+    }
+    bool ok = true;
+    //----
+    try{
+
+        Json::Reader rdr;
+        Json::Value jd;
+        rdr.parse(ifs, jd);
+        sName = jd["name"].asString();
+        auto& jcs = jd["cams"];
+        for(auto& jc : jcs)
+        {
+            OneCam c;
+            c.sName = jc["name"].asString();
+            ok &= s2v(jc["pos"].asString(), c.T.t); 
+            ok &= s2q(jc["quat"].asString(), c.T.q);
+            cams.push_back(c); 
+        }
+    }
+    catch(exception& e)
+    {
+        log_e("exception caught:"+string(e.what()));
+        return false;
+    }
+    
+    if(!ok)
+    {
+        log_e("CamsCfg::load() json error");
+        return false;
+    }    
+    //---- dbg
+    string s = this->str();
+    log_d(s);
+
+    return true;
+}
