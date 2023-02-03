@@ -835,6 +835,7 @@ namespace vsn{
         public:
             struct Cfg{
                 CamsCfg cams;
+                bool load(const string& sf);
             }; Cfg cfg_;
             //----
             struct Frm{

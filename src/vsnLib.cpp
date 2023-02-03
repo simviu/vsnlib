@@ -66,9 +66,9 @@ bool Euler::set(const string& s)
 //---- Pose
 string Pose::str()const{
     stringstream ss;
-    ss << "q:'" << q.w() << ", " << q.x() << ", "
-        << q.y() << ", " << q.z() << "', ";
-    ss << "t:'" << t <<"'";
+    ss << "'q':'" << q.w() << "," << q.x() << ","
+        << q.y() << "," << q.z() << "', ";
+    ss << "t:'" << ::str(t) <<"'";
     return ss.str();
 }
 //-----

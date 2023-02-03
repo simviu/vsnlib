@@ -7,6 +7,7 @@
  */
 
 #include "vsn/vsnLib.h"
+#include "json/json.h"
 
 using namespace vsn;
 using namespace stereo;
@@ -18,6 +19,44 @@ namespace{
     
 }
 //----
+bool Recon3d::Cfg::load(const string& sf)
+{
+
+    log_i("Load Multi-Cam cfg :'"+sf+"'");
+    ifstream ifs(sf);
+    sys::FPath fp(sf);
+
+    if(!ifs)
+    {
+        log_ef(sf);
+        return false;
+    }
+    bool ok = true;
+    //----
+    try{
+
+        Json::Reader rdr;
+        Json::Value jd;
+        rdr.parse(ifs, jd);
+       
+        string sfc = fp.path + jd["cams"].asString();
+        if(!cams.load(sfc)) return false;
+        
+    }
+    catch(exception& e)
+    {
+        log_e("exception caught:"+string(e.what()));
+        return false;
+    }
+    
+    if(!ok)
+    {
+        log_e("CamsCfg::load() json error");
+        return false;
+    }    
+    log_i("Recon3d cfg loaded '"+sf +"'");
+    return true;
+}
 //-----
 bool Recon3d::Frm::Imgs::load(string sPath, int i)
 {
@@ -44,6 +83,13 @@ bool Recon3d::Frm::load(string sPath, int i)
 void Recon3d::init_cmds()
 {
     sHelp_ = "(Recon 3d point cloud from frms)";
+
+
+    Cmd::add("init", mkSp<Cmd>("cfg=<CFG_FILE>",
+    [&](CStrs& args)->bool{ 
+        StrTbl kv; parseKV(args, kv);
+        return cfg_.load(lookup(kv, "cfg")); 
+    }));
 
     Cmd::add("frms", mkSp<Cmd>("dir=<DIR> (Run frms)",
     [&](CStrs& args)->bool{ 

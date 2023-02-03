@@ -48,7 +48,7 @@ bool CamCfg::load(CStr& sf)
     }
     //------
     cv2eigen(K1, K);
-    cv2eigen(K1, D);
+    cv2eigen(D1, D);
    
     //----
     stringstream ss;

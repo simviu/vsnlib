@@ -210,9 +210,11 @@ string CamsCfg::str()const
 {
     stringstream s;
     s << sName <<":" << endl;
+    int i=0;
     for(auto& c : cams)
     {
-        s << "  " << sName << ":\n";
+        s << "  cam "+to_string(i++)+
+                " '" << c.sName << "': ";
         s << "  T=" << c.T.str() << "\n";
     }
 
@@ -225,6 +227,8 @@ bool CamsCfg::load(const string& sf)
 
     log_i("Load Multi-Cam cfg :'"+sf+"'");
     ifstream ifs(sf);
+    sys::FPath fp(sf);
+
     if(!ifs)
     {
         log_ef(sf);
@@ -241,11 +245,14 @@ bool CamsCfg::load(const string& sf)
         auto& jcs = jd["cams"];
         for(auto& jc : jcs)
         {
-            OneCam c;
-            c.sName = jc["name"].asString();
-            ok &= s2v(jc["pos"].asString(), c.T.t); 
-            ok &= s2q(jc["quat"].asString(), c.T.q);
-            cams.push_back(c); 
+            OneCam oc;
+            oc.sName = jc["name"].asString();
+            ok &= s2v(jc["pos"].asString(), oc.T.t); 
+            ok &= s2q(jc["quat"].asString(), oc.T.q);
+            string sfc = fp.path + jc["cfg"].asString();
+            if(!oc.camc.load(sfc))
+            {   log_ef(sfc); return false; }
+            cams.push_back(oc); 
         }
     }
     catch(exception& e)
