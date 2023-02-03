@@ -330,7 +330,7 @@ namespace vsn{
         // Length vary, most case 5
         vecxd D; 
         //---- remap matrix for undistortion
-        mat3 map1,map2;
+        matxd map1,map2;
         //---- camera dimention
         Sz sz; 
 
@@ -680,6 +680,7 @@ namespace vsn{
             struct Rectify{
                 matxd Q; // for reproj 3d
             }; Rectify rectify;
+            
             //--
             bool load(const string& sf);
         protected:
@@ -844,26 +845,28 @@ namespace vsn{
         public:
             struct Cfg{
                 CamsCfg cams;
+
+                struct FrmsCfg{
+                    vector<string> sDirs{"L","R","C","D","N"};                
+                    int color_img = 2;
+                    int depth_img = 3; // TODO: json
+                }; FrmsCfg frms;
+
                 bool load(const string& sf);
             }; Cfg cfg_;
             //----
             struct Frm{
-                struct Imgs{
-                    Sp<Img> pL = nullptr; // L
-                    Sp<Img> pR = nullptr; // R
-                    Sp<Img> pC = nullptr; // Color
-                    Sp<Img> pD = nullptr; // Depth
-                    Sp<Img> pN = nullptr; // Depth Confidence
-                    bool load(string sPath, int i);
-                }; Imgs imgs;
-                bool load(string sPath, int i);
+                vector<Sp<Img>> imgs;
                 Pose T;
+            protected:
             };
 
             Recon3d(){ init_cmds(); }
             bool onImg(const Frm& frm);
             bool run_frms(const string& sPath);
         protected:
+            bool loadFrm(Frm& frm, const string& sPath, int i);
+            bool loadFrm_imgs(Frm& frm, const string& sPath, int i);
             void init_cmds();
         };
 

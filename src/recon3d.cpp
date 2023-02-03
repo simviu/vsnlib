@@ -8,13 +8,14 @@
 
 #include "vsn/vsnLib.h"
 #include "json/json.h"
+#include "vsn/vsnLibCv.h"
 
 using namespace vsn;
 using namespace stereo;
 
 namespace{
     struct LCfg{
-        float fps = 30;        
+        float fps = 30; 
     }; LCfg lc_;
     
 }
@@ -22,7 +23,7 @@ namespace{
 bool Recon3d::Cfg::load(const string& sf)
 {
 
-    log_i("Load Multi-Cam cfg :'"+sf+"'");
+    log_i("Load Recon3d cfg :'"+sf+"'");
     ifstream ifs(sf);
     sys::FPath fp(sf);
 
@@ -39,8 +40,9 @@ bool Recon3d::Cfg::load(const string& sf)
         Json::Value jd;
         rdr.parse(ifs, jd);
        
-        string sfc = fp.path + jd["cams"].asString();
-        if(!cams.load(sfc)) return false;
+        string sfc = fp.path + jd["cams_cfg"].asString();
+        if(!cams.load(sfc)) 
+            return false;
         
     }
     catch(exception& e)
@@ -58,25 +60,33 @@ bool Recon3d::Cfg::load(const string& sf)
     return true;
 }
 //-----
-bool Recon3d::Frm::Imgs::load(string sPath, int i)
+bool Recon3d::loadFrm_imgs(Frm& frm, const string& sPath, int i)
 {
     string si = to_string(i);
-    pL = Img::loadFile(sPath + "/L/"+si+".png");
-    pR = Img::loadFile(sPath + "/R/"+si+".png");
-    pC = Img::loadFile(sPath + "/C/"+si+".png");
-    pD = Img::loadFile(sPath + "/D/"+si+".png");
-    pN = Img::loadFile(sPath + "/N/"+si+".png");
-    bool ok = (pL!=nullptr) && (pR!=nullptr) && (pC!=nullptr) &&
-              (pD!=nullptr) && (pN!=nullptr);
-    if(!ok)
+    auto& sDirs = cfg_.frms.sDirs;
+    int N = sDirs.size();
+    int k=0;
+    for(k=0;k<N;k++)
+    {
+        string sdir = sDirs[k];
+        auto p = Img::loadFile(sPath + "/"+sdir+"/"+si+".png");
+        if(p==nullptr) break;
+        frm.imgs.push_back(p);
+    }
+    if(k<N)
+    {
         log_e("not all img loaded OK in path:'"+sPath+"'");
-    return ok;
+        return false;
+    }
+    return true;
+
 }
 //----
-bool Recon3d::Frm::load(string sPath, int i)
+
+bool Recon3d::loadFrm(Frm& frm, const string& sPath, int i)
 {
     bool ok = true;
-    ok &= imgs.load(sPath, i);
+    ok &= loadFrm_imgs(frm, sPath, i);
     return ok;
 }
 //----
@@ -102,8 +112,32 @@ void Recon3d::init_cmds()
 bool Recon3d::onImg(const Frm& f)
 {
     // show color
-    f.imgs.pC->show("Color");
+    if(0)
+    {
+        int i = cfg_.frms.color_img;
+        assert(i<f.imgs.size());
+        auto p = f.imgs[i];
+        if(p!=nullptr)
+            p->show("Color");
+    }
+    //---- show undistorted img L
+    {
+        auto p = f.imgs[0];
+        assert(p!=nullptr);
+        p->show("Left");
+        auto& cc = cfg_.cams.cams[0].camc;
+        ImgCv im(*p);
+        cv::Mat imuc;
+        cv::Mat map1, map2;
+        cv::eigen2cv(cc.map1, map1);
+        cv::eigen2cv(cc.map2, map2);
+        cv::remap(im.im_, imuc, map1, map2, cv::INTER_LINEAR);
+        //----
+        ImgCv imu(imuc);
+        imu.show("Left undist");
+    }
     return true;
+
 }
 //----
 bool Recon3d::run_frms(const string& sPath)
@@ -115,7 +149,7 @@ bool Recon3d::run_frms(const string& sPath)
         i++;
         log_i("frm:"+str(i));
         Frm f;
-        if(!f.load(sPath, i))
+        if(!loadFrm(f, sPath, i))
             break;
         
         //---- call
