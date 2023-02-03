@@ -8,7 +8,7 @@
 
 #include "vsn/vsnLib.h"
 #include "json/json.h"
-
+#include "vsn/ocv_hlpr.h"
 using namespace vsn;
 using namespace stereo;
 //----
@@ -16,6 +16,7 @@ namespace{
     const struct{
         string sf_pnts_spar = "pnts_sparse.xyz";
         string sf_Tw = "Tw.txt";
+
     }lcfg_;
     //---- utils
     string gen_Tw3x4_line(const mat3& Rw, 
@@ -270,5 +271,61 @@ bool CamsCfg::load(const string& sf)
     string s = this->str();
     log_d(s);
 
+    return init_rectify();
+}
+
+//----
+bool CamsCfg::init_rectify()
+{
+    if(cams.size()<2)
+    {
+        log_e("need at least 2 cameras");
+        return false;
+    }
+    //----
+    struct Cd{ cv::Mat K,D,Ro,P,map1, map2; };
+    Cd cd[2];
+    for(int i=0;i<2;i++)
+    {
+        auto& cc = cams[i].camc;
+        cv::eigen2cv(cc.K, cd[i].K);
+        cv::eigen2cv(cc.D, cd[i].D);
+    }
+    
+    //----
+    auto& cc0 = cams[0].camc;
+    auto& cc1 = cams[1].camc;
+    auto sz = cc0.sz;
+    assert(sz.w == cc1.sz.w);
+    assert(sz.h == cc1.sz.h);
+    cv::Size imsz(sz.w, sz.h);
+
+    //----
+    cv::Mat R,t,Q;
+    cv::eigen2cv(mat3(cams[1].T.q), R);
+    cv::eigen2cv(cams[1].T.t, t);
+    //---
+    cv::stereoRectify(cd[0].K, cd[0].D, 
+                      cd[1].K, cd[1].D,
+                      imsz, R, t, 
+                      cd[0].Ro, cd[1].Ro, 
+                      cd[0].P,  cd[1].P, Q);
+    //--- fill remap map1/map2 for undistortion
+    auto I3 = cv::Mat::eye(3,3,  CV_32F);
+    for(int i=0;i<2;i++)
+    {
+        cv::Mat map1,map2;
+        auto& d = cd[i];
+        cv::initUndistortRectifyMap(
+                d.K, d.D, d.Ro, d.P, imsz, CV_32F,
+                map1, map2);
+
+        auto& cc = cams[i].camc;
+        cv::cv2eigen(map1, cc.map1);
+        cv::cv2eigen(map2, cc.map2);
+    }
+    //--- fill Q mat for reproj 3d
+    cv::cv2eigen(Q, rectify.Q);
+    //----
     return true;
 }

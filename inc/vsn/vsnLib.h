@@ -329,6 +329,8 @@ namespace vsn{
         //             s1,s2,s3,s4,tx,ty
         // Length vary, most case 5
         vecxd D; 
+        //---- remap matrix for undistortion
+        mat3 map1,map2;
         //---- camera dimention
         Sz sz; 
 
@@ -674,7 +676,14 @@ namespace vsn{
                 Pose T; 
             };
             vector<OneCam> cams;
+            //-- stereo rectify
+            struct Rectify{
+                matxd Q; // for reproj 3d
+            }; Rectify rectify;
+            //--
             bool load(const string& sf);
+        protected:
+            bool init_rectify();
             string str()const;
         };
 
