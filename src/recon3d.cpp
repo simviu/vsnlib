@@ -116,6 +116,15 @@ void Recon3d::init_cmds()
         string sdir = lookup(kv, "dir"); 
         return run_frms(sdir); 
     }));
+
+    Cmd::add("frm", mkSp<Cmd>("dir=<DIR> i=<IDX> (Run one frm)",
+    [&](CStrs& args)->bool{ 
+        StrTbl kv; parseKV(args, kv);
+        string sdir = lookup(kv, "dir"); 
+        int i=-1; s2d(lookup(kv, "i"), i); 
+        if(i<0) return false;
+        return run_frm(sdir, i); 
+    }));
 }
 //----
 bool Recon3d::onImg(Frm& f)
@@ -203,6 +212,29 @@ bool Recon3d::Frm::genPnts(const Cfg& cfg)
 
     return true;
 }
+//----
+bool Recon3d::run_frm(const string& sPath, int i)
+{
+
+    log_i("frm:"+str(i));
+    Frm f;
+    if(!f.load(cfg_, sPath, i))
+        return false;
+    
+    //---- call
+    onImg(f);
+
+    //--- show
+    show(f);
+
+    while(1)
+    {
+        assert(data_.p_pvis_frm!=nullptr);
+        data_.p_pvis_frm->spin();
+        sys::sleep(1.0/lc_.fps);    
+    }
+}
+
 //----
 bool Recon3d::run_frms(const string& sPath)
 {

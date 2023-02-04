@@ -876,6 +876,7 @@ namespace vsn{
             Recon3d(){ init_cmds(); }
             bool onImg(Frm& frm);
             bool run_frms(const string& sPath);
+            bool run_frm(const string& sPath, int i);
         protected:
             void init_cmds();
 
