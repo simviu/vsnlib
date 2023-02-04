@@ -7,7 +7,7 @@
  */
 
 #include "vsn/vsnLib.h"
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 
 using namespace vsn;
 using namespace cv;
@@ -240,4 +240,16 @@ bool CamCfg::toLense(Lense& l)const
     s << "  (Note): only for none distort camCfg" << endl;
     log_d(s.str());
     return true;
+}
+
+//-------------
+// UnDistortion
+//-------------
+Sp<Img> UnDistImpl::remap(const Img& img)
+{
+    auto p = mkSp<ImgCv>();
+    ImgCv imi(img);
+    cv::remap(imi.im_, p->im_, map1, map2, 
+                    cv::INTER_LANCZOS4);
+    return p;
 }

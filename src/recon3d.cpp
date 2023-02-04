@@ -129,18 +129,11 @@ bool Recon3d::onImg(const Frm& f)
         assert(p!=nullptr);
         p->show("Left");
         auto& cc = cfg_.cams.cams[0].camc;
-        ImgCv im(*p);
-        cv::Mat imuc;
-        cv::Mat map1, map2;
-        cv::eigen2cv(cc.map1, map1);
-        cv::eigen2cv(cc.map2, map2);
-        map1.convertTo(map1, CV_32FC1);
-        map2.convertTo(map2, CV_32FC1);
-        int tp = map1.type();
-        cv::remap(im.im_, imuc, map1, map2, cv::INTER_LANCZOS4);
+        auto pu = cc.p_undist_;
+        assert(pu!=nullptr);
+        auto p1 = pu->remap(*p);
         //----
-        ImgCv imu(imuc);
-        imu.show("Left undist");
+        p1->show("Left undist");
     }
     return true;
 

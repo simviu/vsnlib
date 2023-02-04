@@ -8,7 +8,7 @@
 
 #include "vsn/vsnLib.h"
 #include "json/json.h"
-#include "vsn/ocv_hlpr.h"
+#include "vsn/vsnLibCv.h"
 using namespace vsn;
 using namespace stereo;
 //----
@@ -18,6 +18,7 @@ namespace{
         string sf_Tw = "Tw.txt";
 
     }lcfg_;
+
     //---- utils
     string gen_Tw3x4_line(const mat3& Rw, 
                           const vec3& tw, 
@@ -315,13 +316,14 @@ bool CamsCfg::init_rectify()
     {
         cv::Mat map1,map2;
         auto& d = cd[i];
+        auto pu = mkSp<UnDistImpl>();
         cv::initUndistortRectifyMap(
                 d.K, d.D, d.Ro, d.P, imsz, CV_32FC1,
-                map1, map2);
+                pu->map1, pu->map2);
 
         auto& cc = cams[i].camc;
-        cv::cv2eigen(map1, cc.map1);
-        cv::cv2eigen(map2, cc.map2);
+        cc.p_undist_ = pu;
+        
     }
     //--- fill Q mat for reproj 3d
     cv::cv2eigen(Q, rectify.Q);

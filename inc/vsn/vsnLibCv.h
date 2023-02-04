@@ -7,6 +7,15 @@ namespace vsn
 
 
     //------------
+    // cfg
+    //------------
+    class UnDistImpl : public CamCfg::UnDist{
+    public:
+        virtual Sp<Img> remap(const Img& img)override;
+        cv::Mat map1, map2;
+    };
+    
+    //------------
     // ImgCv
     //------------
     // Implementation of Img
@@ -17,6 +26,7 @@ namespace vsn
         {  
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
         }
+
         virtual int type()override
         { return im_.type(); }
 

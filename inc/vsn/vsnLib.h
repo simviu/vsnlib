@@ -297,6 +297,7 @@ namespace vsn{
     //---------
     // cam
     //---------
+    class Img;
     struct CamCfg{
         using Ptr = shared_ptr<CamCfg>;
         bool load(CStr& sf);
@@ -329,11 +330,15 @@ namespace vsn{
         //             s1,s2,s3,s4,tx,ty
         // Length vary, most case 5
         vecxd D; 
-        //---- remap matrix for undistortion
-        matxd map1,map2;
+
         //---- camera dimention
         Sz sz; 
-
+        //---- undistortion map
+        class UnDist{
+        public:
+            virtual Sp<Img> remap(const Img& img)=0;
+        };
+        Sp<UnDist> p_undist_ = nullptr;
     };
     //---- streamming
     //inline ostream& operator <<(ostream& s, const CamCfg::Dist& d)
