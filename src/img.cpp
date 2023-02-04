@@ -47,7 +47,7 @@ Sp<Img> Img::create()
 Sp<Img> Img::loadFile(const string& sf, int cvFlags)
 {
     auto p = Img::create();
-    if(p->load(sf))
+    if(p->load(sf, cvFlags))
       return p;
     return nullptr;
 

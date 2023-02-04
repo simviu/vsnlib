@@ -326,6 +326,7 @@ bool CamsCfg::init_rectify()
         
     }
     //--- fill Q mat for reproj 3d
+    int tpQ = Q.type();
     cv::cv2eigen(Q, rectify.Q);
     //----
     return true;

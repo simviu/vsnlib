@@ -60,18 +60,25 @@ bool Recon3d::Cfg::load(const string& sf)
     return true;
 }
 //-----
-bool Recon3d::loadFrm_imgs(Frm& frm, const string& sPath, int i)
+
+bool Recon3d::Frm::load_imgs(const Cfg& cfg, const string& sPath, int i)
 {
     string si = to_string(i);
-    auto& sDirs = cfg_.frms.sDirs;
+    auto& sDirs = cfg.frms.sDirs;
     int N = sDirs.size();
     int k=0;
     for(k=0;k<N;k++)
     {
         string sdir = sDirs[k];
-        auto p = Img::loadFile(sPath + "/"+sdir+"/"+si+".png");        
+        /*
+        int flag = (k==cfg.frms.color_img) ?  cv::IMREAD_COLOR :
+                   (k==cfg.frms.depth_img) ?  cv::IMREAD_ANYDEPTH :
+                   cv::IMREAD_GRAYSCALE;
+                   */
+        int flag = -1 ; // unchange
+        auto p = Img::loadFile(sPath + "/"+sdir+"/"+si+".png", flag);        
         if(p==nullptr) break;
-        frm.imgs.push_back(p);
+        imgs.push_back(p);
         //--- dbg
         //int tp = p->type();
         //log_d("  type:"+to_string(tp));
@@ -85,11 +92,10 @@ bool Recon3d::loadFrm_imgs(Frm& frm, const string& sPath, int i)
 
 }
 //----
-
-bool Recon3d::loadFrm(Frm& frm, const string& sPath, int i)
+bool Recon3d::Frm::load(const Cfg& cfg, const string& sPath, int i)
 {
     bool ok = true;
-    ok &= loadFrm_imgs(frm, sPath, i);
+    ok &= load_imgs(cfg, sPath, i);
     return ok;
 }
 //----
@@ -112,7 +118,7 @@ void Recon3d::init_cmds()
     }));
 }
 //----
-bool Recon3d::onImg(const Frm& f)
+bool Recon3d::onImg(Frm& f)
 {
     // show color
     if(0)
@@ -135,8 +141,67 @@ bool Recon3d::onImg(const Frm& f)
         //----
         p1->show("Left undist");
     }
+    //---- recon
+    bool ok = true;
+    ok &= f.recon(cfg_);
+
+
     return true;
 
+}
+//----
+bool Recon3d::Frm::genPnts(const Cfg& cfg)
+{
+    int i_d = cfg.frms.depth_img;
+    assert(i_d<imgs.size());
+    auto pd = imgs[i_d];
+    assert(pd!=nullptr);
+    
+
+    // assume depth aligned with RGB
+    int i_c = cfg.frms.color_img;
+    assert(i_c<imgs.size());
+    auto pc = imgs[i_c];
+
+    auto& cc_c = cfg.cams.cams[i_c].camc;
+    Sz sz = cc_c.sz;
+    pd->scale(sz);
+    ImgCv imcc(*pc);
+    ImgCv imcd(*pd);
+    cv::Mat imc = imcc.im_;
+    cv::Mat imd = imcd.im_;
+    int tpd = imd.type();
+    cv::Mat K; cv::eigen2cv(cc_c.K, K);
+    for(int i=0;i<imc.rows;i++)
+        for(int j=0;j<imc.cols;j++)
+        {
+            auto& d = imd.ptr<uint16_t>(i)[j];
+            double z = d*0.001; // was mm
+            auto c = imc.ptr<const BGR>(i)[j];
+            Points::Pnt p;
+            p.c = {c.r,c.g,c.b,255};
+            vec2 px; px << j,i;
+            p.p = cc_c.proj(px, z);
+            pnts.add(p);
+        }
+
+
+    //--- if depth image is disparity
+    /*
+    cv::Mat Q; // Q from stereoRectify
+    cv::eigen2cv(cfg.cams.rectify.Q, Q);
+    Q.convertTo(Q, CV_64FC1);
+    int tpQ = Q.type();
+    cv::Mat im3d;
+    cv::Mat imd; imcd.im_.convertTo(imd, CV_8UC1);
+
+    int tpd = imd.type();
+    cv::reprojectImageTo3D(imd, im3d, Q);
+    int tp3 = im3d.type();
+    */
+    //----
+
+    return true;
 }
 //----
 bool Recon3d::run_frms(const string& sPath)
@@ -148,13 +213,34 @@ bool Recon3d::run_frms(const string& sPath)
         i++;
         log_i("frm:"+str(i));
         Frm f;
-        if(!loadFrm(f, sPath, i))
+        if(!f.load(cfg_, sPath, i))
             break;
         
         //---- call
         onImg(f);
 
+        //--- show
+        show(f);
         sys::sleep(1.0/lc_.fps);
     }
     return true;
+}
+//-----
+bool Recon3d::Frm::recon(const Cfg& cfg)
+{
+    bool ok = true;
+    ok &= genPnts(cfg);
+    return true;
+
+}
+//----
+void Recon3d::show(const Frm& f)
+{
+    assert(data_.p_pvis_frm!=nullptr);
+    auto& vis = *data_.p_pvis_frm;
+    //--- local points
+    vis.clear();
+    vis.add(f.pnts, "frm");
+    vis.spin();
+
 }

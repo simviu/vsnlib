@@ -864,16 +864,28 @@ namespace vsn{
             struct Frm{
                 vector<Sp<Img>> imgs;
                 Pose T;
+                Points pnts;
+
+                bool recon(const Cfg& cfg);
+                bool load(const Cfg& cfg, const string& sPath, int i);
+                bool load_imgs(const Cfg& cfg, const string& sPath, int i);
+                bool genPnts(const Cfg& cfg);
             protected:
             };
 
             Recon3d(){ init_cmds(); }
-            bool onImg(const Frm& frm);
+            bool onImg(Frm& frm);
             bool run_frms(const string& sPath);
         protected:
-            bool loadFrm(Frm& frm, const string& sPath, int i);
-            bool loadFrm_imgs(Frm& frm, const string& sPath, int i);
             void init_cmds();
+
+            //----
+            struct Data{
+                // local point cloud
+                Sp<Points::Vis> p_pvis_frm = 
+                    Points::Vis::create();
+            }; Data data_;
+            void show(const Frm& f);
         };
 
 
