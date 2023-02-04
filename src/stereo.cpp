@@ -311,13 +311,12 @@ bool CamsCfg::init_rectify()
                       cd[0].Ro, cd[1].Ro, 
                       cd[0].P,  cd[1].P, Q);
     //--- fill remap map1/map2 for undistortion
-    auto I3 = cv::Mat::eye(3,3,  CV_32F);
     for(int i=0;i<2;i++)
     {
         cv::Mat map1,map2;
         auto& d = cd[i];
         cv::initUndistortRectifyMap(
-                d.K, d.D, d.Ro, d.P, imsz, CV_32F,
+                d.K, d.D, d.Ro, d.P, imsz, CV_32FC1,
                 map1, map2);
 
         auto& cc = cams[i].camc;

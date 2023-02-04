@@ -69,9 +69,12 @@ bool Recon3d::loadFrm_imgs(Frm& frm, const string& sPath, int i)
     for(k=0;k<N;k++)
     {
         string sdir = sDirs[k];
-        auto p = Img::loadFile(sPath + "/"+sdir+"/"+si+".png");
+        auto p = Img::loadFile(sPath + "/"+sdir+"/"+si+".png");        
         if(p==nullptr) break;
         frm.imgs.push_back(p);
+        //--- dbg
+        //int tp = p->type();
+        //log_d("  type:"+to_string(tp));
     }
     if(k<N)
     {
@@ -131,7 +134,10 @@ bool Recon3d::onImg(const Frm& f)
         cv::Mat map1, map2;
         cv::eigen2cv(cc.map1, map1);
         cv::eigen2cv(cc.map2, map2);
-        cv::remap(im.im_, imuc, map1, map2, cv::INTER_LINEAR);
+        map1.convertTo(map1, CV_32FC1);
+        map2.convertTo(map2, CV_32FC1);
+        int tp = map1.type();
+        cv::remap(im.im_, imuc, map1, map2, cv::INTER_LANCZOS4);
         //----
         ImgCv imu(imuc);
         imu.show("Left undist");

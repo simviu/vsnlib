@@ -17,6 +17,8 @@ namespace vsn
         {  
             im_ = *reinterpret_cast<const cv::Mat*>(im.data());
         }
+        virtual int type()override
+        { return im_.type(); }
 
         virtual Sz size()const override
         {  return {im_.cols,im_.rows}; }
