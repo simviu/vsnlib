@@ -132,8 +132,12 @@ bool Cmd::runFile(CStr& sf)
             break;
         }
     }
-    log_i("Cmd::runFile() done");
-    return true;
+    //----
+    if(ok)
+        log_i("Cmd::runFile() done OK");
+    else
+        log_e("Cmd::runFile() stopped with Error");
+    return ok;
 
 }
 
