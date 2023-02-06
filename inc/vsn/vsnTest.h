@@ -41,15 +41,7 @@ namespace test{
     public:
         virtual bool run() override;
     }; //------
-    class TestStereo : public Test
-    {
-    public:
-        virtual bool run() override;
-    protected:
-        bool testKittyGray()const;
-        bool test_imgLR()const;
-
-    };
+    
     //------
     class TestBlob : public Test
     {

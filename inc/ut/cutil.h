@@ -355,6 +355,8 @@ namespace ut
         Test(map<string, Sp<Test>>& ts):tests_(ts){}
         virtual bool run();
         virtual bool run(const string& s);
+        int run(int argc, char ** argv);
+
         void add(const string& s, Sp<Test> p)
         { tests_[s] = p; }
         string getTestsStr()const;

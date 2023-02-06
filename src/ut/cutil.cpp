@@ -207,53 +207,6 @@ bool fexist(CStr& sf)
     return ok;
 }
 
-//--------------------
-// Test
-//--------------------
-bool Test::run()
-{ 
-    if(tests_.size()==0)
-    {
-        log_e("tests empty");
-        return false; 
-    }
-    //----
-    bool ok = true;
-    
-    for(auto it : tests_)
-    {
-        string s = it.first;
-        ok &= run(s);
-    }
 
-    if(!ok)
-         log_e("  tests has failure");
-    else log_i(" tests passed");
-    return ok;
-}
-//----
-bool Test::run(const string& s)
-{
-    auto it = tests_.find(s);
-    if(it==tests_.end())
-    {
-        log_e("  test not found:"+s);
-        return false;
-    }
-    auto& t = *tests_[s];
-    log_i("  ---- run test:'"+s+"'...");
-    bool ok = t.run();
-    if(ok) log_i("  ---- test '"+s+"' pass");
-    else   log_e("  ---- test '"+s+"' fail");
-    return ok;
-}
-//----
-string Test::getTestsStr()const
-{
-    string s;
-    for(auto it : tests_)
-        s += it.first; s += " ";
-    return s;
-}
 
 }// namespace ut
