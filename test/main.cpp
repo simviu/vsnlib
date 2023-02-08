@@ -16,6 +16,7 @@ namespace{
     //---- test list
     map<string, Sp<Test>> tests_
     {
+        {"math"     , mkSp<TestMath>()}, 
         {"marker"   , mkSp<TestMarker>()}, 
         {"feature"  , mkSp<TestFeature>()}, 
         {"inst"     , mkSp<TestInst>()}, 

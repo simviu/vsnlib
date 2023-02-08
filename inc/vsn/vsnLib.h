@@ -18,6 +18,7 @@ namespace vsn{
     using namespace std;
     using namespace ut;
     using namespace egn;
+
     //--------
     // types
     //--------
@@ -74,6 +75,13 @@ namespace vsn{
         double rz = 0;
 
         bool set(const string& s); 
+        void operator += (const Euler& e)
+        {  
+            rx = dgrIn180(rx + e.rx);
+            ry = dgrIn180(ry + e.ry);
+            rz = dgrIn180(rz + e.rz);
+        } 
+
         string str()const 
         { return vsn::str(rx,1) + ","+
                  vsn::str(ry,1) + ","+

@@ -94,6 +94,10 @@ namespace ut
     //-----------
     inline double toRad(double d){ return d*M_PI/180.0;  };
     inline double toDgr(double d){ return d*180.0/M_PI;  };
+    template<typename T>
+    T dgrIn180(const T& d)
+    {   return d - ((int)(d/360.0+(d>0?0.5:-0.5)))*360.0; }
+
     //-----------
     // log
     //-----------

@@ -13,6 +13,13 @@ using namespace vsn;
 
 namespace test{
     //------
+    class TestMath : public Test
+    {
+    public:
+        virtual bool run() override;
+    protected:
+        bool t_dgrIn180();
+    };
     class TestSocketSrvr : public Test
     {
     public:
