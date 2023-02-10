@@ -50,6 +50,9 @@ namespace vsn{
     };
     //----- Pose
     struct Pose{ 
+        Pose(){}
+        Pose(const vec3& ti, const quat& qi)
+        { t = ti; q = qi; }
         quat q{1,0,0,0}; 
         vec3 t = zerov3(); 
         string str()const;
