@@ -106,20 +106,36 @@ bool Node::readLn(string& sln)
     sln = string(buffer, n);
     return true;
 }
+//------
+bool Node::send(const string& s)
+{ 
+    uint8_t* p = (uint8_t*)(s.c_str());
+    const Buf buf(p, s.length());
+    return send(buf); 
+}
+//----
+bool Node::read(Buf& buf)
+{
+    char* p = (char*)buf.p;
+    int fd = cntx_.cur_socket;
+    size_t n = ::read(fd, p, buf.n);
+    return n = buf.n;
+
+}
 
 //------
-bool Node::send(const char* buf, int len)
+bool Node::send(const Buf& buf)
 {
     std::unique_lock<std::mutex> lk(wr_mtx_);
     if(!cntx_.bConnected) 
         return false;
     
-    size_t n = ::send(cntx_.cur_socket, buf, len, 0);
+    size_t n = ::send(cntx_.cur_socket, buf.p, buf.n, 0);
     if(n<0){
         onDisconnect();
         return false;
     }
-    if(n!=len)
+    if(n!=buf.n)
     {
         log_e("Send length differ");
         onDisconnect();

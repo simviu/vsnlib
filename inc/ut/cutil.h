@@ -384,12 +384,12 @@ namespace ut
                 bool isRunning = false;
             }; Cntx cntx_;
 
-            bool send(const char* buf, int len);
-            bool send(const string& s)
-            { return send(s.c_str(), s.length()); }
+            bool send(const Buf& buf);
+            bool send(const string& s);
             bool isRunning()const
             { return cntx_.isRunning; }
             bool readLn(string& sln);
+            bool read(Buf& buf);
         protected:
             std::mutex rd_mtx_;
             std::mutex wr_mtx_;
