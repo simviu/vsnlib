@@ -19,13 +19,14 @@ namespace{
     using MarkerPE=Marker::PoseEstimator;
     using Board=MarkerPE::Board;
     //----
-    using DictPtr = cv::Ptr<cv::aruco::Dictionary>;
+    using DictPtr = Sp<cv::aruco::Dictionary>;
     struct DictionTbl{
         DictPtr findCreate(int id)
         {
            if(tbl.find(id)!=tbl.end())
               return tbl[id];
-           auto p = cv::aruco::getPredefinedDictionary(id);
+           auto p = mkSp<cv::aruco::Dictionary>();
+           *p = cv::aruco::getPredefinedDictionary(id);
            tbl[id] = p;
            return p;
         }
@@ -91,7 +92,7 @@ namespace{
     using BoardCfg = Marker::PoseEstimator::Board::Cfg;
     struct BrdCfgImp : public BoardCfg
     {
-        Ptr<aruco::Board> pBrd = nullptr;
+        Sp<aruco::Board> pBrd = nullptr;
         //---- load json board cfg
         bool load(const Json::Value& j)
         {
@@ -181,7 +182,8 @@ namespace{
             }
             box.upd(zerov3());// original always included
             auto pDict = dictTbl_.findCreate(dict_id);
-            pBrd = aruco::Board::create(allPnts, pDict, ids);
+            pBrd = mkSp<aruco::Board>(allPnts, *pDict, ids);
+            //pBrd = aruco::Board::create();
         }
         //------
         bool det(const CvDetd& detd, const CamCfg& camc,
