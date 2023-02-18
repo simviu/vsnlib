@@ -345,11 +345,11 @@ namespace vsn{
         //---- camera dimention
         Sz sz; 
         //---- undistortion map
-        class UnDist{
+        class UnDistMap{
         public:
             virtual Sp<Img> remap(const Img& img)=0;
         };
-        Sp<UnDist> p_undist_ = nullptr;
+        Sp<UnDistMap> p_udmap = nullptr;
     };
     //---- streamming
     //inline ostream& operator <<(ostream& s, const CamCfg::Dist& d)

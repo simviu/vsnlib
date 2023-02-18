@@ -245,7 +245,7 @@ bool CamCfg::toLense(Lense& l)const
 //-------------
 // UnDistortion
 //-------------
-Sp<Img> UnDistImpl::remap(const Img& img)
+Sp<Img> UnDistMapImpl::remap(const Img& img)
 {
     auto p = mkSp<ImgCv>();
     ImgCv imi(img);
