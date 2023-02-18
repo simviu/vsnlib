@@ -98,7 +98,7 @@ namespace vsn
     protected:
     };
     //---- cast utils
-    cv::Mat img2cv(const Img& im)
+    inline cv::Mat img2cv(const Img& im)
     { ImgCv imc(im); return imc.im_; }
     //------------
     // VideoCv
