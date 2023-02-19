@@ -18,7 +18,7 @@ namespace vsn
     //------------
     // cfg
     //------------
-    class UnDistImpl : public CamCfg::UnDist{
+    class UnDistMapImpl : public CamCfg::UnDistMap{
     public:
         virtual Sp<Img> remap(const Img& img)override;
         cv::Mat map1, map2;
@@ -98,6 +98,8 @@ namespace vsn
     protected:
     };
     //---- cast utils
+    inline cv::Mat img2cv(const Img& im)
+    { ImgCv imc(im); return imc.im_; }
     //------------
     // VideoCv
     //------------
