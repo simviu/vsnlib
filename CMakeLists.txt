@@ -13,9 +13,8 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
 find_package(OpenCV 4.5 REQUIRED)
 find_package(Gflags REQUIRED)
-find_package(libArchive REQUIRED)
+#find_package(LibArchive REQUIRED)
 find_package(PCL 1.3 REQUIRED COMPONENTS common io filters visualization)
-
 
 
 add_definitions(${PCL_DEFINITIONS})
@@ -30,6 +29,9 @@ message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
 message(STATUS "OpenCV inc dirs: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "PCL inc dirs: ${PCL_INCLUDE_DIRS}")
 #message(STATUS "PCL libs: ${PCL_LIBRARIES}")
+message(STATUS "LibArchive_LIBRARIES: ${LibArchive_LIBRARIES}")
+
+
 
 include_directories( 
     ${EIGEN3_INCLUDE_DIR}
@@ -37,7 +39,7 @@ include_directories(
     ${JsonCpp_INCLUDE_DIR}
     ${PCL_INCLUDE_DIRS}
     #${CMAKE_PREFIX_PATH}/include
-    /usr/include/jsoncpp
+    #/usr/include/jsoncpp
     #/opt/dep/local/include
     inc
     )
@@ -46,10 +48,11 @@ include_directories(
 #--- Hack for Mac brew
 message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 link_directories(
-    /opt/dep/local/lib
-    /usr/local/lib
-    ${PCL_LIBRARY_DIRS}
-    ${CMAKE_PREFIX_PATH}/lib)
+    #/opt/dep/local/lib
+    #/usr/local/lib
+    #${PCL_LIBRARY_DIRS}
+    #${CMAKE_PREFIX_PATH}/lib
+    )
 
 
     
@@ -58,7 +61,7 @@ FILE(GLOB  SRC_UTLIB src/ut/*.cpp)
 add_library(utLib ${SRC_UTLIB})
 target_link_libraries(utLib   
     ${JsonCpp_LIBRARIES} 
-    jsoncpp
+    #${LibArchive_LIBRARIES}
     pthread
     )
     
@@ -67,11 +70,10 @@ target_link_libraries(utLib
 FILE(GLOB  SRC_VSNLIB src/*.cpp)
 add_library(vsnLib ${SRC_VSNLIB})
 target_link_libraries(vsnLib   
-    ${OpenCV_LIBRARIES} 
-    ${Eigen3_LIBRARY}    
-    ${JsonCpp_LIBRARIES} 
-    ${PCL_LIBRARIES}
     utLib
+    #${OpenCV_LIBRARIES} 
+    ${Eigen3_LIBRARY}    
+    ${PCL_LIBRARIES}
     )
     
 set(ENV{vsnLib_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
@@ -88,7 +90,8 @@ target_link_libraries(vsnTest
 FILE(GLOB  SRC_VSNTEST apps/*.cpp)
 add_executable(vsntool ${SRC_VSNTEST})
 target_link_libraries(vsntool  
-    vsnLib)
+    vsnLib
+    )
 
 #---- calib tool
 #add_subdirectory(calib)
