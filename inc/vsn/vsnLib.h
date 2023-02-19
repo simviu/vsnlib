@@ -473,7 +473,28 @@ namespace vsn{
         virtual void close()=0;
         Cfg cfg_;
     };
-
+    //----------
+    // video streaming
+    //----------
+    namespace vstream{
+        class Server{
+        public:
+            bool init(int port);
+            bool open(const string& sf);
+            bool open(int cam_id);
+            void push(Sp<Img> p);
+        };
+        //----
+        class Client{
+        public:
+            using FuncCB = function<void(Sp<Img>)>; 
+            bool connect(const string& sHost, int port);
+            virtual void onImg(Sp<Img> p){};
+            void setFuncCB(FuncCB f) { p_fcb = f;}
+        protected:
+            FuncCB p_fcb = nullptr;
+        };
+    }
     //----------
     // InstSegm 
     //----------
