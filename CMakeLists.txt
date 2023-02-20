@@ -11,9 +11,9 @@ add_definitions(-fPIC)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
-find_package(OpenCV 4.5 REQUIRED)
+find_package(OpenCV CONFIG 4.5 REQUIRED)
 find_package(Gflags REQUIRED)
-#find_package(LibArchive REQUIRED)
+find_package(LibArchive  REQUIRED)
 find_package(PCL 1.3 REQUIRED COMPONENTS common io filters visualization)
 
 
@@ -61,8 +61,7 @@ FILE(GLOB  SRC_UTLIB src/ut/*.cpp)
 add_library(utLib ${SRC_UTLIB})
 target_link_libraries(utLib   
     ${JsonCpp_LIBRARIES} 
-    #${LibArchive_LIBRARIES}
-    pthread
+    PRIVATE ${LibArchive_LIBRARIES}    pthread
     )
     
     
@@ -71,7 +70,7 @@ FILE(GLOB  SRC_VSNLIB src/*.cpp)
 add_library(vsnLib ${SRC_VSNLIB})
 target_link_libraries(vsnLib   
     utLib
-    #${OpenCV_LIBRARIES} 
+    ${OpenCV_LIBRARIES} 
     ${Eigen3_LIBRARY}    
     ${PCL_LIBRARIES}
     )
