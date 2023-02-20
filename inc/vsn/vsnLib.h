@@ -484,6 +484,9 @@ namespace vsn{
             bool open(int cam_id);
             void push(Sp<Img> p);
         protected:
+            void run_once();
+            void run_loop();
+            std::thread thd_;
             socket::Server svr_;
             Sp<Video> p_video_ = nullptr;
         };
