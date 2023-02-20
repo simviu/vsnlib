@@ -466,7 +466,7 @@ namespace vsn{
         };
 
         static Sp<Video> open(CStr& s); // video file
-        static Sp<Video> open(int i); // camera
+        static Sp<Video> open(int cam_id); // camera
         static Sp<Video> create(CStr& sf, const Cfg& cfg);
         virtual Sp<Img> read()=0;
         virtual bool write(const Img& im)=0;
@@ -483,6 +483,9 @@ namespace vsn{
             bool open(const string& sf);
             bool open(int cam_id);
             void push(Sp<Img> p);
+        protected:
+            socket::Server svr_;
+            Sp<Video> p_video_ = nullptr;
         };
         //----
         class Client{
