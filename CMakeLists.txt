@@ -13,7 +13,7 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
 find_package(OpenCV CONFIG 4.5 REQUIRED)
 find_package(Gflags REQUIRED)
-find_package(LibArchive  REQUIRED)
+#find_package(LibArchive  REQUIRED)
 find_package(PCL 1.3 REQUIRED COMPONENTS common io filters visualization)
 
 
@@ -29,7 +29,7 @@ message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
 message(STATUS "OpenCV inc dirs: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "PCL inc dirs: ${PCL_INCLUDE_DIRS}")
 #message(STATUS "PCL libs: ${PCL_LIBRARIES}")
-message(STATUS "LibArchive_LIBRARIES: ${LibArchive_LIBRARIES}")
+#message(STATUS "LibArchive_LIBRARIES: ${LibArchive_LIBRARIES}")
 
 
 
@@ -61,7 +61,7 @@ FILE(GLOB  SRC_UTLIB src/ut/*.cpp)
 add_library(utLib ${SRC_UTLIB})
 target_link_libraries(utLib   
     ${JsonCpp_LIBRARIES} 
-    PRIVATE ${LibArchive_LIBRARIES}    pthread
+    pthread
     )
     
     
@@ -83,6 +83,7 @@ FILE(GLOB  SRC_VSNTEST test/*.cpp)
 add_executable(vsnTest ${SRC_VSNTEST})
 target_link_libraries(vsnTest  
     vsnLib
+    #${LibArchive_LIBRARIES}
     )
 
 #---- vsnTool
