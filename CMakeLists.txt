@@ -9,6 +9,8 @@ SET(CMAKE_CXX_STANDARD 17)
 add_definitions(-fPIC)
 #set( OpenCV_STATIC ON ) 
 
+
+
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
 find_package(OpenCV CONFIG 4.5 REQUIRED)
@@ -68,7 +70,7 @@ target_link_libraries(utLib
 #---- vsnLib 
 FILE(GLOB  SRC_VSNLIB src/*.cpp)
 add_library(vsnLib ${SRC_VSNLIB})
-target_link_libraries(vsnLib   
+target_link_libraries(vsnLib PRIVATE  
     utLib
     ${OpenCV_LIBRARIES} 
     ${Eigen3_LIBRARY}    
