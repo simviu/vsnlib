@@ -21,9 +21,10 @@ namespace{
     
     //---- TODO: temp hack to fit both 
     // OpenCV 4.5 and OpenCV 4.7
-#ifdef OPENCV470
+#ifndef OPENCV455
     using BoardPtr = Sp<aruco::Board>;
     using DictPtr = Sp<cv::aruco::Dictionary>;
+    DictPtr getDict(int id)
     {
         auto p = mkSp<cv::aruco::Dictionary>();
         *p = cv::aruco::getPredefinedDictionary(id);
@@ -200,7 +201,7 @@ namespace{
             box.upd(zerov3());// original always included
             auto pDict = dictTbl_.findCreate(dict_id);
         // TODO: temp hack
-        #ifdef OPENCV470
+        #ifndef OPENCV455
             pBrd = mkSp<aruco::Board>(allPnts, *pDict, ids);
         #else
             pBrd = aruco::Board::create(allPnts, pDict, ids);
