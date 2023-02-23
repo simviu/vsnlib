@@ -20,6 +20,11 @@ namespace{
     using Board=MarkerPE::Board;
     //----
     using DictPtr = Sp<cv::aruco::Dictionary>;
+    //----- TODO: temp hack for OpenCV 4.5 and 4.6/4.7
+    #if CV_MAJOR_VERSION < 4
+        
+    #endif
+    //-----
     struct DictionTbl{
         DictPtr findCreate(int id)
         {

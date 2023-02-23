@@ -39,9 +39,10 @@ bool Server::init(int port)
 //----
 bool Server::open(const string& sf)
 {
-    p_video_ = Video::create(cam_id);
+    p_video_ = Video::open(sf);
     bool ok = (p_video_!=nullptr);
-    string s = (ok?"OK ":"Failed") + " to vstream server open video:'"+sf+"'"; 
+    string s = (ok?"OK ":"Failed");
+    s  += " to vstream server open video:'"+sf+"'"; 
     if(ok) log_i(s);
     else log_e(s);
     return ok;
@@ -50,13 +51,13 @@ bool Server::open(const string& sf)
 //----
 bool Server::open(int cam_id)
 {
-    p_video_ = Video::create(cam_id);
+    p_video_ = Video::open(cam_id);
     if(p_video_!=nullptr)
     {
         log_i("vstream server openned camera:"+to_string(cam_id));
         return true;
     }
-    log_e("vstream server failed to open camera:"+to_strimg(cam_id));
+    log_e("vstream server failed to open camera:"+to_string(cam_id));
     return false;
 
 }
@@ -67,7 +68,7 @@ void Server::run_loop()
     while(1)
     {
         run_once();
-        sys::sleep(lc_.t_loop_dely);
+        sys::sleep(lc_.t_loop_delay);
     }
 }
 
