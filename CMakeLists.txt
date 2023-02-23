@@ -26,7 +26,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 message(STATUS "CMAKE_SYSTEM_PREFIX_PATH = ${CMAKE_SYSTEM_PREFIX_PATH}")
 message(STATUS "Eigen3 inc dir: ${EIGEN3_INCLUDE_DIR}")
-message(STATUS "JsonCpp_LIBRARIES =: ${JsonCpp_LIBRARIES}")
+#message(STATUS "JsonCpp_LIBRARIES =: ${JsonCpp_LIBRARIES}")
 message(STATUS "OpenCV_DIR: ${OpenCV_DIR}")
 message(STATUS "OpenCV inc dirs: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "PCL inc dirs: ${PCL_INCLUDE_DIRS}")
@@ -38,7 +38,8 @@ message(STATUS "PCL inc dirs: ${PCL_INCLUDE_DIRS}")
 include_directories( 
     ${EIGEN3_INCLUDE_DIR}
     ${OpenCV_DIRS}  
-    ${JsonCpp_INCLUDE_DIR}
+    ${OpenCV_INCLUDE_DIRS}
+#    ${JsonCpp_INCLUDE_DIR}
     ${PCL_INCLUDE_DIRS}
     ${CMAKE_PREFIX_PATH}/include
     /usr/include/jsoncpp
@@ -63,6 +64,7 @@ FILE(GLOB  SRC_UTLIB src/ut/*.cpp)
 add_library(utLib ${SRC_UTLIB})
 target_link_libraries(utLib   
     ${JsonCpp_LIBRARIES} 
+    jsoncpp
     pthread
     )
     

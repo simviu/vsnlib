@@ -18,20 +18,32 @@ using namespace ocv;
 namespace{
     using MarkerPE=Marker::PoseEstimator;
     using Board=MarkerPE::Board;
-    //----
+    
+    //---- TODO: temp hack to fit both 
+    // OpenCV 4.5 and OpenCV 4.7
+#ifdef OPENCV470
+    using BoardPtr = Sp<aruco::Board>;
     using DictPtr = Sp<cv::aruco::Dictionary>;
-    //----- TODO: temp hack for OpenCV 4.5 and 4.6/4.7
-    #if CV_MAJOR_VERSION < 4
-        
-    #endif
+    {
+        auto p = mkSp<cv::aruco::Dictionary>();
+        *p = cv::aruco::getPredefinedDictionary(id);
+        return p;
+    }
+#else // OpenCV 4.5.5
+    using DictPtr = cv::Ptr<cv::aruco::Dictionary>;
+    using BoardPtr = cv::Ptr<aruco::Board>;
+    DictPtr getDict(int id)
+    { return cv::aruco::getPredefinedDictionary(id); }
+#endif //  #ifdef OPENCV470
+
+    
     //-----
     struct DictionTbl{
         DictPtr findCreate(int id)
         {
            if(tbl.find(id)!=tbl.end())
               return tbl[id];
-           auto p = mkSp<cv::aruco::Dictionary>();
-           *p = cv::aruco::getPredefinedDictionary(id);
+           auto p =getDict(id);
            tbl[id] = p;
            return p;
         }
@@ -97,7 +109,7 @@ namespace{
     using BoardCfg = Marker::PoseEstimator::Board::Cfg;
     struct BrdCfgImp : public BoardCfg
     {
-        Sp<aruco::Board> pBrd = nullptr;
+        BoardPtr pBrd = nullptr;
         //---- load json board cfg
         bool load(const Json::Value& j)
         {
@@ -187,8 +199,12 @@ namespace{
             }
             box.upd(zerov3());// original always included
             auto pDict = dictTbl_.findCreate(dict_id);
+        // TODO: temp hack
+        #ifdef OPENCV470
             pBrd = mkSp<aruco::Board>(allPnts, *pDict, ids);
-            //pBrd = aruco::Board::create();
+        #else
+            pBrd = aruco::Board::create(allPnts, pDict, ids);
+        #endif
         }
         //------
         bool det(const CvDetd& detd, const CamCfg& camc,

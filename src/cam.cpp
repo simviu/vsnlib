@@ -242,14 +242,3 @@ bool CamCfg::toLense(Lense& l)const
     return true;
 }
 
-//-------------
-// UnDistortion
-//-------------
-Sp<Img> UnDistMapImpl::remap(const Img& img)
-{
-    auto p = mkSp<ImgCv>();
-    ImgCv imi(img);
-    cv::remap(imi.im_, p->im_, map1, map2, 
-                    cv::INTER_LANCZOS4);
-    return p;
-}
