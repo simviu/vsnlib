@@ -86,5 +86,7 @@ void Server::run_once()
 void Server::push(Sp<Img> p)
 {
     cv::Mat im = img2cv(*p);
+    vector<uchar> buf;
+    cv::imencode(".jpg",im,buf);
     
 }
