@@ -10,7 +10,6 @@ add_definitions(-fPIC)
 #set( OpenCV_STATIC ON ) 
 
 
-
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package (jsoncpp REQUIRED)
 find_package(OpenCV CONFIG 4.5 REQUIRED)
@@ -53,7 +52,8 @@ message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 link_directories(
     #/opt/dep/local/lib
     #/usr/local/lib
-    #${PCL_LIBRARY_DIRS}
+    ${PCL_LIBRARY_DIRS}
+    ${OPENCV_LIBRARY_DIRS}
     #${CMAKE_PREFIX_PATH}/lib
     )
 
@@ -72,7 +72,7 @@ target_link_libraries(utLib
 #---- vsnLib 
 FILE(GLOB  SRC_VSNLIB src/*.cpp)
 add_library(vsnLib ${SRC_VSNLIB})
-target_link_libraries(vsnLib PRIVATE  
+target_link_libraries(vsnLib   
     utLib
     ${OpenCV_LIBRARIES} 
     ${Eigen3_LIBRARY}    
