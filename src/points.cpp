@@ -113,6 +113,14 @@ Sp<Points::Vis> Points::Vis::create(const Cfg& c)
 //---------------
 // 
 //---------------
+void Points::clear()
+{
+    auto pc = getRaw(*this);
+    pc->points.clear();
+ 
+}
+
+//---
 void Points::add(const Pnt& p)
 {
     auto pc = getRaw(*this);

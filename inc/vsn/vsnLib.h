@@ -704,8 +704,10 @@ namespace vsn{
 
         //---- samples
         void gen_cylinder();
+        void clear();
     protected:
         Sp<Data> p_data_ = nullptr;
+
     };
 
     
