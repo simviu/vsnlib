@@ -18,12 +18,13 @@ namespace vsn
     //------------
     // cfg
     //------------
+    /*
     class UnDistMapImpl : public CamCfg::UnDistMap{
     public:
         virtual Sp<Img> remap(const Img& img)override;
         cv::Mat map1, map2;
     };
-    
+    */
     //------------
     // ImgCv
     //------------

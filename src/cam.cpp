@@ -6,7 +6,6 @@
    Website: https://www.simviu.com
  */
 
-#include "vsn/vsnLib.h"
 #include "vsn/vsnLibCv.h"
 
 using namespace vsn;
@@ -240,5 +239,15 @@ bool CamCfg::toLense(Lense& l)const
     s << "  (Note): only for none distort camCfg" << endl;
     log_d(s.str());
     return true;
+}
+//----
+Sp<Img> CamCfg::undist(const Img& im)const
+{
+    cv::Mat imc = img2cv(im);
+    auto p = mkSp<ImgCv>();
+    cv::Mat Kc; cv::eigen2cv(K, Kc);
+    cv::Mat Dc; cv::eigen2cv(D, Dc);
+    cv::undistort(imc, p->im_, Kc, Dc);
+    return p;
 }
 
