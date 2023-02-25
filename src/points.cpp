@@ -50,6 +50,8 @@ namespace{
         auto& di = reinterpret_cast<DataImp&>(*p);
         return di.raw();
     }
+   
+   
     //---------------
     // Visualization
     //---------------
@@ -119,6 +121,26 @@ void Points::clear()
     pc->points.clear();
  
 }
+//---
+int Points::num()const
+{
+    auto& di = reinterpret_cast<DataImp&>(*p_data_);
+    return di.raw()->points.size();
+}
+//---- info
+string Points::Stats::str()const
+{
+    string s = "box:";
+    s += "{" + box.str()+"}";
+    return s;
+}
+string Points::info()const
+{
+    stringstream s;
+    s << "N:" << num() << ", ";
+    s << "stats:{" << stats_.str() << "}";
+    return s.str();
+}
 
 //---
 void Points::add(const Pnt& p)
@@ -127,6 +149,7 @@ void Points::add(const Pnt& p)
     pc->points.push_back (toPcl(p));
     pc->width = pc->size();
     pc->height = 1;
+    stats_.box.upd(p.p);
 
 }
 

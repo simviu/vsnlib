@@ -293,6 +293,13 @@ namespace vsn{
         { x.upd(b.x); y.upd(b.y); z.upd(b.z);  }
         void scale(double s)
         { x.scale(s); y.scale(s); z.scale(s); }
+        string str()const
+        { 
+            stringstream s;
+            s << "min:'" << egn::str(min()) << "',";
+            s << "max:'" << egn::str(max()) << "'";
+            return s.str();
+        }
     };
 
     //---------
@@ -705,6 +712,13 @@ namespace vsn{
         //---- samples
         void gen_cylinder();
         void clear();
+        int num()const;
+        //---- stats
+        struct Stats{
+            Box3d box;
+            string str()const;
+        }; Stats stats_;
+        string info()const;
     protected:
         Sp<Data> p_data_ = nullptr;
 

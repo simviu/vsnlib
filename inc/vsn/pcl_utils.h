@@ -18,4 +18,5 @@
 namespace pclu{
     using Pnt = pcl::PointXYZRGB;
     using PCloud = pcl::PointCloud<pcl::PointXYZRGB>;
+    using ConstPCloud = const pcl::PointCloud<pcl::PointXYZRGB>;
 }
