@@ -97,7 +97,8 @@ namespace ut
     template<typename T>
     T dgrIn180(const T& d)
     {   return d - ((int)(d/360.0+(d>0?0.5:-0.5)))*360.0; }
-
+    inline bool isValid(double d)
+    { return !(std::isnan(d)||std::isinf(d)); }
     //-----------
     // log
     //-----------
