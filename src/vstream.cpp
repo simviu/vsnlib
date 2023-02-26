@@ -79,12 +79,66 @@ void Server::run_once()
         return;
     auto& vd = *p_video_;
     auto p = vd.read();
-    push(p);
+    send(p);
 
 }
 //----
-void Server::push(Sp<Img> p)
+void Server::send(Sp<Img> p)
 {
     cv::Mat im = img2cv(*p);
+    vector<uchar> buf;
+    cv::imencode(".bmp", im, buf);
+
+    //---- to binary
+    auto pb = (uint8_t*)(&buf[0]);
+    int n  = buf.size();
+    Buf b(pb, n);
+    svr_.send(b);
+}
+//----
+bool Client::connect(const string& sHost, int port)
+{
+    log_i("vstream Client init...");
+    if(!clnt_.connect(sHost, port))
+        return false;
     
+    return true;
+}
+
+//----
+void Client::run_loop()
+{
+    while(1)
+    {
+        if(!clnt_.isRunning()) 
+            break;
+
+        run_once();
+        sys::sleep(lc_.t_loop_delay);
+    }
+    log_i("vstream client disconnected");
+}
+
+//----
+bool Client::run_once()
+{
+    Buf buf;
+    if(!clnt_.read(buf))
+        return false;
+    vector<uchar> ds;
+    for(int i=0;i<buf.n;i++)
+        ds.push_back(buf.p[i]);
+    cv::Mat im  = cv::imdecode(ds, cv::IMREAD_COLOR);
+    if(im.empty())
+    {
+        log_e("vstream client fail to decode received img");
+        return false;
+    }
+    //----
+    Sp<Img> p = mkSp<ImgCv>(im);
+    onImg(p);
+    if(p_fcb!=nullptr)
+        p_fcb(p);
+
+    return true;
 }

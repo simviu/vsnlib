@@ -324,6 +324,9 @@ namespace ut
 
         size_t n = 0;
         uint8_t* p = nullptr; 
+        //--- to C vector buf
+        void to(vector<uint8_t>& d)const
+        { for(int i=0;i<n;i++)d.push_back(*(p+i)); }
     protected:
         bool bDel = false;
     };

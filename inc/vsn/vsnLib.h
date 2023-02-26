@@ -482,7 +482,7 @@ namespace vsn{
             bool init(int port);
             bool open(const string& sf);
             bool open(int cam_id);
-            void push(Sp<Img> p);
+            void send(Sp<Img> p);
         protected:
             void run_once();
             void run_loop();
@@ -496,9 +496,13 @@ namespace vsn{
             using FuncCB = function<void(Sp<Img>)>; 
             bool connect(const string& sHost, int port);
             virtual void onImg(Sp<Img> p){};
-            void setFuncCB(FuncCB f) { p_fcb = f;}
+            void setCB(FuncCB f) { p_fcb = f;}
         protected:
+            bool run_once();
+            void run_loop();
+            socket::Client clnt_;
             FuncCB p_fcb = nullptr;
+            std::thread thd_;
         };
     }
     //----------
