@@ -87,7 +87,6 @@ void Server::send(Sp<Img> p)
 {
     cv::Mat im = img2cv(*p);
     vector<uchar> buf;
-<<<<<<< HEAD
     cv::imencode(".bmp", im, buf);
 
     //---- to binary
@@ -102,8 +101,13 @@ bool Client::connect(const string& sHost, int port)
     log_i("vstream Client init...");
     if(!clnt_.connect(sHost, port))
         return false;
-    cv::imencode(".jpg",im,buf);
     
+
+    //--- start loop thread
+    thd_ = std::thread([&](){
+        run_loop();
+    });
+    thd_.detach();
     return true;
 }
 
