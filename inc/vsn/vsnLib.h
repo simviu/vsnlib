@@ -35,7 +35,20 @@ namespace vsn{
         { stringstream s; s << b << "," << g << "," << r; 
           return s.str(); }
     }; 
-
+    //--- similar to BGR
+    struct BGRA {
+        uint8_t b=0;
+        uint8_t g=0;
+        uint8_t r=0;  
+        uint8_t a=255;  
+        BGRA(){}
+        BGRA(const Color& c):b(c.b), g(c.g), r(c.r){}
+        Color toUt()const{ return {r,g,b,a}; }
+        string str()const
+        { stringstream s; s << b << "," << g << "," 
+                << r << "," << a; 
+          return s.str(); }
+    }; 
     struct HSV {
         HSV(){}
         HSV(uint8_t h, uint8_t s, uint8_t v):

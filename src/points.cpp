@@ -77,7 +77,7 @@ namespace{
     }
     
 }
-    
+//----
 Points::Points()
 {
     p_data_ = mkSp<DataImp>();
@@ -134,6 +134,7 @@ string Points::Stats::str()const
     s += "{" + box.str()+"}";
     return s;
 }
+//----
 string Points::info()const
 {
     stringstream s;
