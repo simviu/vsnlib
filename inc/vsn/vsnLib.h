@@ -500,27 +500,37 @@ namespace vsn{
     // video streaming
     //----------
     namespace vstream{
-        class Server{
+        class Server : public Cmd{
         public:
+            Server(){ init_cmds(); }
             bool init(int port);
+            void send(Sp<Img> p);
+
             bool open(const string& sf);
             bool open(int cam_id);
-            void send(Sp<Img> p);
+            bool openImg(const string& sf);
         protected:
+            void init_cmds();
+            bool init(CStrs& args);
             void run_once();
             void run_loop();
             std::thread thd_;
             socket::Server svr_;
+
+            //-- source
+            Sp<Img> p_img_ = nullptr;
             Sp<Video> p_video_ = nullptr;
         };
         //----
-        class Client{
+        class Client: public Cmd{
         public:
+            Client(){ init_cmds(); }
             using FuncCB = function<void(Sp<Img>)>; 
             bool connect(const string& sHost, int port);
             virtual void onImg(Sp<Img> p){};
             void setCB(FuncCB f) { p_fcb = f;}
         protected:
+            void init_cmds();
             bool run_once();
             void run_loop();
             socket::Client clnt_;

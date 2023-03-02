@@ -17,6 +17,49 @@ namespace{
         float t_loop_delay = 0.001;
     }; LCfg lc_;
 }
+//----
+void Server::init_cmds()
+{
+    sHelp_ = "(vstream server commands)";
+
+    //----
+    add("init", mkSp<Cmd>("port=<PORT> [cam=ID | img=<FILE> | video=<FILE>]",
+    [&](CStrs& args)->bool{  return init(args); }));
+}
+//---
+bool Server::init(CStrs& args)
+{
+    KeyVals kvs(args);
+    int port=-1; 
+    if(!kvs.get("port", port)) 
+        return false;
+    if(!init(port)) return false;
+    //---
+    bool ok = true;
+    string si;  
+    if(!kvs.get("src", si)) 
+        return false;
+
+    //---- open cam
+    int cam_id=0;
+    if(kvs.has("cam"))
+    {
+        ok &= kvs.get("cam", cam_id);        
+        ok &= open(cam_id);
+    }
+    else if(kvs.has("img"))
+        ok &= openImg(kvs["img"]);
+    else if(kvs.has("video"))
+        ok &= open(kvs["video"]);
+    else{
+        log_e("  missing src [cam|img|video]");
+        return false;
+    }
+    //----
+    log_i("vstream server init ok on port:"+to_string(port));
+    return ok;
+        
+}
 
 //----
 
@@ -60,6 +103,13 @@ bool Server::open(int cam_id)
     log_e("vstream server failed to open camera:"+to_string(cam_id));
     return false;
 
+}
+//----
+bool Server::openImg(const string& sf)
+{
+    p_img_  = Img::loadFile(sf);
+    return (p_img_!=nullptr);
+    
 }
 
 //----

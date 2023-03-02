@@ -72,6 +72,70 @@ namespace ut{
         
         return ts;
     }
+
+    //-------------- -----
+
+    //----
+    bool KeyVals::has(const string& skey)const
+    {
+        return items.find(skey)!=items.end();
+    }
+    string KeyVals::get(const string& skey)const
+    {
+        auto it = items.find(skey);
+        if(it==items.end()) {
+            log_e("  key '"+skey+"' not found");
+            return "";
+        }
+        return it->second;
+    }
+    //--------
+    bool KeyVals::get(const string& skey, double& d)const
+    { 
+        string sv = get(skey);
+        if(sv=="") return false;
+        if(s2d(sv, d)) true; 
+        
+        log_e("  fail to parse '"+skey+"' to double");
+        return false; 
+    }
+    //---
+    bool KeyVals::get(const string& skey, int& d)const
+    { 
+        string sv = get(skey);
+        if(sv=="") return false;
+        if(s2d(sv, d)) true; 
+        
+        log_e("  fail to parse '"+skey+"' to int");
+        return false; 
+    }
+    //---
+    bool KeyVals::get(const string& skey, bool& d)const
+    { 
+        string sv = get(skey);
+        if(sv=="") return false;
+        if(s2d(sv, d)) true; 
+        
+        log_e("  fail to parse '"+skey+"' to bool");
+        return false; 
+    }
+    //--------
+    bool KeyVals::get(const string& skey, string& s)const
+    {   
+        auto it = items.find(skey);
+        if(it==items.end()) {
+            log_e("  key '"+skey+"' not found");
+            return false;
+        }
+        s = it->second;
+        return true;
+    }
+
+
+
+
+    //-----------------
+
     //-----
     extern bool s2data(const string& s, vector<double>& ds, char c_deli)
     {

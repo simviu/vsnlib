@@ -39,20 +39,22 @@ namespace ut
     using CStr = const string;
     using Strs = vector<string>;
     using CStrs = const vector<string>;
+
+    //-----   TODO: to be deprecated, replace by KeyVals
+    //--- parse key/value table, e.g.:     
+    // file=a.txt n=10 ...
     using StrTbl = map<string, string>;
-    using CStrTbl = const StrTbl;
-    //--- 
+    using CStrTbl = const StrTbl;   
     inline string lookup(CStrTbl& m, CStr& sk)
     {  auto it=m.find(sk); 
         if(it==m.end()) return ""; return it->second; }
-    extern vector<string> tokens(const string& s, char c_deli=' ');
-    //--- parse key/value table, e.g.: 
-    // file=a.txt n=10 ...
     extern bool parseKV(CStrs& ss, StrTbl& kv);
     inline bool has(CStrTbl& m, CStr& sk)
     { auto it=m.find(sk); return it!=m.end(); }
+
     //----
     extern string remove(const string& s, const char c);
+    extern vector<string> tokens(const string& s, char c_deli=' ');
     //----
     template<typename T>
         bool s2d(const string& s, T& d)
@@ -60,6 +62,35 @@ namespace ut
     // TODO: template this by s2d()
     extern bool s2data(const string& s, vector<double>& ds, char c_deli=',');
     extern bool s2data(const string& s, vector<int>& ds,    char c_deli=',');
+    //-------
+    // KeyVals
+    //-------
+    class KeyVals{
+    public:
+        KeyVals(){}
+        KeyVals(const string& s, char c_sep=' ')
+            { parse(s, c_sep); }
+        KeyVals(CStrs& ss){ parse(ss); };
+
+        //---
+        bool parse(CStrs& ss){ return parseKV(ss, items);  };
+        bool parse(const string& s, char c_sep=' ')
+            { return parse(tokens(s, c_sep)); }
+
+        //----
+        bool has(const string& sKey)const;
+        string operator[] (const string& skey) { return get(skey); }
+        string get(const string& skey)const;
+
+        bool get(const string& skey, double& d)const;
+        bool get(const string& skey, int& d)const;
+        bool get(const string& skey, bool& d)const;
+
+        bool get(const string& skey, string& s)const;
+
+        //----
+        map<string, string> items;
+    };
     //-----------------------------
     //	Aliase for std::shared_ptr
     //-----------------------------
