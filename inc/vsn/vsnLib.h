@@ -547,6 +547,7 @@ namespace vsn{
             FuncCB p_fcb = nullptr;
             std::thread thd_;
         };
+        
     }
     //----------
     // InstSegm 

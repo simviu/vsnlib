@@ -78,6 +78,17 @@ namespace app
         bool save_frm(const Img& im);
 
     };
+
+    //-----------
+    // CmdVStream
+    //-----------
+    class CmdVStream:public Cmd{
+    public:
+
+        CmdVStream(){ init_cmds(); };
+    protected:
+        void init_cmds();
+    }    
     //-----------
     // CmdMarker
     //-----------
