@@ -503,6 +503,11 @@ namespace vsn{
         class Server : public Cmd{
         public:
             Server(){ init_cmds(); }
+
+            struct Cfg{
+                bool en_show = false;
+            }; Cfg cfg_;
+            //---
             bool init(int port);
             void send(Sp<Img> p);
 
@@ -524,8 +529,13 @@ namespace vsn{
         //----
         class Client: public Cmd{
         public:
-            Client(){ init_cmds(); }
             using FuncCB = function<void(Sp<Img>)>; 
+            Client(){ init_cmds(); }
+            
+            struct Cfg{
+                bool en_show = false;
+            }; Cfg cfg_;
+            //----
             bool connect(const string& sHost, int port);
             virtual void onImg(Sp<Img> p){};
             void setCB(FuncCB f) { p_fcb = f;}

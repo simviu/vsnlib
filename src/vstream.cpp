@@ -56,6 +56,9 @@ bool Server::init(CStrs& args)
         return false;
     }
     //----
+    if(kvs.has("--en_show"))
+        cfg_.en_show = true;
+    //----
     log_i("vstream server init ok on port:"+to_string(port));
     return ok;
         
@@ -125,11 +128,17 @@ void Server::run_loop()
 //----
 void Server::run_once()
 {
-    if(p_video_==nullptr)
-        return;
-    auto& vd = *p_video_;
-    auto p = vd.read();
-    send(p);
+    Sp<Img> p = nullptr;
+    if(p_video_!=nullptr)
+        p = p_video_->read();
+    else if(p_img_!=nullptr)
+        p = p_img_;
+    
+    //----
+    if(p!=nullptr)
+        send(p);
+    if(cfg_.en_show)
+        p->show("vstream Server");
 
 }
 //----
@@ -197,4 +206,22 @@ bool Client::run_once()
         p_fcb(p);
 
     return true;
+}
+
+
+//----
+void Client::init_cmds()
+{
+    sHelp_ = "(vstream client commands)";
+
+    //----
+    add("connect", mkSp<Cmd>("host=<HOST> port=<PORT>",
+    [&](CStrs& args)->bool{  
+        KeyVals kvs(args);
+        string s_host;
+        int port = -1; 
+        if(!kvs.get("host", s_host)) return false;
+        if(!kvs.get("port", port)) return false;
+        return connect(s_host, port); 
+    }));
 }
