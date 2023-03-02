@@ -21,7 +21,8 @@ void VsnTool::initCmd()
     add("marker",  mkSp<CmdMarker>());
     add("image",   mkSp<CmdImg>());
     add("video",   mkSp<CmdVideo>());
-    add("math",   mkSp<CmdMath>());
+    add("math",      mkSp<CmdMath>());
+    add("vstream",   mkSp<CmdVStream>());
 }
 
 

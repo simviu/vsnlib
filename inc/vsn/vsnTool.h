@@ -88,7 +88,7 @@ namespace app
         CmdVStream(){ init_cmds(); };
     protected:
         void init_cmds();
-    }    
+    };    
     //-----------
     // CmdMarker
     //-----------

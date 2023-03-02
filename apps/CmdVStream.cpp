@@ -12,3 +12,9 @@
 
 
 using namespace app;
+
+void CmdVStream::init_cmds()
+{
+    add("server", mkSp<vstream::Server>());
+    add("client", mkSp<vstream::Client>());
+}

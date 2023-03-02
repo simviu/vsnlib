@@ -541,6 +541,7 @@ namespace vsn{
             void setCB(FuncCB f) { p_fcb = f;}
         protected:
             void init_cmds();
+            bool connect(CStrs& args);
             bool run_once();
             void run_loop();
             socket::Client clnt_;
