@@ -14,6 +14,7 @@
 #define PATH_BUF_LEN 1024
 
 namespace ut{
+   
     //--- file name/ path util
     namespace fn
     {
@@ -90,35 +91,31 @@ namespace ut{
         return it->second;
     }
     //--------
+    //------
+    namespace{
+        //----- Help func for KeyVals::get()
+        template<typename T> bool get_val(
+            const KeyVals& kvs, 
+            const string& skey,
+            const string& sType,
+            T& d)
+        {
+            string sv = kvs.get(skey);
+            if(sv=="") return false;
+            if(s2d<T>(sv, d)) return true; 
+            
+            log_e("  For key '"+skey+"' fail to parse '"+
+                    sv+"' to "+sType);
+            return false;             
+        }
+    }
+    //--------
     bool KeyVals::get(const string& skey, double& d)const
-    { 
-        string sv = get(skey);
-        if(sv=="") return false;
-        if(s2d(sv, d)) true; 
-        
-        log_e("  fail to parse '"+skey+"' to double");
-        return false; 
-    }
-    //---
+        {  return get_val(*this, skey, "'double'", d); }
     bool KeyVals::get(const string& skey, int& d)const
-    { 
-        string sv = get(skey);
-        if(sv=="") return false;
-        if(s2d(sv, d)) true; 
-        
-        log_e("  fail to parse '"+skey+"' to int");
-        return false; 
-    }
-    //---
+        {  return get_val(*this, skey, "'int'", d); }
     bool KeyVals::get(const string& skey, bool& d)const
-    { 
-        string sv = get(skey);
-        if(sv=="") return false;
-        if(s2d(sv, d)) true; 
-        
-        log_e("  fail to parse '"+skey+"' to bool");
-        return false; 
-    }
+        {  return get_val(*this, skey, "'bool'", d); }
     //--------
     bool KeyVals::get(const string& skey, string& s)const
     {   

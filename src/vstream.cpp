@@ -34,13 +34,9 @@ bool Server::init(CStrs& args)
     if(!kvs.get("port", port)) 
         return false;
     if(!init(port)) return false;
-    //---
-    bool ok = true;
-    string si;  
-    if(!kvs.get("src", si)) 
-        return false;
 
     //---- open cam
+    bool ok = true;
     int cam_id=0;
     if(kvs.has("cam"))
     {
@@ -52,14 +48,18 @@ bool Server::init(CStrs& args)
     else if(kvs.has("video"))
         ok &= open(kvs["video"]);
     else{
-        log_e("  missing src [cam|img|video]");
+        log_e("  missing [cam=|img=|video=]");
         return false;
     }
     //----
     if(kvs.has("--show"))
         cfg_.en_show = true;
+    
     //----
-    log_i("vstream server init ok on port:"+to_string(port));
+    log_i("vstream server init ok on port:"+to_string(port)+"...");
+    while(1)
+        sys::sleep(0.02);
+
     return ok;
         
 }
@@ -145,15 +145,19 @@ void Server::run_once()
 void Server::send(Sp<Img> p)
 {
     
+    if(!svr_.isConnected())
+        return;
 
     cv::Mat im = img2cv(*p);
     vector<uchar> buf;
-    cv::imencode(".bmp", im, buf);
+    cv::imencode(".jpg", im, buf);
 
     //---- to binary
     auto pb = (uint8_t*)(&buf[0]);
     int n  = buf.size();
     Buf b(pb, n);
+
+    //---- send
     svr_.send(b);
 }
 //----

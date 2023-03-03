@@ -37,12 +37,9 @@ string Cmd::usage()const
 }
 
 //----
-bool Cmd::run(const string& sLn_in)
+bool Cmd::runln(const string& sLn_in)
 {
     auto sLns = tokens(sLn_in, ';');
-    
-
-    //---
     for(auto& s : sLns)
     {
         if(s=="")continue;
@@ -68,7 +65,6 @@ bool Cmd::run(int argc, char ** argv)
         log_i(usage());
         return true;
     }
-
 
     //---- run with args
     Strs args;
@@ -96,8 +92,8 @@ bool Cmd::run(int argc, char ** argv)
         return run_server(args);
     else if(scmd=="--console")
         return run_console();
-    else if(args.size()==1)
-        return run(args[0]);
+    else if(args.size()==1)// TODO: ?
+        return runln(args[0]);
     else 
         return run(args);
     return true;
@@ -124,7 +120,7 @@ bool Cmd::runFile(CStr& sf)
         string s = rm_comment(si);
         if(s=="")continue;
         log_i("Run cmd (line "+to_string(i)+"):'"+s+"'");
-        ok = run(s);
+        ok = runln(s);
         if(!ok)
         {
             log_e("Line "+to_string(i)+" in '"+sf+"':");
@@ -183,7 +179,7 @@ bool Cmd::run_server(CStrs& args)
         //---- run cmd
         log_i("Run cmd:'"+sln+"'");
         s_log = "";
-        bool ok = this->run(sln);
+        bool ok = this->runln(sln);
         string s_ok = "cmd_ok:";
         s_ok += ok?"true":"false" ;
 
@@ -211,7 +207,7 @@ bool Cmd::run_console()
 
         
         //--- run
-        run(sln);
+        runln(sln);
     }
     return true;
 }
@@ -222,7 +218,7 @@ bool Cmd::run(CStrs& args)
     if(f_!=nullptr)
     {
         if(f_(args)) return true;
-        log_e("  Failed, args: '"+sHelp_ +"'");
+        log_e("  Cmd failed, usage: '"+sHelp_ +"'");
         return false;
     }
 

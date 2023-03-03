@@ -27,6 +27,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <assert.h>
+#include <atomic>
 
 namespace ut
 {
@@ -414,9 +415,9 @@ namespace ut
             struct Cntx{
                 int port = -1;
                 string sHost = "undef";
-                bool bConnected = false;
                 int cur_socket = -1;
-                bool isRunning = false;
+                atomic<bool> bConnected{false};
+                atomic<bool> isRunning{false};
             }; Cntx cntx_;
 
             bool send(const Buf& buf);
@@ -425,6 +426,8 @@ namespace ut
             { return cntx_.isRunning; }
             bool readLn(string& sln);
             bool read(Buf& buf);
+            bool isConnected()const 
+            { return cntx_.bConnected; }
         protected:
             std::mutex rd_mtx_;
             std::mutex wr_mtx_;
@@ -465,7 +468,7 @@ namespace ut
         Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
         void add(CStr& s, Sp<Cmd> p)
         { cmds_[s]=p; }
-        virtual bool run(const string& sLn);
+        virtual bool runln(const string& sLn);
         virtual bool run(CStrs& args);
         bool parse(CStr& s);
         bool runFile(CStr& sf);
