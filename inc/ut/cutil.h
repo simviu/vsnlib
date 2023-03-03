@@ -422,8 +422,11 @@ namespace ut
 
             bool send(const Buf& buf);
             bool send(const string& s);
+
+            // TODO: discard, change to isConnected.
             bool isRunning()const
             { return cntx_.isRunning; }
+
             bool readLn(string& sln);
             bool read(Buf& buf);
             bool isConnected()const 
@@ -470,7 +473,7 @@ namespace ut
         { cmds_[s]=p; }
         virtual bool runln(const string& sLn);
         virtual bool run(CStrs& args);
-        bool parse(CStr& s);
+
         bool runFile(CStr& sf);
         virtual bool run(int argc, char ** argv);
         string help(const string& s_prefix="")const;
@@ -480,6 +483,7 @@ namespace ut
         bool run_server(CStrs& args);
         string sHelp_;
     protected:
+        bool run_func(CStrs& args);
         Fun f_=nullptr;
         map<string, Sp<Cmd>> cmds_;
         string rm_comment(CStr & s)const;

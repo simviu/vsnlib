@@ -500,6 +500,9 @@ namespace vsn{
     // video streaming
     //----------
     namespace vstream{
+        //----------
+        // Server
+        //----------
         class Server : public Cmd{
         public:
             Server(){ init_cmds(); }
@@ -521,12 +524,18 @@ namespace vsn{
             void run_loop();
             std::thread thd_;
             socket::Server svr_;
+            //----
+            struct Data{
+                int frm_idx = 0;
+            }; Data data_;
 
             //-- source
             Sp<Img> p_img_ = nullptr;
             Sp<Video> p_video_ = nullptr;
         };
-        //----
+        //----------
+        // Client
+        //----------
         class Client: public Cmd{
         public:
             using FuncCB = function<void(Sp<Img>)>; 
@@ -540,6 +549,10 @@ namespace vsn{
             virtual void onImg(Sp<Img> p){};
             void setCB(FuncCB f) { p_fcb = f;}
         protected:
+            struct Data{
+                int frm_idx = 0;
+            }; Data data_;
+
             void init_cmds();
             bool connect(CStrs& args);
             bool run_once();

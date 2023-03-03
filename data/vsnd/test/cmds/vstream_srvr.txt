@@ -1,1 +1,3 @@
 vstream server init port=2468 img=cur.png --show
+:halt
+

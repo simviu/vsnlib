@@ -1,0 +1,3 @@
+vstream client connect host=127.0.0.1 port=2468 --show
+:halt
+

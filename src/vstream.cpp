@@ -57,8 +57,8 @@ bool Server::init(CStrs& args)
     
     //----
     log_i("vstream server init ok on port:"+to_string(port)+"...");
-    while(1)
-        sys::sleep(0.02);
+ //   while(1)
+   //     sys::sleep(0.02);
 
     return ok;
         
@@ -159,14 +159,19 @@ void Server::send(Sp<Img> p)
 
     //---- send
     svr_.send(b);
+    auto& fi = data_.frm_idx;
+    log_d("  sent img "+to_string(fi++));
 }
 //----
 bool Client::connect(const string& sHost, int port)
 {
     log_i("vstream Client init...");
     if(!clnt_.connect(sHost, port))
+    {
+        log_e("  vstream client fail to connect to server "+
+                    sHost + ":"+ to_string(port));
         return false;
-    
+    }    
 
     //--- start loop thread
     thd_ = std::thread([&](){
@@ -182,7 +187,7 @@ void Client::run_loop()
 {
     while(1)
     {
-        if(!clnt_.isRunning()) 
+        if(!clnt_.isConnected()) 
             break;
 
         run_once();
@@ -207,6 +212,9 @@ bool Client::run_once()
         return false;
     }
     //----
+    auto& fi = data_.frm_idx;
+    log_d("  recv img "+to_string(fi++));
+    //----
     Sp<Img> p = mkSp<ImgCv>(im);
     onImg(p);
     if(p_fcb!=nullptr)
@@ -224,8 +232,6 @@ bool Client::run_once()
 void Client::init_cmds()
 {
     sHelp_ = "(vstream client commands)";
-
-    //----
     add("connect", mkSp<Cmd>("host=<HOST> port=<PORT> [--show]",
     [&](CStrs& args)->bool{  
         return connect(args);        
@@ -245,5 +251,6 @@ bool Client::connect(CStrs& args)
     if(kvs.has("--show"))
         cfg_.en_show = true;
     //----
-    return connect(s_host, port); 
+    bool ok = connect(s_host, port); 
+    return ok;
 }

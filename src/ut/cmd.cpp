@@ -35,6 +35,20 @@ string Cmd::usage()const
     s += "    <CMD> [ARGS] \n";
     return s;
 }
+//----
+bool Cmd::run_func(CStrs& args)
+{
+    assert(args.size()!=0);
+    string scmd=args[0];
+    assert(scmd!="");
+    KeyVals kvs(args);
+
+    //------ TODO: add singleton of internal function Cmd
+    if(scmd==":halt")
+        while(1) sys::sleep(0.01);
+
+    return true;
+}
 
 //----
 bool Cmd::runln(const string& sLn_in)
@@ -46,11 +60,16 @@ bool Cmd::runln(const string& sLn_in)
         auto args = tokens(s, ' ');
         if(args.size()==0)
             continue;
-
-        if(run(args))
-            continue;
-        
-        return false;
+        //---- check embedded functions
+        string scmd = args[0];
+        if(scmd=="") continue;
+        bool ok = true;
+        if(scmd[0]==':')
+            ok = run_func(args);
+        //---- run this cmd
+        else ok = run(args);
+        //--- exit loop
+        if(!ok) return false;
     }
     return true;
 }
