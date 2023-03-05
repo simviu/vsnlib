@@ -45,7 +45,7 @@ namespace {
 
         totRead = 0;
         for (;;) {
-            numRead = read(fd, &ch, 1);
+            numRead = ::recv(fd, &ch, 1, MSG_WAITALL);
 
             if (numRead == -1) {
                 if (errno == EINTR)         /* Interrupted --> restart read() */
@@ -88,7 +88,7 @@ void Node::onDisconnect()
 
 }
 //------
-bool Node::readLn(string& sln)
+bool Node::recvLn(string& sln)
 {
     std::unique_lock<std::mutex> lk(rd_mtx_);
     if(!cntx_.bConnected) 

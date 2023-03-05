@@ -189,7 +189,7 @@ bool Cmd::run_server(CStrs& args)
     {
         string sln;
 
-        if(!svr.readLn(sln)) 
+        if(!svr.recvLn(sln)) 
         {
             sys::sleep(0.2);
             continue;

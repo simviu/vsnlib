@@ -236,7 +236,7 @@ bool Client::run_once()
 {
     //---- get header string
     string sln;
-    if(!clnt_.readLn(sln))
+    if(!clnt_.recvLn(sln))
     {
         log_e("failed to get vstream header");
         return false;

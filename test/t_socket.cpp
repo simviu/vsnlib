@@ -33,7 +33,7 @@ bool TestSocketSrvr::run()
     while(1)
     {
         string s;
-        if(!srv.readLn(s))
+        if(!srv.recvLn(s))
             break;
         log_i("Recv: '"+s+"'");
         //---- ack
@@ -62,8 +62,8 @@ bool TestSocketClnt::run()
         clnt.send(s);
         log_i("  sent");
         //--
-        log_i("readLn...");
-        if(!clnt.readLn(s)) 
+        log_i("recvLn...");
+        if(!clnt.recvLn(s)) 
             break;
         
         log_i("  client recv:'"+s+"'");

@@ -428,7 +428,7 @@ namespace ut
             bool isRunning()const
             { return cntx_.isRunning; }
 
-            bool readLn(string& sln);
+            bool recvLn(string& sln);
             bool recv(Buf& buf);
             bool isConnected()const 
             { return cntx_.bConnected; }
