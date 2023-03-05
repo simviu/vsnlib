@@ -39,6 +39,12 @@ bool CamCfg::load(CStr& sf)
         fs["distortion_coefficients"] >> D1;
         fs["image_width"] >> sz.w;
         fs["image_height"] >> sz.h;
+
+        // Note : 
+        // distortion coefficients (OpeCV online doc):
+        //   k1,k2,p1,p2[,k3[,k4,k5,k6[,s1,s2,s3,s4[,τx,τy]]]]
+        //   of 4, 5, 8, 12 or 14 elements
+
     }
     catch(exception& e)
     {
