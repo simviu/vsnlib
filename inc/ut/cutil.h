@@ -342,7 +342,7 @@ namespace ut
         Buf(){}
         Buf(uint8_t* p, size_t n):
         p(p), n(n){}
-        Buf(uint8_t n) { resize(n); }
+        Buf(size_t n) { resize(n); }
         void resize(size_t nn)
         { 
             if(p!=nullptr) delete p;
@@ -354,7 +354,8 @@ namespace ut
         { if(bDel && p!=nullptr) 
             delete p; }
 
-
+        uint8_t operator[](int i)
+        {  if(i>=n) return 0xee; return p[i]; }
         size_t n = 0;
         uint8_t* p = nullptr; 
         //--- to C vector buf
@@ -428,7 +429,7 @@ namespace ut
             { return cntx_.isRunning; }
 
             bool readLn(string& sln);
-            bool read(Buf& buf);
+            bool recv(Buf& buf);
             bool isConnected()const 
             { return cntx_.bConnected; }
         protected:

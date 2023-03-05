@@ -16,6 +16,32 @@ namespace{
     struct LCfg{
         float t_loop_delay = 0.001;
     }; LCfg lc_;
+    //----  check jpeg buf
+    bool chk_jpg(const Buf& buf)
+    {
+
+        if(buf.n<5){
+            log_e("chk_jpg(): very small buf, not JPG data");
+            return false;
+        }
+        //---- header 0xffd8
+        auto d = buf.p;
+        if((d[0]!=0xff) || (d[1]!=0xd8))
+        {
+            log_e("chk_jpg(): jpg stream prefix 0xffd8 not found");
+            return false;
+        }
+        //---- get image size
+        /*
+        int w = ( d[3]<<8 )+(d[2]);
+        int h = ( d[5]<<8 )+(d[4]);
+        stringstream s;
+        s << "  jpeg header (w,h)=(" 
+            << w << "," << h << ")";
+        log_d(s.str());
+        */
+        return true;
+    }
 }
 //----
 void Server::init_cmds()
@@ -156,8 +182,17 @@ void Server::send(Sp<Img> p)
     auto pb = (uint8_t*)(&buf[0]);
     int n  = buf.size();
     Buf b(pb, n);
+    //--- dbg , check jpg buf
+    if(!chk_jpg(b)) return;
 
-    //---- send
+    //---- send header
+    stringstream s;
+    s << "dtype=vstream.image ";
+    s << "buf_len=" << n << "\n";
+    log_d("  send header '"+s.str()+"'");
+    svr_.send(s.str());
+
+    //---- send data
     svr_.send(b);
     auto& fi = data_.frm_idx;
     log_d("  sent img "+to_string(fi++));
@@ -199,9 +234,35 @@ void Client::run_loop()
 //----
 bool Client::run_once()
 {
-    Buf buf;
-    if(!clnt_.read(buf))
+    //---- get header string
+    string sln;
+    if(!clnt_.readLn(sln))
+    {
+        log_e("failed to get vstream header");
         return false;
+    }
+    log_d("  recv header '"+sln+"'");
+    //---- chk
+    KeyVals kvs(sln);
+    string st = kvs.get("dtype");
+    if(st!="vstream.image")
+    {
+        log_e("expect header 'dtype=vstream.image'");
+        return false;
+    }
+    int len=0; 
+    if(!kvs.get("buf_len", len)) 
+        return false;
+    log_d("  got buf_len:"+to_string(len));
+    //-----
+    Buf buf(len);
+    if(!clnt_.recv(buf))
+        return false;
+    //----
+    //----
+    if(!chk_jpg(buf))
+        return false;
+    //----
     vector<uchar> ds;
     for(int i=0;i<buf.n;i++)
         ds.push_back(buf.p[i]);
@@ -211,11 +272,15 @@ bool Client::run_once()
         log_e("vstream client fail to decode received img");
         return false;
     }
+    
     //----
     auto& fi = data_.frm_idx;
-    log_d("  recv img "+to_string(fi++));
+    stringstream s;
     //----
     Sp<Img> p = mkSp<ImgCv>(im);
+    s << "  recv img " << fi++ << ", size:" << p->size().str();
+    log_d(s.str());
+
     onImg(p);
     if(p_fcb!=nullptr)
         p_fcb(p);

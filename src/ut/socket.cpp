@@ -114,12 +114,12 @@ bool Node::send(const string& s)
     return send(buf); 
 }
 //----
-bool Node::read(Buf& buf)
+bool Node::recv(Buf& buf)
 {
     char* p = (char*)buf.p;
     int fd = cntx_.cur_socket;
-    size_t n = ::read(fd, p, buf.n);
-    return n = buf.n;
+    size_t n = ::recv(fd, p, buf.n, MSG_WAITALL);
+    return n == buf.n;
 
 }
 
