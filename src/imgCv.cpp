@@ -166,7 +166,10 @@ Sp<Img> ImgCv::crop(const ut::Rect& r)const
     bool bVal =  rr.isIn(r0) && rr.isIn(r1) &&
                  rc.isIn(c0) && rc.isIn(c1); 
     if(!bVal)
+    {
+        log_e("Invalid cropping");
         return nullptr;
+    }
     //----
     Range rrow(r0, r1);
     Range rcol(c0, c1);
