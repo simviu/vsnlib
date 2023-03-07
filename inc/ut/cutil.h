@@ -461,7 +461,7 @@ namespace ut
         };
     }
     //-------------
-    // Cmds
+    // Cmd
     //-------------
     // string cmd line handler
     class Cmd{
@@ -471,7 +471,9 @@ namespace ut
         Cmd(CStr& sHelp):sHelp_(sHelp){}
         Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
         void add(CStr& s, Sp<Cmd> p)
-        { cmds_[s]=p; }
+            { cmds_[s]=p; }
+        void add(CStr& s, CStr& sHelp, Fun f)
+            { add(s, mkSp<Cmd>(sHelp, f)); }
         virtual bool runln(const string& sLn);
         virtual bool run(CStrs& args);
 
