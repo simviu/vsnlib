@@ -470,8 +470,8 @@ namespace ut
         Cmd(){}
         Cmd(CStr& sHelp):sHelp_(sHelp){}
         Cmd(CStr& sHelp, Fun f):sHelp_(sHelp), f_(f){}
-        void add(CStr& s, Sp<Cmd> p)
-        { cmds_[s]=p; }
+        void add(CStr& s, Sp<Cmd> p) { cmds_[s]=p; }
+        void add(CStr& s, CStr& sH, Fun f) { add(s, mkSp<Cmd>(sH, f)); }
         virtual bool runln(const string& sLn);
         virtual bool run(CStrs& args);
 
