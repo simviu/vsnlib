@@ -461,7 +461,7 @@ namespace ut
         };
     }
     //-------------
-    // Cmds
+    // Cmd
     //-------------
     // string cmd line handler
     class Cmd{

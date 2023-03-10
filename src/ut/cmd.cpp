@@ -13,6 +13,33 @@
 
 using namespace ut;
 
+namespace
+{
+    // internal function
+    class CmdFunc : public Cmd{
+    public:
+        CmdFunc()
+        {
+           
+            add(":halt", "(system halt loop)",
+            [&](CStrs& args)->bool{  
+                while(1) sys::sleep(0.01);
+                return true;
+            });
+
+            //----
+            add(":sleep", "t=<SEC>",
+            [&](CStrs& args)->bool{  
+                double t=0;
+                if(!KeyVals(args).get("t", t))
+                    return false;
+                sys::sleep(t);
+                return true;
+            });
+        }
+    };  CmdFunc cmdFunc_;
+
+}
 
 
 //--------------------
@@ -42,12 +69,7 @@ bool Cmd::run_func(CStrs& args)
     string scmd=args[0];
     assert(scmd!="");
     KeyVals kvs(args);
-
-    //------ TODO: add singleton of internal function Cmd
-    if(scmd==":halt")
-        while(1) sys::sleep(0.01);
-
-    return true;
+    return cmdFunc_.run(args);
 }
 
 //----

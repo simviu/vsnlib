@@ -189,13 +189,18 @@ void Server::send(Sp<Img> p)
     stringstream s;
     s << "dtype=vstream.image ";
     s << "buf_len=" << n << "\n";
-    log_d("  send header '"+s.str()+"'");
     svr_.send(s.str());
 
     //---- send data
     svr_.send(b);
     auto& fi = data_.frm_idx;
-    log_d("  sent img "+to_string(fi++));
+    if(cfg_.en_show)
+    {
+        stringstream s2;
+        s2 << "  send header '"+s.str()+"'\n";
+        s2 << "  sent img " << (fi++);
+        log_d(s2.str());
+    }
 }
 //----
 bool Client::connect(const string& sHost, int port)
@@ -241,7 +246,10 @@ bool Client::run_once()
         log_e("failed to get vstream header");
         return false;
     }
-    log_d("  recv header '"+sln+"'");
+    //----
+    bool ensh = cfg_.en_show;
+    if(ensh)
+        log_d("  recv header '"+sln+"'");
     //---- chk
     KeyVals kvs(sln);
     string st = kvs.get("dtype");
@@ -253,7 +261,8 @@ bool Client::run_once()
     int len=0; 
     if(!kvs.get("buf_len", len)) 
         return false;
-    log_d("  got buf_len:"+to_string(len));
+    if(ensh)
+        log_d("  got buf_len:"+to_string(len));
     //-----
     Buf buf(len);
     if(!clnt_.recv(buf))
@@ -275,12 +284,16 @@ bool Client::run_once()
     
     //----
     auto& fi = data_.frm_idx;
-    stringstream s;
     //----
     Sp<Img> p = mkSp<ImgCv>(im);
-    s << "  recv img " << fi++ << ", size:" << p->size().str();
-    log_d(s.str());
 
+    if(ensh)
+    {
+        stringstream s;
+        s << "  recv img " << fi++ << ", size:" << p->size().str();
+        log_d(s.str());
+    }
+    //-----
     onImg(p);
     if(p_fcb!=nullptr)
         p_fcb(p);
