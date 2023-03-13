@@ -314,6 +314,9 @@ namespace ut
         Rng(){};
         Rng(const T& d0, const T& d1):d0(d0),d1(d1){}
 
+        T cut(const T& d)const 
+        { return (d<d0)?d0 : (d>d1)?d1 : d; }
+
         bool isIn(const T& d)const
         { return (d>=d0)&&(d<=d1); }
         void upd(const T& d)
