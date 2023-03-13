@@ -63,6 +63,8 @@ namespace ut
     // TODO: template this by s2d()
     extern bool s2data(const string& s, vector<double>& ds, char c_deli=',');
     extern bool s2data(const string& s, vector<int>& ds,    char c_deli=',');
+    // hex string must with prefix of "0x"
+    extern bool s2hex(const string& s, uint32_t& d);
     //-------
     // KeyVals
     //-------

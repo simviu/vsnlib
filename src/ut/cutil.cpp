@@ -164,6 +164,17 @@ namespace ut{
         return true;
     }
 
+//-----
+extern bool s2hex(const string& s, uint32_t& d)
+{
+    if( s.length()<2) return false;
+    if( (s[0]!='0') || (s[1]!='x') ) return false;
+    string sx = s.substr(2, s.length()-2);
+    stringstream ss;
+    ss >> std::hex >> d;
+    return (!ss.fail()); 
+}
+
 
 //--------------------
 // sys
