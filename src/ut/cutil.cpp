@@ -43,20 +43,23 @@ namespace ut{
         return s1;
     }
 
-    //---- 
+    //---- TODO: deprecated and put in KeyVals
     extern bool parseKV(CStrs& ss, StrTbl& kv)
     {
-        for(auto& s : ss)
+        for(auto& si : ss)
         {
-           if(s=="")continue;
-           size_t e = s.find('=');
-           //---- standalong string take as option
-           if(e==string::npos)
-           { kv[s] =""; continue; }
-           //--- split k/v
-           string sk = s.substr(0,e);
-           string sv = s.substr(e+1);
-           kv[sk] = sv;
+            string s = si;
+            s.erase(remove(s.begin(), s.end(), ' '), s.end());
+
+            if(s=="")continue;
+            size_t e = s.find('=');
+            //---- standalong string take as option
+            if(e==string::npos)
+            { kv[s] =""; continue; }
+            //--- split k/v
+            string sk = s.substr(0,e);
+            string sv = s.substr(e+1);
+            kv[sk] = sv;
         }
         return true;
     }
@@ -75,6 +78,13 @@ namespace ut{
     }
 
     //-------------- -----
+    //-----
+    bool KeyVals::parse(const string& s, char c_sep)
+    { 
+        string s1 = s;
+        std::replace(s1.begin(), s1.end(), '\n', c_sep);         
+        return parse(tokens(s1, c_sep)); 
+    }
 
     //----
     bool KeyVals::has(const string& skey)const
@@ -128,12 +138,7 @@ namespace ut{
         return true;
     }
 
-
-
-
     //-----------------
-
-    //-----
     extern bool s2data(const string& s, vector<double>& ds, char c_deli)
     {
         auto ts = tokens(s, c_deli);

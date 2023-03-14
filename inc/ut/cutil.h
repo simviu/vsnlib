@@ -77,8 +77,7 @@ namespace ut
 
         //---
         bool parse(CStrs& ss){ return parseKV(ss, items);  };
-        bool parse(const string& s, char c_sep=' ')
-            { return parse(tokens(s, c_sep)); }
+        bool parse(const string& s, char c_sep=' ');
 
         //----
         bool has(const string& sKey)const;
@@ -486,7 +485,19 @@ namespace ut
         auto& cmds(){ return cmds_; }
         auto& cmds()const{ return cmds_; }
         bool run_console();
+
+        //---- Simple protocol for Server ack
+        struct Ack{
+            string enc()const;
+            bool dec(CStrs& ss);
+            string s_log;
+            bool run_ok = false;
+            string str()const;
+
+        };
         bool run_server(CStrs& args);
+
+        //----
         string sHelp_;
     protected:
         bool run_func(CStrs& args);

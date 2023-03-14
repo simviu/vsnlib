@@ -177,6 +177,65 @@ bool Cmd::runFile(CStr& sf)
     return ok;
 
 }
+//---- Cmd server ack
+string Cmd::Ack::str()const 
+{
+    stringstream s;
+    s << "run_ok=" << run_ok << endl;
+    s << "log:\n";
+    s << s_log << endl;
+    return s.str();
+}
+//---
+string Cmd::Ack::enc()const
+{
+    //---- A simple protocol wrap output
+    // into multiple lines:
+    //  'cmd_ack\n' 
+    //  'cmd_ok=[true|false]\n'
+    //  '[LOG_LINE\n | ...]'
+    //  'cmd_ack_end\n'
+    string s;
+    s += "cmd_ack\n";
+    string s_ok = "cmd_ok=";
+    s_ok += run_ok?"true":"false" ;
+    s_ok += "\n";
+
+    s += s_ok + s_log + "\n"; 
+    s += "cmd_ack_end";
+    return s;
+}
+//----
+bool Cmd::Ack::dec(CStrs& ss)
+{
+ //   auto ss = tokens(sLns, '\n');
+    if(ss.size()<3)
+    {
+        log_e("Cmd::Ack::dec() expect at least 3 lines");
+        return false;
+    }
+    //----
+    if( (ss[0]!="cmd_ack") ||
+        (ss[1]!="cmd_ok") ||
+        (ss[ss.size()-1]!="cmd_ack_end") )
+    {
+        log_e("Cmd::Ack::dec() expect 'cmd_ack', 'cmd_ok' and 'cmd_ack_end'");
+        return false;        
+    }
+    //----
+    string s_ok = ss[1];
+    
+    if(s_ok=="true") run_ok = true;
+    else if(s_ok=="false") run_ok = false;
+    else {
+        log_e("Cmd::Ack::dec() expect 'true' or 'false'");
+        return false;
+    } 
+    //----
+    s_log = ss[2];
+    return true;
+}
+
 
 //----- arm server
 bool Cmd::run_server(CStrs& args)
@@ -210,7 +269,6 @@ bool Cmd::run_server(CStrs& args)
     while(svr.isRunning())
     {
         string sln;
-
         if(!svr.recvLn(sln)) 
         {
             sys::sleep(0.2);
@@ -220,11 +278,13 @@ bool Cmd::run_server(CStrs& args)
         //---- run cmd
         log_i("Run cmd:'"+sln+"'");
         s_log = "";
-        bool ok = this->runln(sln);
-        string s_ok = "cmd_ok:";
-        s_ok += ok?"true":"false" ;
 
-        string sr = s_ok + "\n" +  s_log + "\n"; 
+        //---- run session
+        Ack ack;
+        ack.run_ok = this->runln(sln);
+        ack.s_log = s_log;
+        string sr = ack.enc();
+        
         svr.send(sr);
         sys::sleep(0.2);
     }
