@@ -680,6 +680,7 @@ namespace vsn{
             }; Result result_;
             //---- detect
             bool onImg(const Img& im);
+            auto get_imo() const{ return result_.p_imo; }
         protected:
             Sp<Img> gen_imo(const Img& im)const;
         };
