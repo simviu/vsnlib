@@ -75,7 +75,8 @@ bool Cmd::run_func(CStrs& args)
 //----
 bool Cmd::runln(const string& sLn_in)
 {
-    auto sLns = tokens(sLn_in, ';');
+    string sLn = ut::remove(sLn_in, '\n');
+    auto sLns = tokens(sLn, ';');
     for(auto& s : sLns)
     {
         if(s=="")continue;
@@ -158,7 +159,8 @@ bool Cmd::runFile(CStr& sf)
         i++;
         string si;
         getline(f, si);
-        string s = rm_comment(si);
+        string si2 = rm_comment(si);
+        string s = ut::remove(si2, '\n');
         if(s=="")continue;
         log_i("Run cmd (line "+to_string(i)+"):'"+s+"'");
         ok = runln(s);
@@ -268,18 +270,19 @@ bool Cmd::run_server(CStrs& args)
     //---- server started
     while(svr.isRunning())
     {
-        string sln;
-        if(!svr.recvLn(sln)) 
+        string slnr;
+        if(!svr.recvLn(slnr)) 
         {
             sys::sleep(0.2);
             continue;
         }
-
+        string sln = ut::remove(slnr, '\n');
+        if(sln=="")continue;
         //---- run cmd
         log_i("Run cmd:'"+sln+"'");
-        s_log = "";
 
         //---- run session
+        s_log = ""; // clear log
         Ack ack;
         ack.run_ok = this->runln(sln);
         ack.s_log = s_log;
