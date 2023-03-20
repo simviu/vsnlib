@@ -748,6 +748,9 @@ namespace vsn{
             void add(const Points& ps, 
                      const string& sName,
                      float pnt_sz=3);
+            void addCube(const string& s,
+                         const Pose& T, 
+                         const vec3& sz);
             bool spin();
             static Sp<Vis> create(const Cfg& c=Cfg());
             void clear();

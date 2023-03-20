@@ -73,6 +73,7 @@ namespace{
         p->setBackgroundColor (cb.r/255.0, cb.g/255.0, cb.b/255.0);
         p->addCoordinateSystem (c.axisL);
         p->initCameraParameters();
+        
         p_pcl_vis_ = p;
     }
     
@@ -95,6 +96,18 @@ void Points::Vis::add(const Points& pd,
     vi.addPointCloud<pcl::PointXYZRGB> (p, rgb, sName);
     vi.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, pnt_sz, sName);
 }
+//----
+void Points::Vis::addCube(const string& s,
+                          const Pose& T, 
+                          const vec3& sz)
+{
+    auto p_vi = getRaw(*this);
+    Eigen::Vector3f t; t<<T.t.x(), T.t.y(), T.t.z();
+    Eigen::Quaternionf q(T.q);
+    p_vi->addCube(t, q, sz.x(), sz.y(), sz.z(), s);
+
+}
+
 //----
 bool Points::Vis::spin()
 {
@@ -153,6 +166,7 @@ void Points::add(const Pnt& p)
     stats_.box.upd(p.p);
 
 }
+
 
 //---------------
 bool Points::load(const string& sf)
