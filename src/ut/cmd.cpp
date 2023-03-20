@@ -204,7 +204,7 @@ string Cmd::Ack::enc()const
     s_ok += "\n";
 
     s += s_ok + s_log + "\n"; 
-    s += "cmd_ack_end";
+    s += "cmd_ack_end\n";
     return s;
 }
 //----
@@ -218,15 +218,15 @@ bool Cmd::Ack::dec(CStrs& ss)
     }
     //----
     if( (ss[0]!="cmd_ack") ||
-        (ss[1]!="cmd_ok") ||
         (ss[ss.size()-1]!="cmd_ack_end") )
     {
-        log_e("Cmd::Ack::dec() expect 'cmd_ack', 'cmd_ok' and 'cmd_ack_end'");
+        log_e("Cmd::Ack::dec() expect 'cmd_ack' and 'cmd_ack_end'");
         return false;        
     }
     //----
-    string s_ok = ss[1];
-    
+    KeyVals kvs(ss);
+    //----
+    string s_ok = kvs["cmd_ok"];
     if(s_ok=="true") run_ok = true;
     else if(s_ok=="false") run_ok = false;
     else {
@@ -234,7 +234,9 @@ bool Cmd::Ack::dec(CStrs& ss)
         return false;
     } 
     //----
-    s_log = ss[2];
+    s_log = "";
+    for(int i=2;i<ss.size();i++)
+        s_log += ss[i];
     return true;
 }
 
@@ -271,15 +273,25 @@ bool Cmd::run_server(CStrs& args)
     while(svr.isRunning())
     {
         string slnr;
+        if(!svr.isConnected())
+        {
+            sys::sleep(0.2);
+            continue;
+        } 
+
+        //----
+        log_i("Cmd server wait...");
         if(!svr.recvLn(slnr)) 
         {
             sys::sleep(0.2);
             continue;
         }
+        //-----
         string sln = ut::remove(slnr, '\n');
         if(sln=="")continue;
+        //---
         //---- run cmd
-        log_i("Run cmd:'"+sln+"'");
+        log_i("Cmd server recv and run:'"+sln+"'");
 
         //---- run session
         s_log = ""; // clear log
@@ -288,8 +300,11 @@ bool Cmd::run_server(CStrs& args)
         ack.s_log = s_log;
         string sr = ack.enc();
         
+        //---
+        log_d("  send ack...");
         svr.send(sr);
         sys::sleep(0.2);
+        log_d("done\n");
     }
     log_i("Server shutdown");
     //---- 
