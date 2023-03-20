@@ -87,9 +87,10 @@ namespace ut
         bool get(const string& skey, double& d)const;
         bool get(const string& skey, int& d)const;
         bool get(const string& skey, bool& d)const;
-
         bool get(const string& skey, string& s)const;
 
+        string query(const string& skey)const
+        { return (has(skey))?get(skey) :""; }
         //----
         map<string, string> items;
     };
@@ -186,6 +187,7 @@ namespace ut
         };
         //----
         extern bool exists(const string& s);
+        extern bool mkdir(const string& s);
     }
     
     //----------------
@@ -339,7 +341,7 @@ namespace ut
     //-------------
     //  utils
     //-------------
-    bool fexist(CStr& sf);
+    //bool fexist(CStr& sf);
 
     //---- Binary Buf
     struct Buf{

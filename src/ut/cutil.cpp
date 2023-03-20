@@ -235,6 +235,15 @@ namespace sys
     {
         return filesystem::exists(s);
     }
+    //----
+    extern bool mkdir(const string& s)
+    {
+        if(exists(s))return true;
+        bool ok = std::filesystem::create_directory(s);
+        if(ok) log_i("mkdir:'"+s+"'");
+        else log_e("fail to mkdir:'"+s+"'");
+        return ok;
+    }
 
 }
 //--------------------
@@ -275,6 +284,7 @@ bool Sz::set(const string& s, char c_deli)
 //--------------------
 // file utils
 //--------------------
+/*
 bool fexist(CStr& sf)
 {
     ifstream f;
@@ -283,7 +293,7 @@ bool fexist(CStr& sf)
     f.close();
     return ok;
 }
-
+*/
 
 
 }// namespace ut

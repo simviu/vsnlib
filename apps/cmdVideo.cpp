@@ -10,6 +10,7 @@
 
 #include "vsn/vsnTool.h"
 #include <opencv2/ccalib/multicalib.hpp>
+#include <filesystem>
 
 using namespace app;
 
@@ -51,17 +52,21 @@ CmdVideo::CmdVideo():
 //------
 bool CmdVideo::run_frames(CStrs& args)
 {
-    StrTbl kv;   parseKV(args, kv);
-    string sf = lookup(kv, string("file"));
-    string s_idx = lookup(kv, string("idx"));
-    string s_wd  = lookup(kv, string("wdir"));
+    //StrTbl kv;   parseKV(args, kv);
+    KeyVals kvs(args);
+    string sf; 
+    if(!kvs.get("file", sf)) return false;
+    string s_wd  = kvs["wdir"];
+    string s_idx = kvs.query("idx");
+    data_.is_stereo = kvs.has("-stereo");
+    //----
     if(s_wd=="") s_wd = "./";
     data_.s_wdir = s_wd;
-    bool b_ui = has(kv, "-ui");
+    bool b_ui = kvs.has("-ui");
     //----
-    int idx = 0;
-    if(s_idx=="all") idx = -1;
-    else if(!s2d(s_idx, idx))
+    int idx = -1;
+    if ( (s_idx!="")&&
+         (!s2d(s_idx, idx)) )
     {
         log_e("  Invalid index:"+s_idx);
         return false;
@@ -111,16 +116,51 @@ bool CmdVideo::run_frames(CStrs& args)
 //------
 bool CmdVideo::save_frm(const Img& im)
 {
+    //---- stereo
+    if(data_.is_stereo)
+         return save_frm_stereo(im);
+    
+    //----
     auto& fi = data_.frm_idx;
-    string sf= data_.s_wdir +"/"+ 
-                std::to_string(fi)+".png";
-    if(!im.save(sf))
+    string sf = data_.s_wdir + "/" + std::to_string(fi)+".png";
+    bool ok = im.save(sf);
+    
+    if(ok)
+         log_i("saved: "+sf); 
+    else log_ef(sf);
+        
+    return ok;
+}
+//----
+bool CmdVideo::save_frm_stereo(const Img& im)
+{
+    // crop split image L/R
+    Sz sz = im.size();
+    sz.w *= 0.5;
+    float xcs[2]{0.5, 1.5}; // center x of Rect
+    string sds[2]{"/L/", "/R/"};
+
+    //--- check/create dir
+    string swds[2];
+    for(int i=0;i<2;i++)
     {
-        log_ef(sf);
-        return false;
-    }   
-    log_i("saved: "+sf); 
-    return true;
+        string swd = data_.s_wdir + sds[i] ;
+        if(!sys::mkdir(swd)) return false;
+        swds[i] = swd;
+    }
+
+    //--- write files
+    auto& fi = data_.frm_idx;
+    bool ok = true;
+    for(int i=0;i<2;i++)
+    {
+        int xc = sz.w*xcs[i];
+        Px pc{xc, sz.h*0.5};
+        auto p = im.crop({pc, sz});
+        string sf = swds[i] + std::to_string(fi)+".png";
+        ok &= p->save(sf);
+    }
+    return ok;
 }
 
 //------

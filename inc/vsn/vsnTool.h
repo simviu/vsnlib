@@ -69,6 +69,7 @@ namespace app
         struct Data{
             int frm_idx=0;
             string s_wdir="./";
+            bool is_stereo = false;
         }; Data data_;
         bool video_frm_ui(const Img& im);
         bool run_frames(CStrs& args);
@@ -76,6 +77,7 @@ namespace app
         bool run_crop_stereo(CStrs& args);
         bool run_enc(CStrs& args);
         bool save_frm(const Img& im);
+        bool save_frm_stereo(const Img& im);
 
     };
 

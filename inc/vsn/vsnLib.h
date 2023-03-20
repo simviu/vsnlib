@@ -451,6 +451,7 @@ namespace vsn{
         virtual Sp<Img> crop(const ut::Rect& r)const=0;
         //---- img operations
         virtual void rot(double dgr)=0;
+
         //---- 
         static Sp<Img> loadFile(const string& sf, int cvFlags=1);
 
