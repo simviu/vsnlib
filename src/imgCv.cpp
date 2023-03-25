@@ -222,28 +222,61 @@ vector<Circle> ImgCv::det(const HoughCirCfg& c)const
     return cirs;
 }
 
-//----- set/get
+//----- set/get -----------
+template<typename T> 
+    void setpx(Mat& im, const Px& px, const Color& c)
+{
+    im.ptr<T>(px.y)[px.x] = T(c);
+}
+//---
+template<typename T> 
+    bool getpx(const Mat& im, const Px& px, Color& c)
+{
+    auto& d = im.ptr<const T>(px.y)[px.x];
+    c = d.toUt();
+    return true;    
+}
+
+//----
 void ImgCv::set(const Px& px, const Color& c) 
 {
     if(!size().isIn(px)) return;
-    im_.ptr<BGR>(px.y)[px.x] = BGR(c);
+
+    int tp = im_.type();
+    if(tp==CV_8UC1) setpx<Gray>(im_, px, c);
+    else if(tp==CV_8UC3) setpx<BGR>(im_, px, c);
+    else if(tp==CV_8UC4) setpx<BGRA>(im_, px, c);
+    else log_e("ImgCv::set() not yet mat type:"+str(tp));
 }
+//---
 bool ImgCv::get(const Px& px, Color& c)const
 {
+    bool ok = true;
     if(!size().isIn(px)) return false;
-    auto& bgr = im_.ptr<const BGR>(px.y)[px.x];
-    c = bgr.toUt();
-    return true;
+
+    int tp = im_.type();
+    if(tp==CV_8UC1) getpx<Gray>(im_, px, c);
+    else if(tp==CV_8UC3) getpx<BGR>(im_, px, c);
+    else if(tp==CV_8UC4) getpx<BGRA>(im_, px, c);
+    else {
+        ok = false;
+        log_e("ImgCv::get() not yet mat type:"+str(tp));
+    }
+    return ok;
 }
+
+
 //---- TODO: template
 void ImgCv::set(const Px& px, const HSV& c) 
 {
     if(!size().isIn(px)) return;
     im_.ptr<HSV>(px.y)[px.x] = HSV(c);
 }
+//----
 bool ImgCv::get(const Px& px, HSV& c)const
 {
     if(!size().isIn(px)) return false;
     c = im_.ptr<const HSV>(px.y)[px.x];
     return true;
 }
+//----

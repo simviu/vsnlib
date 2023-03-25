@@ -22,6 +22,18 @@ namespace vsn{
     //--------
     // types
     //--------
+    struct Gray {
+        uint8_t d=0;
+        Gray(){}
+        Gray(const Color& c):d(avg(c)){}
+        Color toUt()const{ return {d,d,d,255}; }
+        string str()const
+        { stringstream s; s << d; return s.str(); }
+    protected:
+        uint8_t avg(const Color& c)
+        { int s = c.r + c.g + c.b; return  s/3; }
+    }; 
+
     //---- BGR can be used to access image BGR
     // elements directly.
     struct BGR {
@@ -49,6 +61,7 @@ namespace vsn{
                 << r << "," << a; 
           return s.str(); }
     }; 
+    //---
     struct HSV {
         HSV(){}
         HSV(uint8_t h, uint8_t s, uint8_t v):

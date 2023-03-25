@@ -18,7 +18,7 @@ using namespace ut;
 //-----------------
 bool CamCfg::load(CStr& sf)
 {
-
+    log_i("Load cam cfg:'"+sf+"'...");
     if(!sys::exists(sf)) {   
         log_ef("CamCfg '"+ sf+"' not found"); 
         return false; }
