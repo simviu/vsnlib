@@ -100,6 +100,24 @@ bool Cmd::runln(const string& sLn_in)
 //--------
 bool Cmd::run(int argc, char ** argv)
 {
+    bool ok = true;
+    try{
+        ok = run_core(argc, argv);
+    }
+    catch(const std::exception& e)
+    {
+        stringstream s;
+        s << "Cmd::run() exception :'";
+        s << e.what() << "'";
+        log_e(s.str());
+        ok = false;
+    }
+    return ok;
+}
+
+//--------
+bool Cmd::run_core(int argc, char ** argv)
+{
 
     //---- no arg
     if(argc==1)

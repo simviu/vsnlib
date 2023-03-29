@@ -502,6 +502,8 @@ namespace ut
         //----
         string sHelp_;
     protected:
+        bool run_core(int argc, char ** argv);
+
         bool run_func(CStrs& args);
         Fun f_=nullptr;
         map<string, Sp<Cmd>> cmds_;
