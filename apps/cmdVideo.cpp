@@ -155,7 +155,7 @@ bool CmdVideo::save_frm_stereo(const Img& im)
     for(int i=0;i<2;i++)
     {
         int xc = sz.w*xcs[i];
-        Px pc{xc, sz.h*0.5};
+        Px pc{xc, (int)(sz.h*0.5)};
         auto p = im.crop({pc, sz});
         string sf = swds[i] + std::to_string(fi)+".png";
         ok &= p->save(sf);
