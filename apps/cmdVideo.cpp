@@ -25,9 +25,8 @@ CmdVideo::CmdVideo():
     //---- 'frames'
     {
         string sH = "frame by frame examine and operations \n";
-        sH += "   Usage: frames file=<FILE> idx=<IDX> wdir=<WDIR> [-ui]\n";
-        sH += "       Notes - <IDX> can set 'all' \n";
-        sH += "             - in '-ui' mode, 's' key to save frm  \n";
+        sH += "   Usage: frames file=<FILE> idx=<IDX> wdir=<WDIR> [-ui] [-stereo]\n";
+        sH += "       Notes : in '-ui' mode, 's' key to save frm  \n";
         add("frames", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_frames(args); }));
     }
@@ -62,6 +61,8 @@ bool CmdVideo::run_frames(CStrs& args)
     //----
     if(s_wd=="") s_wd = "./";
     data_.s_wdir = s_wd;
+    if(!sys::mkdir(s_wd))return false;
+    //---
     bool b_ui = kvs.has("-ui");
     //----
     int idx = -1;
