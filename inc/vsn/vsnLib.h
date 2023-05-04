@@ -757,6 +757,7 @@ namespace vsn{
                 string sName;
                 Color bk_color;
                 float axisL=10.0;
+                bool set(const KeyVals& kvs){ return true; } // TODO
             }; 
             void add(const Points& ps, 
                      const string& sName,

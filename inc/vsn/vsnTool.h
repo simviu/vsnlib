@@ -81,6 +81,18 @@ namespace app
 
     };
 
+
+    //-----------
+    // CmdPoints
+    //-----------
+    class CmdPoints:public Cmd{
+    public:
+        using Cmd::Cmd;
+        CmdPoints();
+    protected:
+        bool show(CStrs& args);
+
+    };
     //-----------
     // CmdVStream
     //-----------
