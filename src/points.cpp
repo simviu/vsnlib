@@ -166,6 +166,16 @@ void Points::add(const Pnt& p)
     stats_.box.upd(p.p);
 
 }
+//-----
+void Points::add(const Points& p)
+{
+    auto pc = getRaw(*this);
+    auto pc2 = getRaw(p);
+    (*pc) += (*pc2); 
+    pc->width = pc->size();
+    pc->height = 1;
+    stats_.box.upd(p.stats_.box);
+}
 
 
 //---------------

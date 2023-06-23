@@ -771,6 +771,7 @@ namespace vsn{
         };
         //----
         void add(const Pnt& p);
+        void add(const Points& p);
         bool load(const string& sf);
         bool save(const string& sf)const;
         //--- filter statistical or voxel
