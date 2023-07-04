@@ -747,7 +747,12 @@ namespace vsn{
     class Points{
     public:
         Points();
-        struct Pnt{ vec3 p; Color c; };
+        struct Pnt{ 
+            vec3 p; 
+            Color c; 
+            void trans(const Pose& T){ p =T*p; }
+        };
+        //----
         struct Data{};// virtual
         //----- visualization
         class Vis{
@@ -780,7 +785,8 @@ namespace vsn{
 
         auto getData(){ return p_data_ ; }
         auto getData()const{ return p_data_ ; }
-
+        void trans(const Pose& T);
+        
         //---- samples
         void gen_cylinder();
         void clear();

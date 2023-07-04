@@ -27,6 +27,19 @@ namespace{
         p.z = v.z();
         return p;
     }
+    //---
+    Points::Pnt toVsn(const  pclu::Pnt& p)
+    {
+        Points::Pnt v;
+        v.p << p.x, p.y, p.z;
+        uint32_t c = p.rgb;
+        uint8_t r = (c>>16) & 0xff;
+        uint8_t g = (c>>8) & 0xff;
+        uint8_t b = c & 0xff;
+        v.c = {r,g,b,0xff};
+        return v;
+    }
+
     //------------
     // Points::Data Imp
     //------------
@@ -177,6 +190,22 @@ void Points::add(const Points& p)
     stats_.box.upd(p.stats_.box);
 }
 
+//----
+void Points::trans(const Pose& T)
+{
+    auto pc = getRaw(*this);
+
+    for(auto& p : pc->points)
+    {
+        Pnt v = toVsn(p);
+        v.p = T * v.p;
+        p = toPcl(v);
+        stats_.box.upd(v.p);    
+    }
+    //----
+    pc->width = pc->size();
+    pc->height = 1;
+}
 
 //---------------
 bool Points::load(const string& sf)
