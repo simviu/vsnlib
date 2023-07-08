@@ -5,7 +5,7 @@ from tkinter import ttk
 import shlex, subprocess
 from threading import Thread
 import socket
-
+import cv2
 
 BORDER_W = 2
 TEST_HOST = "127.0.0.1"
@@ -111,6 +111,9 @@ class VStreamClient(object):
 
         l = int(sl)
         buf = self.sock_.recv(l)
+        im = cv2.imdecode(buf)
+        cv2.imshow("image",im)
+        cv2.waitKey(10)
 
         return
         
