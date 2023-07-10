@@ -6,6 +6,7 @@ import shlex, subprocess
 from threading import Thread
 import socket
 import cv2
+import numpy as np
 
 BORDER_W = 2
 TEST_HOST = "127.0.0.1"
@@ -50,7 +51,7 @@ class VStreamClient(object):
             raise Exception("socket failed")
         
         self.sock_.connect((sHost, port))
-        
+        self.sock_.setblocking(1)
         # TODO: check connection
         print("connected")
 
@@ -81,13 +82,36 @@ class VStreamClient(object):
     
     #-----
     def run_bk_func_(self):
-        time.sleep(T_MIN_FRM_DELAY)
         if self.sock_ is None: 
             return 
+
+        while True:
+            time.sleep(T_MIN_FRM_DELAY)
+            self.recv_frm_()
         
+
+        return
+
+    #---- recv buf
+    def recv_buf_(self, N):
+        sock = self.sock_
+        chunks = []
+        bytes_recd = 0
+        while bytes_recd < N:
+            chunk = sock.recv(min(N - bytes_recd, 2048))
+            if chunk == b'':
+                raise RuntimeError("socket connection broken")
+            chunks.append(chunk)
+            bytes_recd = bytes_recd + len(chunk)
+        return b''.join(chunks)
+
+    #--- 
+    def recv_frm_(self):
+        print("[dbg]: recvLn_()...")
         s = self.recvLn_()
         if s == "" :
             return
+        print("[dbg]: recv s='"+s+"'")
 
         #---- prepare err msg
         sExp = "'dtype=vstream.image buf_len=<N>\n'"
@@ -110,8 +134,18 @@ class VStreamClient(object):
             raise(sErr)
 
         l = int(sl)
-        buf = self.sock_.recv(l)
-        im = cv2.imdecode(buf)
+        print("[dbg]: buf len:"+str(l))
+        #dt = self.sock_.recv(l)
+        dt = self.recv_buf_(l)
+        print("[dbg]: recv dt, len="+str(len(dt)))
+        #---
+
+
+        #---
+        buf = np.asarray(bytearray(dt), dtype="uint8")
+        im = cv2.imdecode(buf,cv2.IMREAD_COLOR)
+        print("[dbg]:im dec done")
+
         cv2.imshow("image",im)
         cv2.waitKey(10)
 
@@ -129,11 +163,9 @@ class TestApp:
                       font = ("Times New Roman", 25))
         lt.grid(row=0, column=0, sticky="news")
 
-        #sCmd = "ping www.yahoo.com"
-        #sCmd = "ping"
-        sCmd = "./tmp.sh"
-        pnl = ConsolePanel(root, "Command Console", sCmd)
+        pnl = VStreamClient(root, "vstream test")
         pnl.frm.grid(row=1, column=0, sticky="news")
+        pnl.connect(TEST_HOST, TEST_PORT)
 
         root.rowconfigure(0, weight=1)
         root.rowconfigure(1, weight=10)
