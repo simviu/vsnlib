@@ -7,6 +7,9 @@ from threading import Thread
 import socket
 import cv2
 import numpy as np
+from PIL import Image, ImageTk
+
+
 
 BORDER_W = 2
 TEST_HOST = "127.0.0.1"
@@ -16,7 +19,9 @@ LN_MAX_CHARS = 1024
 
 #----
 class VStreamClient(object):
-    def __init__(self, topFrm, sTitle):
+    def __init__(self, topFrm, sTitle, scale=(1.0,1.0)):
+        self.cfg = {}
+        self.cfg['scale'] = scale
         frm = ttk.Frame(topFrm, padding=(3,3,12,12))
        
         #---- title
@@ -32,6 +37,9 @@ class VStreamClient(object):
         #---- status bar
         ls = tk.Label(frm, text = "status")
         ls.grid(row=2, column=0, sticky="news")
+        frm.columnconfigure(1, minsize=640)
+        frm.rowconfigure(1, minsize=480)
+
         self.l_status_ = ls
         #----        
         frm.rowconfigure(0, weight=1)
@@ -146,9 +154,22 @@ class VStreamClient(object):
         im = cv2.imdecode(buf,cv2.IMREAD_COLOR)
         print("[dbg]:im dec done")
 
-        cv2.imshow("image",im)
-        cv2.waitKey(10)
-
+        #cv2.imshow("image",im)
+        #cv2.waitKey(10)
+        #----
+        scl = self.cfg['scale']
+        w,h = im.shape[1], im.shape[0]
+        w,h = int(w * scl[0]), int(h * scl[1])
+        im  = cv2.resize(im, (w,h))
+        #----
+        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(im)
+        imgtk = ImageTk.PhotoImage(image=img)
+        #---- dbg
+        #imgtk = ImageTk.PhotoImage(Image.open("./t1.jpg"))
+        lb = self.l_img_
+        lb.configure(image=imgtk)
+        lb.image = imgtk
         return
         
 
@@ -163,7 +184,7 @@ class TestApp:
                       font = ("Times New Roman", 25))
         lt.grid(row=0, column=0, sticky="news")
 
-        pnl = VStreamClient(root, "vstream test")
+        pnl = VStreamClient(root, "vstream test", (0.5,0.5))
         pnl.frm.grid(row=1, column=0, sticky="news")
         pnl.connect(TEST_HOST, TEST_PORT)
 
