@@ -94,12 +94,15 @@ bool Server::init(CStrs& args)
 
 bool Server::init(int port)
 {
+    data_.isConnected = false;
+
     log_i("Start vstream server at port "+to_string(port));
     bool ok = svr_.start(port);
     if(!ok) log_e(" vstream server failed");
 
     if(!ok) return false;
-
+    log_i("vstream server started on port:"+str(port));
+    data_.isConnected = true;
     //--- start loop thread
     thd_ = std::thread([&](){
         run_loop();

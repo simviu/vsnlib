@@ -531,6 +531,8 @@ namespace vsn{
             bool open(const string& sf);
             bool open(int cam_id);
             bool openImg(const string& sf);
+            bool isConnected()const
+                { return data_.isConnected; }
         protected:
             void init_cmds();
             bool init(CStrs& args);
@@ -541,6 +543,7 @@ namespace vsn{
             //----
             struct Data{
                 int frm_idx = 0;
+                bool isConnected = false;
             }; Data data_;
 
             //-- source
