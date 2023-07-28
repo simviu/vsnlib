@@ -85,6 +85,12 @@ CmdImg::CmdImg():
         add("crop", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_crop(args); }));
     }
+    //---- 'undist'
+    {
+        string sH = "undist file=<IMG> cfg=<CAM_CFG> filew=<FILEW> (image un-distortion) \n";
+        add("undist", mkSp<Cmd>(sH,
+        [&](CStrs& args)->bool{ return run_undist(args); }));
+    }
 
 }
 
@@ -174,4 +180,23 @@ bool CmdImg::run_crop(CStrs& args)
     //---- save dbg img
     p_imd->save(fp.base + "_dbg" + fp.ext);
     return true;
+}
+
+
+//------
+bool CmdImg::run_undist(CStrs& args)
+{
+    using namespace picker;
+    KeyVals kvs(args);
+    string sf  = kvs["file"];
+    string sfw = kvs["filew"];
+    string sfc = kvs["cfg"];
+    auto p_im = vsn::Img::create();
+    CamCfg camc; 
+    if(!p_im->load(sf)) return false;
+    if(!camc.load(sfc)) return false;
+    auto pw = camc.undist(*p_im);    
+
+    return pw->save(sfw);
+
 }

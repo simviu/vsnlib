@@ -53,6 +53,7 @@ namespace app
     protected:
         bool run_picker(CStrs& args);
         bool run_crop(CStrs& args);
+        bool run_undist(CStrs& args);
         struct Data{
             int frm_idx=0;
         }; Data data_;
