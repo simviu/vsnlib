@@ -42,7 +42,7 @@ namespace vsn{
         uint8_t r=0;  
         BGR(){}
         BGR(const Color& c):b(c.b), g(c.g), r(c.r){}
-        Color toUt()const{ return {r,g,b,255}; }
+        Color toUt()const{ Color c{r,g,b,255}; return c;  }
         string str()const
         { stringstream s; s << b << "," << g << "," << r; 
           return s.str(); }

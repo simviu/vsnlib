@@ -45,8 +45,10 @@ bool ImgCv::load(ut::CStr& s, int cvFlag)
 {
     im_ = cv::imread(s, cvFlag);
     bool ok = val();
+    int t = im_.type();
     if(ok)
-        log_i("Img load:"+s);
+        log_i("Img load:"+s + ", type="+to_string(t) +
+                ", sz="+size().str());
     else
         log_ef(s);
     return ok;

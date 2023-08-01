@@ -211,9 +211,12 @@ bool CmdImg::run_diff(CStrs& args)
 {
     KeyVals kvs(args);
     auto p1 = Img::loadFile(kvs["file1"]);
-    auto p2 = Img::loadFile(kvs["file1"]);
+    auto p2 = Img::loadFile(kvs["file2"]);
     if((p1==nullptr) ||(p2==nullptr))
+    {
+        log_e("image load failed");
         return false;
+    }
 
     Sz sz  = p1->size();
     Sz sz2 = p2->size();
@@ -233,7 +236,9 @@ bool CmdImg::run_diff(CStrs& args)
             i++;
             Color c1,c2;
             Px px(x, y);
-            bool ok = p1->get(px, c1) && p2->get(px, c2);
+            bool ok = true;
+            ok &= p1->get(px, c1);
+            ok &= p2->get(px, c2);
             if(!ok) continue;
             //----
             Color dc = c1 - c2;
@@ -259,7 +264,10 @@ bool CmdImg::run_diff(CStrs& args)
     s << "avg err:" << e_avg << "\n";
     s << "deviation err:" << ed << "\n";
 
-
+    log_i(s.str());
+    //---- dbg
+    //p1->save("tmp1.png");
+    //p2->save("tmp2.png");
 
     return true;
 }
