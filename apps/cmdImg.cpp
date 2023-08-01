@@ -91,6 +91,12 @@ CmdImg::CmdImg():
         add("undist", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_undist(args); }));
     }
+    //---- 'diff'
+    {
+        string sH = "diff file1=<IMG1> file2=<IMG2> filew=<FILEW> \n";
+        add("diff", mkSp<Cmd>(sH,
+        [&](CStrs& args)->bool{ return run_diff(args); }));
+    }    
 
 }
 
@@ -199,4 +205,61 @@ bool CmdImg::run_undist(CStrs& args)
 
     return pw->save(sfw);
 
+}
+//----
+bool CmdImg::run_diff(CStrs& args)
+{
+    KeyVals kvs(args);
+    auto p1 = Img::loadFile(kvs["file1"]);
+    auto p2 = Img::loadFile(kvs["file1"]);
+    if((p1==nullptr) ||(p2==nullptr))
+        return false;
+
+    Sz sz  = p1->size();
+    Sz sz2 = p2->size();
+    if( sz != sz2 )
+    {
+        log_e("Size differ, ("+sz.str()+") vs ("+ sz2.str() + ")");
+        return false;
+    }
+    //-----
+    int i=0;
+    double e_sum = 0;
+    double e_max = 0;
+    vector<double> es;
+    for(int y = 0 ; y< sz.h ; y++)
+        for(int x = 0; x<sz.w ; x++)
+        {
+            i++;
+            Color c1,c2;
+            Px px(x, y);
+            bool ok = p1->get(px, c1) && p2->get(px, c2);
+            if(!ok) continue;
+            //----
+            Color dc = c1 - c2;
+            double e = fabs(dc.r) + fabs(dc.g) + fabs(dc.b) + fabs(dc.a);
+            if(e > e_max) e_max = e;
+            e_sum += e;
+            es.push_back(e);
+
+        }
+    //----
+    if(i==0) { log_e("no data"); return false; }
+    //----
+    double e_avg = e_sum / (double)i;
+    //---- deviation
+    double ed_sum = 0;
+    for(auto& e : es)
+        ed_sum += e*e;
+    double ed = sqrt(ed_sum / (double)i);
+
+    //----
+    stringstream s;
+    s << "max err:" << e_max << "\n";
+    s << "avg err:" << e_avg << "\n";
+    s << "deviation err:" << ed << "\n";
+
+
+
+    return true;
 }
