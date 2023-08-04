@@ -143,6 +143,8 @@ int main(int argc, char *argv[]) {
 
 //    Ptr<aruco::Dictionary> dictionary;
     aruco::Dictionary dictionary;
+    //*pDict = dictionary;
+
     if (parser.has("d")) {
         int dictionaryId = parser.get<int>("d");
 //      dictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
@@ -160,6 +162,7 @@ int main(int argc, char *argv[]) {
         cerr << "Dictionary not specified" << endl;
         return 0;
     }
+    auto pDict = make_shared<aruco::Dictionary>(dictionary);
 
     // create charuco board object
     Ptr<aruco::CharucoBoard> charucoboard =
@@ -177,7 +180,10 @@ int main(int argc, char *argv[]) {
         Mat image, imageCopy;
 
         if(sImgs.size()!=0)
+        {
+            if(i >= sImgs.size()) break;
             image = imread(sImgs[i]);
+        }
         else if(inputVideo.grab()) 
             inputVideo.retrieve(image);
         else break;
@@ -188,7 +194,7 @@ int main(int argc, char *argv[]) {
 
         // detect markers
 //        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
-        aruco::detectMarkers(image, &dictionary, corners, ids);
+        aruco::detectMarkers(image, pDict, corners, ids);
 
         // refind strategy to detect more markers
         if(refindStrategy) aruco::refineDetectedMarkers(image, board, corners, ids, rejected);
