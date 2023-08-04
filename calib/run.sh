@@ -1,5 +1,5 @@
 
-SRC=-imgs=$1
+SRC=-imgs=imgs
 #SRC=-v=$1
 #SRC=--ci=0    
 

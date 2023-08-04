@@ -230,7 +230,7 @@ bool Points::save(const string& sf)const
         return false;
     }
 
-    log_i("Load Point Cloud OK:'"+sf+"'");
+    log_i("Save Point Cloud OK:'"+sf+"'");
 
     return true;
 }
