@@ -101,4 +101,4 @@ target_link_libraries(vsntool
     )
 
 #---- calib tool
-#add_subdirectory(calib)
+add_subdirectory(calib)

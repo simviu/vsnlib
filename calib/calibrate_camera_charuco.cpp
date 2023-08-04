@@ -65,6 +65,7 @@ const char* keys  =
         "DICT_7X7_100=13, DICT_7X7_250=14, DICT_7X7_1000=15, DICT_ARUCO_ORIGINAL = 16}"
         "{cd       |       | Input file with custom dictionary }"
         "{@outfile |<none> | Output file with calibrated camera parameters }"
+        "{imgs     |       | Input from img dir}"
         "{v        |       | Input from video file, if ommited, input comes from camera }"
         "{ci       | 0     | Camera id if input doesnt come from video (-v) }"
         "{dp       |       | File of marker detector parameters }"
@@ -105,7 +106,7 @@ int main(int argc, char *argv[]) {
     Ptr<aruco::DetectorParameters> detectorParams;
     if(parser.has("dp")) {
         FileStorage fs(parser.get<string>("dp"), FileStorage::READ);
-        bool readOk = aruco::DetectorParameters::readDetectorParameters(fs.root(), detectorParams);
+        bool readOk = detectorParams->readDetectorParameters(fs.root());
         if(!readOk) {
             cerr << "Invalid detector parameters file" << endl;
             return 0;
@@ -114,9 +115,11 @@ int main(int argc, char *argv[]) {
 
     bool refindStrategy = parser.get<bool>("rs");
     int camId = parser.get<int>("ci");
-    String video;
+    String video, sImgDir;
 
-    if(parser.has("v")) {
+    if(parser.has("imgs"))
+        sImgDir = parser.get<String>("imgs");
+    else if(parser.has("v")) {
         video = parser.get<String>("v");
     }
 
@@ -126,23 +129,28 @@ int main(int argc, char *argv[]) {
     }
 
     VideoCapture inputVideo;
-    int waitTime;
-    if(!video.empty()) {
+    vector<cv::String> sImgs;
+    
+    int waitTime = 0;
+    if(sImgDir!="")
+        glob(sImgDir + "/*.png", sImgs, false);    
+    else if(!video.empty())
         inputVideo.open(video);
-        waitTime = 0;
-    } else {
+    else {
         inputVideo.open(camId);
         waitTime = 10;
     }
 
-    Ptr<aruco::Dictionary> dictionary;
+//    Ptr<aruco::Dictionary> dictionary;
+    aruco::Dictionary dictionary;
     if (parser.has("d")) {
         int dictionaryId = parser.get<int>("d");
-        dictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
+//      dictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
+        dictionary = aruco::getPredefinedDictionary(dictionaryId);
     }
     else if (parser.has("cd")) {
         FileStorage fs(parser.get<std::string>("cd"), FileStorage::READ);
-        bool readOk = aruco::Dictionary::readDictionary(fs.root(), dictionary);
+        bool readOk = dictionary.readDictionary(fs.root());
         if(!readOk) {
             cerr << "Invalid dictionary file" << endl;
             return 0;
@@ -155,7 +163,7 @@ int main(int argc, char *argv[]) {
 
     // create charuco board object
     Ptr<aruco::CharucoBoard> charucoboard =
-            aruco::CharucoBoard::create(squaresX, squaresY, squareLength, markerLength, dictionary);
+            make_shared<aruco::CharucoBoard>(Size(squaresX, squaresY), squareLength, markerLength, dictionary);
     Ptr<aruco::Board> board = charucoboard.staticCast<aruco::Board>();
 
     // collect data from each frame
@@ -164,16 +172,23 @@ int main(int argc, char *argv[]) {
     vector< Mat > allImgs;
     Size imgSize;
 
-    while(inputVideo.grab()) {
+    int i=0;
+    while(true) {
         Mat image, imageCopy;
-        inputVideo.retrieve(image);
+
+        if(sImgs.size()!=0)
+            image = imread(sImgs[i]);
+        else if(inputVideo.grab()) 
+            inputVideo.retrieve(image);
+        else break;
+
 
         vector< int > ids;
         vector< vector< Point2f > > corners, rejected;
 
         // detect markers
 //        aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
-        aruco::detectMarkers(image, dictionary, corners, ids);
+        aruco::detectMarkers(image, &dictionary, corners, ids);
 
         // refind strategy to detect more markers
         if(refindStrategy) aruco::refineDetectedMarkers(image, board, corners, ids, rejected);
@@ -204,6 +219,8 @@ int main(int argc, char *argv[]) {
             allImgs.push_back(image);
             imgSize = image.size();
         }
+        //---
+        i++;
     }
 
     if(allIds.size() < 1) {
