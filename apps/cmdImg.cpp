@@ -87,7 +87,7 @@ CmdImg::CmdImg():
     }
     //---- 'undist'
     {
-        string sH = "undist file=<IMG> cfg=<CAM_CFG> filew=<FILEW> (image un-distortion) \n";
+        string sH = "undist dir=<DIR> dirw=<FILEW> cfg=<CAM_CFG>  (image un-distortion) \n";
         add("undist", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_undist(args); }));
     }
@@ -194,17 +194,28 @@ bool CmdImg::run_undist(CStrs& args)
 {
     using namespace picker;
     KeyVals kvs(args);
-    string sf  = kvs["file"];
-    string sfw = kvs["filew"];
+    string sdir  = kvs["dir"];
+    string sdirw = kvs["dirw"];
     string sfc = kvs["cfg"];
     auto p_im = vsn::Img::create();
     CamCfg camc; 
-    if(!p_im->load(sf)) return false;
     if(!camc.load(sfc)) return false;
-    auto pw = camc.undist(*p_im);    
+    if(!ut::sys::mkdir(sdirw)) return false;
 
-    return pw->save(sfw);
-
+    //----
+    vector<cv::String> sImgs;
+    cv::glob(sdir + "/*.png", sImgs, false);    
+    for(auto& sf : sImgs)
+    {
+        if(!p_im->load(sf)) return false;
+        string sfw = sf;
+        sfw.replace(sf.find(sdir), sdir.length(), sdirw);
+        auto pw = camc.undist(*p_im);    
+        if(!pw->save(sfw)) return false;
+        //---
+        log_i("Undistort '"+sf + "' -> '" + sfw+"'");
+    }
+    return true;
 }
 //----
 bool CmdImg::run_diff(CStrs& args)

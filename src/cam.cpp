@@ -53,6 +53,11 @@ bool CamCfg::load(CStr& sf)
     }
     //------
     cv2eigen(K1, K);
+    
+    //---- fit for rows/cols change in OpenCV 4.7
+    if(D1.rows==1)
+        transpose(D1, D1);
+
     cv2eigen(D1, D);
    
     //----
