@@ -18,5 +18,5 @@ SRC=-imgs=$FRMS
 #SRC=--ci=0    
 
 #./charuco_calib -a=1 --sc --pc --ml=0.0205 --sl=0.0345 -d=10 -w=5 -h=7 --zt $SRC cam.yml 
-./charuco_calib -a=1 --sc --pc --ml=0.021 --sl=0.035 -d=10 -w=5 -h=7 --zt $SRC OUTF 
+./bin/charuco_calib -a=1 --sc --pc --ml=0.021 --sl=0.035 -d=10 -w=5 -h=7 --zt $SRC $OUTF 
 
