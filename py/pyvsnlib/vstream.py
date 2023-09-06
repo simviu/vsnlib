@@ -24,26 +24,27 @@ class VStreamClient(object):
         self.cfg['scale'] = scale
         frm = ttk.Frame(topFrm, padding=(3,3,12,12))
        
-        #---- title
+        #---- title at(0,0)
         lt = tk.Label(frm, text = sTitle)
         lt.grid(row=0, column=0, sticky="news")
         #----
-        #---- image
+        #---- image at(1,0)
         li = tk.Label(frm, text = sTitle)
         li.grid(row=1, column=0, sticky="news")
         self.l_img_ = li
+        frm.columnconfigure(0, minsize=640)
+        frm.rowconfigure(1, minsize=480)
 
         #----
-        #---- status bar
+        #---- status bar at(2,0)
         ls = tk.Label(frm, text = "status")
         ls.grid(row=2, column=0, sticky="news")
-        frm.columnconfigure(1, minsize=640)
-        frm.rowconfigure(1, minsize=480)
 
         self.l_status_ = ls
         #----        
         frm.rowconfigure(0, weight=1)
-        frm.rowconfigure(1, weight=3)
+        frm.rowconfigure(1, weight=10)
+        frm.rowconfigure(2, weight=1)
         frm.columnconfigure(0, weight=1)
 
         self.frm  = frm
