@@ -54,7 +54,7 @@ class VStreamClient(object):
     #----
     def connect(self, sHost, port):
         #------
-        print("ArmTcp connect to '"+sHost+"'" + str(port)+"...")
+        print("Vstream connect to '"+sHost+"'" + str(port)+"...")
         self.sock_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if self.sock_ is None:
             raise Exception("socket failed")
