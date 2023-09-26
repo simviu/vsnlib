@@ -55,6 +55,8 @@ namespace app
         bool run_crop(CStrs& args);
         bool run_undist(CStrs& args);
         bool run_diff(CStrs& args);
+        bool run_capture(CStrs& args);
+
         struct Data{
             int frm_idx=0;
         }; Data data_;

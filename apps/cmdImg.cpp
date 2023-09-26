@@ -97,6 +97,14 @@ CmdImg::CmdImg():
         add("diff", mkSp<Cmd>(sH,
         [&](CStrs& args)->bool{ return run_diff(args); }));
     }    
+    //---- 'capture'
+    {
+        string sH = "capture ";
+        sH += "fps=<FPS> devices=<ID0,ID1> res=<W,H>";
+        sH += " vis=false save=<DIR>";
+        add("capture", mkSp<Cmd>(sH,
+        [&](CStrs& args)->bool{ return run_capture(args); }));
+    }    
 
 }
 
@@ -281,4 +289,81 @@ bool CmdImg::run_diff(CStrs& args)
     //p2->save("tmp2.png");
 
     return true;
+}
+
+
+//------
+bool CmdImg::run_capture(CStrs& args)
+{
+    KeyVals kvs(args);
+    string sdirw;
+    int vsrc = 0;
+    if(!kvs.get("src", vsrc)) return false;
+    kvs.get("src", vsrc);
+    cv::VideoCapture  vcap(vsrc, cv::CAP_V4L2);
+    string ssrc = to_string(vsrc);
+    if(!vcap.isOpened())
+    {
+        log_e("failed to open video :"+ssrc);
+        return false;
+    }
+    log_i("video capture opened:"+ssrc);
+    //---
+    //----
+    string sWd = kvs["save"];
+    if(!sys::mkdir(sWd)) return false;
+
+    //---- chk res
+    Sz sz(-1,-1);
+    auto tks = tokens(kvs["res"], ',');
+    bool ok = (tks.size()>1) &&  
+            s2d(tks[0], sz.w) &&
+            s2d(tks[1], sz.h) ;
+    if(!ok){ log_e("wrong res"); return false; }
+    vcap.set(cv::CAP_PROP_FRAME_WIDTH, sz.w);
+    vcap.set(cv::CAP_PROP_FRAME_HEIGHT, sz.h);
+
+    //----- fps
+    float fps=10;
+    ok = s2d(kvs["fps"], fps);
+    if((!ok)||(fps<=0))
+    {
+        log_e("Incorrect fps:"+kvs["kvs"]);
+        return false;
+    }
+    float dt = 1.0/fps;
+    
+    //---- main loop
+    int fi=0; // frame idx
+
+    while(1)
+    {
+        fi++;
+        cv::Mat im;
+        if(!vcap.read(im))
+        {
+            log_e("StereoCap dual cam fail to get frms");
+            return false;
+        }
+
+        //---- show 
+        if(kvs["vis"]=="true")
+            cv::imshow("source:"+ssrc, im);
+
+        //---- save
+        if(sWd!="")
+        {
+            string sfw = "./" + sWd +  "/" +
+                        to_string(fi) + ".png";
+            if(!cv::imwrite(sfw, im))
+            {
+                log_e("failed to write img:"+sfw);
+                return false;
+            }
+        }
+        //----
+        sys::sleep(dt);
+    }
+    return true;
+
 }
