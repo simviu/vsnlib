@@ -658,6 +658,7 @@ namespace vsn{
                 //---- result
                 Pose pose;
                 Sp<Cfg> p_cfg = nullptr;
+                vector<int> ids; // id's found
             };
             //---- Marker cfg
             struct MCfg{

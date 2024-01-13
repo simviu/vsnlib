@@ -438,6 +438,7 @@ bool Marker::PoseEstimator::onImg(const Img& im)
         if(!bc.det(detd, camc, brd.pose))
             continue;
         brd.p_cfg = pc;
+        brd.ids = detd.ids;
         result_.boards.push_back(p);
     }
     //----- show
