@@ -108,7 +108,7 @@ namespace vsn
     class VideoCv : public vsn::Video{
     public:
         VideoCv(){};
-        VideoCv(int idx); // cam index
+        VideoCv(int idx, Sz res=Sz(-1,-1)); // cam index
         VideoCv(CStr& s);
         virtual Sp<Img> read()override;
         

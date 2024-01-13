@@ -11,12 +11,24 @@
 using namespace ocv;
 
 //--------
-VideoCv::VideoCv(int idx)
+VideoCv::VideoCv(int idx, Sz res)
 {
+    log_i("Open camera :"+to_string(idx));
     cap_.open(idx);
     if(!cap_.isOpened())
         return;
 
+    //---- try set resolution
+    bool ok = true;
+    ok &= cap_.set(CAP_PROP_FRAME_WIDTH,  res.w);
+    ok &= cap_.set(CAP_PROP_FRAME_HEIGHT, res.h);
+    if(!ok)
+    {
+        log_e("  Failed to init resolution sz:" + res.str());
+        return;
+    }
+
+    //----
     init();
 }
 
@@ -49,10 +61,10 @@ void VideoCv::init()
 }
 
 //--------
-Sp<Video> Video::open(int i)
+Sp<Video> Video::open(int i, Sz sz)
 {
 
-    auto p = mkSp<VideoCv>(i);
+    auto p = mkSp<VideoCv>(i, sz);
     if(p->isOpen()) 
         return p;
     log_e("Failed to open camera:"+to_string(i));
